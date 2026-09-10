@@ -136,18 +136,29 @@
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX - ELIMINATES FLASH AND CUTOFFS */
+    /* 3. ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & BORDER RETENTION */
+    body.is-printing {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        overflow: hidden !important;
+    }
+    body.is-printing > *:not(#cv-print-container) {
+        display: none !important;
+    }
+    body.is-printing #cv-print-container {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        visibility: visible !important;
+    }
+
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
       html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: hidden !important; }
       
-      /* Instantly hide all UI overlays */
-      #app-screen-workspace, #custom-alert-modal, #reset-modal, #cv-history-modal, #global-dropdown-modal { 
-          display: none !important; opacity: 0 !important; visibility: hidden !important; 
-      }
+      body > *:not(#cv-print-container) { display: none !important; }
       
-      /* Force single A4 page bounds to prevent cutting/bleeding into second page */
       #cv-print-container {
         display: block !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; margin: 0 !important; padding: 4mm !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-after: avoid !important; page-break-inside: avoid !important; page-break-before: avoid !important; z-index: 999999 !important; visibility: visible !important;
       }
@@ -155,8 +166,7 @@
     }
   </style>
 </head>
-<!-- REMOVED GLOBAL UPPERCASE TO ALLOW PROPER CASE SETTINGS TO WORK -->
-<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans">
+<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans uppercase font-bold">
 
   <!-- 1. SCREEN WORKSPACE -->
   <div id="app-screen-workspace" class="h-[100dvh] w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
@@ -229,7 +239,7 @@
   <div id="cv-print-container"></div>
 
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v18';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v19';
     
     // Geographical Data List (States, Districts, Tehsils)
     const indiaData = {
@@ -368,7 +378,7 @@
         try { await window.signOut(window.auth); } catch (e) {}
     }
 
-    // BUG FIX 1: Direct Clean Print Output (No Flash)
+    // BUG FIX: Direct Clean Print Output (No Flash)
     function triggerPrint(onComplete = null) {
         renderPrintNode();
         
@@ -451,7 +461,7 @@
         }, 350); 
     }
 
-    // BUG FIX 2: Silent Dropdown Change (NO SCROLL JUMPS)
+    // BUG FIX: Silent Dropdown Change (NO SCROLL JUMPS)
     function selectGlobalDropdown(fieldPath, val, label) {
         setNested(cvData, fieldPath, val);
         
@@ -551,7 +561,7 @@
 
     function addArrayItem(key, val) {
       if (!cvData[key]) cvData[key] = [];
-      cvData[key].push(val);
+      cvData[key].push(val.toUpperCase());
       saveState();
       isNavigating = false; 
       renderApp();
@@ -628,10 +638,26 @@
       if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
     }
 
-    // BUG FIX 3: Removed forced uppercase from original escape html so Proper/Caps settings work exactly.
+    // Core HTML Escaping (Removed forced upper/lower so formatter works cleanly)
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // BUG FIX: TRUE PROPER CASE ALGORITHM
+    function formatText(str, tCase) {
+      if (!str) return '';
+      let cleanStr = escapeHtml(str);
+      if (tCase === 'capitalize') {
+          // Force entire string to lowercase first, THEN capitalize first letters.
+          // This fixes the bug where words typed in all caps stayed all caps.
+          return cleanStr.toLowerCase().split(' ').map(word => {
+              if(!word) return '';
+              return word.charAt(0).toUpperCase() + word.slice(1);
+          }).join(' ');
+      }
+      // Fallback to strict uppercase
+      return cleanStr.toUpperCase();
     }
 
     // PERFECT PDF GENERATION ENGINE
@@ -650,7 +676,7 @@
       const actualTehsil = p.tehsil === 'OTHER' ? p.customTehsil : p.tehsil;
       const actualNationality = d.nationality === 'OTHER' ? d.customNationality : d.nationality;
 
-      // BUG FIX 4: Refined Table List so names and numbers don't wrap aggressively.
+      // Contact List construction
       const contactList = [];
       if (p.mobile) contactList.push({ label: 'MOBILE NO.', val: p.mobile });
       if (p.email) contactList.push({ label: 'EMAIL ID', val: p.email });
@@ -659,20 +685,26 @@
       if (actualDistrict) contactList.push({ label: 'DISTRICT', val: actualDistrict });
       if (actualState) contactList.push({ label: 'STATE', val: actualState });
 
+      // HEADER GENERATION - Fixed based on styles
       let contactRowsHTML = '';
       if (p.headerStyle === 'labeled') {
+        // COLON ALIGNED: Includes NAME : Your Name
         contactRowsHTML = `
-            ${p.name ? `<tr><td colspan="3" style="font-size:16pt; font-weight:bold; color:#000; padding-bottom:6px;">${escapeHtml(p.name)}</td></tr>` : ''}
-            ${contactList.map((item) => `
-              <tr>
-                <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:110px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
-                <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
-                <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000;">${escapeHtml(item.val)}</td>
-              </tr>
-            `).join('')}
+          ${p.name ? `<tr>
+            <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0; color:#000; width:110px; white-space:nowrap; text-transform:uppercase;">NAME</td>
+            <td style="font-weight:${fWeight}; font-size:12pt; text-align:center; vertical-align:top; padding:2px 0; color:#000; width:15px;">:</td>
+            <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0 2px 6px; color:#000;">${formatText(p.name, tCase)}</td>
+          </tr>` : ''}
+          ${contactList.map((item) => `
+            <tr>
+              <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:110px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
+              <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
+              <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000;">${formatText(item.val, tCase)}</td>
+            </tr>
+          `).join('')}
         `;
       } else {
-         // BUG FIX 5: Standard Text removes labels completely and just lists values.
+         // STANDARD TEXT: No labels at all, big bold name.
          const detailsArr = [];
          if (p.mobile) detailsArr.push(p.mobile);
          if (p.email) detailsArr.push(p.email);
@@ -682,11 +714,12 @@
          if (actualState) detailsArr.push(actualState);
 
          contactRowsHTML = `<tr><td style="padding-top:4px;">
-            ${p.name ? `<div style="font-size:16pt; font-weight:bold; color:#000; margin-bottom:6px; line-height:1.2;">${escapeHtml(p.name)}</div>` : ''}
-            ${detailsArr.map(val => `<div style="font-size:11pt; font-weight:${fWeight}; color:#000; margin-bottom:3px;">${escapeHtml(val)}</div>`).join('')}
+            ${p.name ? `<div style="font-size:18pt; font-weight:bold; color:#000; margin-bottom:8px; line-height:1.2;">${formatText(p.name, tCase)}</div>` : ''}
+            ${detailsArr.map(val => `<div style="font-size:11pt; font-weight:${fWeight}; color:#000; margin-bottom:4px;">${formatText(val, tCase)}</div>`).join('')}
          </td></tr>`;
       }
 
+      // PERSONAL DETAILS SECTION
       const personalDetails = [
         { l: 'NAME', v: p.name },
         { l: 'DATE OF BIRTH', v: d.dob },
@@ -700,27 +733,28 @@
 
       const personalDetailsHTML = personalDetails.map(item => `
         <tr>
-          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:150px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
+          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:155px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
           <td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:15px;">:</td>
-          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000;">${escapeHtml(item.v)}</td>
+          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000;">${formatText(item.v, tCase)}</td>
         </tr>
       `).join('');
 
-      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${escapeHtml(x)}</li>`).join('');
-      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${escapeHtml(x)}</li>`).join('');
-      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${escapeHtml(x)}</li>`).join('');
+      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${formatText(x, tCase)}</li>`).join('');
+      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${formatText(x, tCase)}</li>`).join('');
+      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${formatText(x, tCase)}</li>`).join('');
 
       const photoBoxHTML = p.photo ? `<img src="${p.photo}" alt="Photo" style="width:115px !important; height:145px !important; min-width:115px !important; min-height:145px !important; max-width:115px !important; max-height:145px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : `<div style="width:115px; height:145px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; box-sizing:border-box;"><div style="width:90%; height:92%; border:1px dashed #71717a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fafafa;"><span style="font-size:8pt; font-weight:bold; color:#000; text-transform:uppercase;">PHOTO</span></div></div>`;
 
       const outerWidth = isPrintMode ? '100%' : '794px';
-      const outerMinH = isPrintMode ? '288mm' : '1123px';
-      const innerMinH = isPrintMode ? '282mm' : '1085px';
+      
+      // BUG FIX: Strict 297mm height boundary limits A4 pages to 1 exact page. Flexbox organically squishes contents to fit.
+      const outerMinH = isPrintMode ? '297mm' : '1123px';
+      const innerMinH = isPrintMode ? '100%' : '1085px';
 
-      // Notice text-transform: ${tCase} handles exactly what you configured in step 9 dynamically.
       return `
-        <div id="${id}" style="width:${outerWidth}; min-height:${outerMinH}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; text-transform:${tCase}; font-weight:${fWeight} !important;">
-          <div style="width:100%; min-height:${innerMinH}; border:1.5px solid #000000; padding:2.5px; box-sizing:border-box; background-color:#ffffff;">
-            <div style="width:100%; height:100%; min-height:calc(${innerMinH} - 7px); border:2.5px solid #000000; padding:6mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between;">
+        <div id="${id}" style="width:${outerWidth}; height:${outerMinH}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; font-weight:${fWeight} !important;">
+          <div style="width:100%; height:${innerMinH}; border:1.5px solid #000000; padding:2.5px; box-sizing:border-box; background-color:#ffffff;">
+            <div style="width:100%; height:100%; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between;">
               <div style="flex-shrink:0;">
                 <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:24pt; font-weight:bold; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:uppercase;">CURRICULUM VITAE</h1>
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
@@ -733,26 +767,26 @@
                       </td>
                     </tr></tbody>
                 </table>
-                <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:8px 0;"></div>
+                <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
               </div>
-              <div style="display:flex; flex-direction:column; flex:1; justify-content:flex-start; margin:4px 0; gap:12px; font-size:11pt; color:#000;">
-                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000;">${escapeHtml(cvData.objective)}</p></li></ul></div>` : ''}
-                ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
-                ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
-                ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
-                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:150px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
-                ${cvData.declaration && cvData.declaration.trim() ? `<div style="margin-top:auto;"><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000;">${escapeHtml(cvData.declaration)}</p></div>` : ''}
+              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; overflow:hidden; margin:2px 0; gap:8px; font-size:11pt; color:#000;">
+                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
+                ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
+                ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
+                ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
+                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:155px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
+                ${cvData.declaration && cvData.declaration.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
               </div>
-              <div style="flex-shrink:0; padding-top:15px;">
+              <div style="flex-shrink:0; padding-top:8px;">
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:${fWeight}; color:#000;">
                   <tbody>
                     <tr>
                       <td style="vertical-align:bottom; text-align:left; border:none;">
-                        ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${escapeHtml(f.date)}</div>` : ''}
-                        ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${escapeHtml(f.place)}</div>` : ''}
+                        ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${formatText(f.date, tCase)}</div>` : ''}
+                        ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${formatText(f.place, tCase)}</div>` : ''}
                       </td>
                       <td style="vertical-align:bottom; text-align:right; padding-right:8px; border:none;">
-                        <div>( ${escapeHtml(f.signName) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
+                        <div>( ${formatText(f.signName, tCase) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
                       </td>
                     </tr>
                   </tbody>
@@ -993,9 +1027,11 @@
              cvData.details = cvData.details || {};
              cvData.footer = cvData.footer || {};
              
-             triggerPrint(() => {
-                cvData = tempOldData;
-                if(activeView === 'preview') renderApp();
+             requestAnimationFrame(() => {
+                 triggerPrint(() => {
+                    cvData = tempOldData;
+                    if(activeView === 'preview') renderApp();
+                 });
              });
           }
       } catch(err) {
@@ -1057,7 +1093,6 @@
         }
         tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
 
-        // Silent Injection containers for inputs to prevent scrolling issues
         stepContentHTML = `
           <div class="space-y-3.5">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5">
@@ -1085,19 +1120,19 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="w-full">
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FULL NAME *</label>
-                <input type="text" value="${escapeHtml(cvData.personal.name)}" oninput="cvData.personal.name = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input type="text" value="${escapeHtml(cvData.personal.name)}" oninput="cvData.personal.name = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
               </div>
               <div class="w-full">
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">MOBILE NUMBER *</label>
-                <input type="tel" value="${escapeHtml(cvData.personal.mobile)}" oninput="cvData.personal.mobile = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input type="tel" value="${escapeHtml(cvData.personal.mobile)}" oninput="cvData.personal.mobile = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
               </div>
               <div class="w-full">
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">EMAIL ADDRESS</label>
-                <input type="email" value="${escapeHtml(cvData.personal.email)}" oninput="cvData.personal.email = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input type="email" value="${escapeHtml(cvData.personal.email)}" oninput="cvData.personal.email = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
               </div>
               <div class="w-full">
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">ADDRESS (VILL & POST / MOHALLA)</label>
-                <input type="text" value="${escapeHtml(cvData.personal.villagePost)}" oninput="cvData.personal.villagePost = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input type="text" value="${escapeHtml(cvData.personal.villagePost)}" oninput="cvData.personal.villagePost = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
               </div>
               <div class="grid grid-cols-2 gap-2.5 w-full">
                 <div class="min-w-0">
