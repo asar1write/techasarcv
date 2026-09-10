@@ -136,37 +136,27 @@
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX - ALLOWS MULTI PAGE CUTOFF PREVENT */
-    body.is-printing {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        overflow: visible !important;
-    }
-    body.is-printing > *:not(#cv-print-container) {
-        display: none !important;
-    }
-    body.is-printing #cv-print-container {
-        display: block !important;
-        position: static !important;
-        width: 100% !important;
-        visibility: visible !important;
-    }
-
+    /* 3. ROCK-SOLID PRINT ENGINE FIX - ELIMINATES FLASH AND CUTOFFS */
     @media print {
-      @page { size: A4 portrait; margin: 0mm !important; }
+      @page { size: A4 portrait; margin: 0 !important; }
       *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
-      html, body { width: 210mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: visible !important; }
+      html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: hidden !important; }
       
-      body > *:not(#cv-print-container) { display: none !important; }
+      /* Instantly hide all UI overlays */
+      #app-screen-workspace, #custom-alert-modal, #reset-modal, #cv-history-modal, #global-dropdown-modal { 
+          display: none !important; opacity: 0 !important; visibility: hidden !important; 
+      }
       
+      /* Force single A4 page bounds to prevent cutting/bleeding into second page */
       #cv-print-container {
-        display: block !important; position: static !important; width: 210mm !important; height: auto !important; min-height: 297mm !important; max-height: none !important; margin: 0 auto !important; padding: 4mm !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: visible !important; z-index: 999999 !important; visibility: visible !important;
+        display: block !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; margin: 0 !important; padding: 4mm !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-after: avoid !important; page-break-inside: avoid !important; page-break-before: avoid !important; z-index: 999999 !important; visibility: visible !important;
       }
       #cv-print-container * { visibility: visible !important; }
     }
   </style>
 </head>
-<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans uppercase font-bold">
+<!-- REMOVED GLOBAL UPPERCASE TO ALLOW PROPER CASE SETTINGS TO WORK -->
+<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans">
 
   <!-- 1. SCREEN WORKSPACE -->
   <div id="app-screen-workspace" class="h-[100dvh] w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
@@ -192,12 +182,12 @@
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
       </div>
       <div>
-        <h3 class="font-bold text-sm text-zinc-100">RESET CV DATA?</h3>
-        <p class="text-xs text-zinc-400 mt-1">CLEAR ALL INPUTS AND START FRESH?</p>
+        <h3 class="font-bold text-sm text-zinc-100 uppercase">RESET CV DATA?</h3>
+        <p class="text-xs text-zinc-400 mt-1 uppercase">CLEAR ALL INPUTS AND START FRESH?</p>
       </div>
       <div class="grid grid-cols-2 gap-2 pt-1">
-        <button type="button" onclick="closeResetDialog()" class="py-1.5 px-3 rounded-lg bg-zinc-800 text-zinc-300 text-xs active:scale-95 transition-all">CANCEL</button>
-        <button type="button" onclick="confirmReset()" class="py-1.5 px-3 rounded-lg bg-red-600 text-white text-xs font-semibold active:scale-95 transition-all">RESET</button>
+        <button type="button" onclick="closeResetDialog()" class="py-1.5 px-3 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+        <button type="button" onclick="confirmReset()" class="py-1.5 px-3 rounded-lg bg-red-600 text-white text-xs font-bold uppercase active:scale-95 transition-all">RESET</button>
       </div>
     </div>
   </div>
@@ -208,7 +198,7 @@
       <div class="flex items-center justify-between p-4 border-b border-zinc-800/80 bg-[#181826]/50">
          <div class="flex items-center gap-2">
            <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-           <h3 class="font-bold text-zinc-100 text-sm">CV HISTORY</h3>
+           <h3 class="font-bold text-zinc-100 text-sm uppercase">CV HISTORY</h3>
          </div>
          <button type="button" onclick="closeHistory()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 active:scale-95 transition-all">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -239,7 +229,7 @@
   <div id="cv-print-container"></div>
 
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v17';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v18';
     
     // Geographical Data List (States, Districts, Tehsils)
     const indiaData = {
@@ -276,7 +266,7 @@
        window.onAuthStateChanged(window.auth, (user) => {
           currentUser = user;
           authLoading = false;
-          renderApp(); // re-render to update Home Screen Auth State
+          renderApp(); 
        });
     };
 
@@ -333,12 +323,12 @@
         alertCallback = callback;
         if(isConfirm) {
             actions.innerHTML = `
-                <button type="button" onclick="closeUIAlert(false)" class="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold active:scale-95 transition-all">CANCEL</button>
-                <button type="button" onclick="closeUIAlert(true)" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-indigo-600/30">CONFIRM</button>
+                <button type="button" onclick="closeUIAlert(false)" class="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+                <button type="button" onclick="closeUIAlert(true)" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">CONFIRM</button>
             `;
         } else {
             actions.innerHTML = `
-                <button type="button" onclick="closeUIAlert(true)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold active:scale-95 transition-all shadow-lg shadow-indigo-600/30">OKAY</button>
+                <button type="button" onclick="closeUIAlert(true)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">OKAY</button>
             `;
         }
         const modal = document.getElementById('custom-alert-modal');
@@ -378,29 +368,15 @@
         try { await window.signOut(window.auth); } catch (e) {}
     }
 
-    // Advanced Bulletproof Print Engine
+    // BUG FIX 1: Direct Clean Print Output (No Flash)
     function triggerPrint(onComplete = null) {
         renderPrintNode();
-        document.body.classList.add('is-printing');
         
-        let cleanedUp = false;
-        const cleanup = () => {
-            if(cleanedUp) return;
-            cleanedUp = true;
-            document.body.classList.remove('is-printing');
-            window.removeEventListener('afterprint', cleanup);
-            if(window._printFocusListener) {
-                window.removeEventListener('focus', window._printFocusListener);
-            }
+        // Let the @media print CSS exclusively handle showing/hiding to prevent any visual UI flashing.
+        setTimeout(() => { 
+            window.print(); 
             if(onComplete) onComplete();
-        };
-
-        window.addEventListener('afterprint', cleanup);
-        window._printFocusListener = () => { setTimeout(cleanup, 500); };
-        window.addEventListener('focus', window._printFocusListener);
-
-        // Immediate trigger to prevent popup blocking in History view
-        setTimeout(() => { window.print(); }, 50);
+        }, 150);
     }
 
     // Custom Dropdown Trigger
@@ -475,43 +451,36 @@
         }, 350); 
     }
 
+    // BUG FIX 2: Silent Dropdown Change (NO SCROLL JUMPS)
     function selectGlobalDropdown(fieldPath, val, label) {
         setNested(cvData, fieldPath, val);
-        
-        let needsReRender = false;
         
         if(fieldPath === 'personal.state') {
             cvData.personal.district = '';
             cvData.personal.tehsil = '';
-            needsReRender = true;
+            let dBtn = document.getElementById('dd-btn-personal-district'); if(dBtn) dBtn.innerText = 'SELECT DISTRICT';
+            let tBtn = document.getElementById('dd-btn-personal-tehsil'); if(tBtn) tBtn.innerText = 'SELECT TEHSIL';
+            let sw = document.getElementById('custom-state-wrapper'); if(sw) sw.style.display = val === 'OTHER' ? 'block' : 'none';
+            let dw = document.getElementById('custom-district-wrapper'); if(dw) dw.style.display = 'none';
+            let tw = document.getElementById('custom-tehsil-wrapper'); if(tw) tw.style.display = 'none';
         } else if(fieldPath === 'personal.district') {
             cvData.personal.tehsil = '';
-            needsReRender = true;
-        } else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') {
-            needsReRender = true;
+            let tBtn = document.getElementById('dd-btn-personal-tehsil'); if(tBtn) tBtn.innerText = 'SELECT TEHSIL';
+            let dw = document.getElementById('custom-district-wrapper'); if(dw) dw.style.display = val === 'OTHER' ? 'block' : 'none';
+            let tw = document.getElementById('custom-tehsil-wrapper'); if(tw) tw.style.display = 'none';
+        } else if (fieldPath === 'personal.tehsil') {
+            let tw = document.getElementById('custom-tehsil-wrapper'); if(tw) tw.style.display = val === 'OTHER' ? 'block' : 'none';
+        } else if (fieldPath === 'details.nationality') {
+            let nw = document.getElementById('custom-nationality-wrapper'); if(nw) nw.style.display = val === 'OTHER' ? 'block' : 'none';
         }
         
         saveState(); 
         closeGlobalDropdown(null, true);
 
-        // Precise Scroll Lock to stop jump bug
-        if (needsReRender && activeView === 'editor') {
-            isNavigating = false;
-            const scrollArea = document.getElementById('editor-scroll-area');
-            const exactScroll = scrollArea ? scrollArea.scrollTop : 0;
-            
-            setTimeout(() => { 
-                renderApp(); 
-                setTimeout(() => {
-                    const newScroll = document.getElementById('editor-scroll-area');
-                    if(newScroll) newScroll.scrollTop = exactScroll;
-                }, 0);
-            }, 350); 
-        } else {
-            const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
-            const btn = document.getElementById(btnId);
-            if (btn) btn.innerText = label;
-        }
+        // Update button text silently without ANY re-renders to strictly preserve user's scroll position.
+        const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
+        const btn = document.getElementById(btnId);
+        if (btn) btn.innerText = label;
     }
 
     // Firebase & Local Save State
@@ -582,7 +551,7 @@
 
     function addArrayItem(key, val) {
       if (!cvData[key]) cvData[key] = [];
-      cvData[key].push(val.toUpperCase());
+      cvData[key].push(val);
       saveState();
       isNavigating = false; 
       renderApp();
@@ -659,22 +628,10 @@
       if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
     }
 
+    // BUG FIX 3: Removed forced uppercase from original escape html so Proper/Caps settings work exactly.
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-    
-    // NEW FIX: Intelligent Case Formatter
-    function formatText(str, tCase) {
-      if (!str) return '';
-      let escaped = escapeHtml(str);
-      if (tCase === 'capitalize') {
-          return escaped.split(' ').map(word => {
-              if(!word) return '';
-              return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-          }).join(' ');
-      }
-      return escaped.toUpperCase();
     }
 
     // PERFECT PDF GENERATION ENGINE
@@ -693,9 +650,8 @@
       const actualTehsil = p.tehsil === 'OTHER' ? p.customTehsil : p.tehsil;
       const actualNationality = d.nationality === 'OTHER' ? d.customNationality : d.nationality;
 
-      // FIX: Name positioned first in hierarchy
+      // BUG FIX 4: Refined Table List so names and numbers don't wrap aggressively.
       const contactList = [];
-      if (p.name) contactList.push({ label: 'NAME', val: p.name });
       if (p.mobile) contactList.push({ label: 'MOBILE NO.', val: p.mobile });
       if (p.email) contactList.push({ label: 'EMAIL ID', val: p.email });
       if (p.villagePost) contactList.push({ label: 'ADDRESS', val: p.villagePost });
@@ -705,19 +661,30 @@
 
       let contactRowsHTML = '';
       if (p.headerStyle === 'labeled') {
-        contactRowsHTML = contactList.map((item) => `
-          <tr>
-            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:110px; white-space:nowrap;">${item.label}</td>
-            <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:20px;">:</td>
-            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 10px; color:#000; word-break:break-word;">${formatText(item.val, tCase)}</td>
-          </tr>
-        `).join('');
+        contactRowsHTML = `
+            ${p.name ? `<tr><td colspan="3" style="font-size:16pt; font-weight:bold; color:#000; padding-bottom:6px;">${escapeHtml(p.name)}</td></tr>` : ''}
+            ${contactList.map((item) => `
+              <tr>
+                <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:110px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
+                <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
+                <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000;">${escapeHtml(item.val)}</td>
+              </tr>
+            `).join('')}
+        `;
       } else {
-         // FIX: Standard format removes generic labels entirely
-         contactRowsHTML = `<tr><td style="padding-top:4px;">` + contactList.map((item) => {
-            if (item.label === 'NAME') return `<div style="font-size:14pt; font-weight:${fWeight}; color:#000; margin-bottom:4px;">${formatText(item.val, tCase)}</div>`;
-            return `<div style="font-size:11pt; font-weight:${fWeight}; color:#000; margin-bottom:2px;">${formatText(item.val, tCase)}</div>`;
-         }).join('') + `</td></tr>`;
+         // BUG FIX 5: Standard Text removes labels completely and just lists values.
+         const detailsArr = [];
+         if (p.mobile) detailsArr.push(p.mobile);
+         if (p.email) detailsArr.push(p.email);
+         if (p.villagePost) detailsArr.push(p.villagePost);
+         if (actualTehsil) detailsArr.push(actualTehsil);
+         if (actualDistrict) detailsArr.push(actualDistrict);
+         if (actualState) detailsArr.push(actualState);
+
+         contactRowsHTML = `<tr><td style="padding-top:4px;">
+            ${p.name ? `<div style="font-size:16pt; font-weight:bold; color:#000; margin-bottom:6px; line-height:1.2;">${escapeHtml(p.name)}</div>` : ''}
+            ${detailsArr.map(val => `<div style="font-size:11pt; font-weight:${fWeight}; color:#000; margin-bottom:3px;">${escapeHtml(val)}</div>`).join('')}
+         </td></tr>`;
       }
 
       const personalDetails = [
@@ -733,33 +700,33 @@
 
       const personalDetailsHTML = personalDetails.map(item => `
         <tr>
-          <td style="padding:2.5px 0; font-weight:${fWeight}; vertical-align:top; color:#000; width:160px; white-space:nowrap;">${item.l}</td>
-          <td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; vertical-align:top; color:#000; width:20px;">:</td>
-          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; vertical-align:top; color:#000; word-break:break-word;">${formatText(item.v, tCase)}</td>
+          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:150px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
+          <td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:15px;">:</td>
+          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000;">${escapeHtml(item.v)}</td>
         </tr>
       `).join('');
 
-      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; word-break:break-word; color:#000;">${formatText(x, tCase)}</li>`).join('');
-      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; word-break:break-word; color:#000;">${formatText(x, tCase)}</li>`).join('');
-      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; word-break:break-word; color:#000;">${formatText(x, tCase)}</li>`).join('');
+      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${escapeHtml(x)}</li>`).join('');
+      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${escapeHtml(x)}</li>`).join('');
+      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${escapeHtml(x)}</li>`).join('');
 
       const photoBoxHTML = p.photo ? `<img src="${p.photo}" alt="Photo" style="width:115px !important; height:145px !important; min-width:115px !important; min-height:145px !important; max-width:115px !important; max-height:145px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : `<div style="width:115px; height:145px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; box-sizing:border-box;"><div style="width:90%; height:92%; border:1px dashed #71717a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fafafa;"><span style="font-size:8pt; font-weight:bold; color:#000; text-transform:uppercase;">PHOTO</span></div></div>`;
 
       const outerWidth = isPrintMode ? '100%' : '794px';
-      // Adjust min heights to Auto in Print Mode to prevent cutoffs
-      const outerMinH = isPrintMode ? 'auto' : '1123px';
-      const innerMinH = isPrintMode ? 'auto' : '1085px';
+      const outerMinH = isPrintMode ? '288mm' : '1123px';
+      const innerMinH = isPrintMode ? '282mm' : '1085px';
 
+      // Notice text-transform: ${tCase} handles exactly what you configured in step 9 dynamically.
       return `
-        <div id="${id}" style="width:${outerWidth}; min-height:${outerMinH}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; font-weight:${fWeight} !important;">
+        <div id="${id}" style="width:${outerWidth}; min-height:${outerMinH}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; text-transform:${tCase}; font-weight:${fWeight} !important;">
           <div style="width:100%; min-height:${innerMinH}; border:1.5px solid #000000; padding:2.5px; box-sizing:border-box; background-color:#ffffff;">
-            <div style="width:100%; height:100%; border:2.5px solid #000000; padding:6mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between;">
+            <div style="width:100%; height:100%; min-height:calc(${innerMinH} - 7px); border:2.5px solid #000000; padding:6mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between;">
               <div style="flex-shrink:0;">
                 <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:24pt; font-weight:bold; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:uppercase;">CURRICULUM VITAE</h1>
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
                   <tbody><tr>
                       <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
-                        ${contactList.length > 0 ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:110px;" /><col style="width:20px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
+                        ${contactList.length > 0 || p.name ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:110px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
                       </td>
                       <td style="width:120px; min-width:120px; max-width:120px; vertical-align:top; text-align:right; border:none;">
                         <div style="width:115px; height:145px; min-width:115px; min-height:145px; max-width:115px; max-height:145px; border:1.5px solid #000000; display:block; overflow:hidden; background-color:#ffffff; box-sizing:border-box; text-align:center; margin-left:auto;">${photoBoxHTML}</div>
@@ -769,23 +736,23 @@
                 <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:8px 0;"></div>
               </div>
               <div style="display:flex; flex-direction:column; flex:1; justify-content:flex-start; margin:4px 0; gap:12px; font-size:11pt; color:#000;">
-                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; word-break:break-word; color:#000;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
+                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000;">${escapeHtml(cvData.objective)}</p></li></ul></div>` : ''}
                 ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
                 ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
                 ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
-                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:160px;" /><col style="width:20px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
-                ${cvData.declaration && cvData.declaration.trim() ? `<div style="margin-top:auto;"><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; word-break:break-word; color:#000;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
+                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:150px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
+                ${cvData.declaration && cvData.declaration.trim() ? `<div style="margin-top:auto;"><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:4px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000;">${escapeHtml(cvData.declaration)}</p></div>` : ''}
               </div>
               <div style="flex-shrink:0; padding-top:15px;">
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:${fWeight}; color:#000;">
                   <tbody>
                     <tr>
                       <td style="vertical-align:bottom; text-align:left; border:none;">
-                        ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${formatText(f.date, tCase)}</div>` : ''}
-                        ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${formatText(f.place, tCase)}</div>` : ''}
+                        ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${escapeHtml(f.date)}</div>` : ''}
+                        ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${escapeHtml(f.place)}</div>` : ''}
                       </td>
                       <td style="vertical-align:bottom; text-align:right; padding-right:8px; border:none;">
-                        <div>( ${formatText(f.signName, tCase) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
+                        <div>( ${escapeHtml(f.signName) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
                       </td>
                     </tr>
                   </tbody>
@@ -883,11 +850,11 @@
             ` : currentUser ? `
                 <div class="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-full">
                     <img src="${currentUser.photoURL}" class="w-7 h-7 rounded-full" />
-                    <span class="text-xs font-bold text-zinc-300 mr-1">${currentUser.displayName.split(' ')[0]}</span>
-                    <button type="button" onclick="logoutGoogle()" class="text-[10px] bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full active:scale-95">LOGOUT</button>
+                    <span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName.split(' ')[0]}</span>
+                    <button type="button" onclick="logoutGoogle()" class="text-[10px] font-bold bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase">LOGOUT</button>
                 </div>
             ` : `
-                <button type="button" onclick="loginWithGoogle()" class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-white/10">
+                <button type="button" onclick="loginWithGoogle()" class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-white/10 uppercase">
                     <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                     LOGIN WITH GOOGLE
                 </button>
@@ -1026,11 +993,9 @@
              cvData.details = cvData.details || {};
              cvData.footer = cvData.footer || {};
              
-             requestAnimationFrame(() => {
-                 triggerPrint(() => {
-                    cvData = tempOldData;
-                    if(activeView === 'preview') renderApp();
-                 });
+             triggerPrint(() => {
+                cvData = tempOldData;
+                if(activeView === 'preview') renderApp();
              });
           }
       } catch(err) {
@@ -1092,7 +1057,7 @@
         }
         tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
 
-
+        // Silent Injection containers for inputs to prevent scrolling issues
         stepContentHTML = `
           <div class="space-y-3.5">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5">
@@ -1138,18 +1103,24 @@
                 <div class="min-w-0">
                   <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">STATE</label>
                   ${createCustomDropdown('personal.state', stateOpts, 'SELECT STATE')}
-                  ${selectedState === 'OTHER' ? `<input type="text" placeholder="ENTER STATE" oninput="cvData.personal.customState = this.value; saveState();" class="mt-2 w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500 elegant-entry" value="${escapeHtml(cvData.personal.customState || '')}">` : ''}
+                  <div id="custom-state-wrapper" style="display: ${selectedState === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                     <input type="text" placeholder="ENTER STATE" oninput="cvData.personal.customState = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customState || '')}">
+                  </div>
                 </div>
                 <div class="min-w-0">
                   <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DISTRICT</label>
                   ${createCustomDropdown('personal.district', distOpts, 'SELECT DISTRICT')}
-                  ${selectedDist === 'OTHER' ? `<input type="text" placeholder="ENTER DISTRICT" oninput="cvData.personal.customDistrict = this.value; saveState();" class="mt-2 w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500 elegant-entry" value="${escapeHtml(cvData.personal.customDistrict || '')}">` : ''}
+                  <div id="custom-district-wrapper" style="display: ${selectedDist === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                     <input type="text" placeholder="ENTER DISTRICT" oninput="cvData.personal.customDistrict = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customDistrict || '')}">
+                  </div>
                 </div>
               </div>
               <div class="w-full">
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEHSIL</label>
                 ${createCustomDropdown('personal.tehsil', tehsilOpts, 'SELECT TEHSIL')}
-                ${cvData.personal.tehsil === 'OTHER' ? `<input type="text" placeholder="ENTER TEHSIL" oninput="cvData.personal.customTehsil = this.value; saveState();" class="mt-2 w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500 elegant-entry" value="${escapeHtml(cvData.personal.customTehsil || '')}">` : ''}
+                <div id="custom-tehsil-wrapper" style="display: ${cvData.personal.tehsil === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                   <input type="text" placeholder="ENTER TEHSIL" oninput="cvData.personal.customTehsil = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customTehsil || '')}">
+                </div>
               </div>
             </div>
           </div>
@@ -1159,13 +1130,13 @@
           <div class="space-y-3.5">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <label class="block text-xs font-bold text-zinc-200 uppercase">CAREER OBJECTIVE STATEMENT</label>
-              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase leading-relaxed outline-none focus:border-indigo-500 resize-none">${escapeHtml(cvData.objective)}</textarea>
+              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none focus:border-indigo-500 resize-none">${escapeHtml(cvData.objective)}</textarea>
               <div class="pt-2 border-t border-zinc-800">
                 <span class="text-[11px] font-bold text-zinc-400 block mb-1.5 uppercase">QUICK TEMPLATES:</span>
                 <div class="space-y-1.5">
-                  <button type="button" onclick="setObjectivePreset('TO CONTRIBUTE TO THE OVERALL GROWTH OF YOUR ORGANIZATION BY APPLYING MY SKILLS, KNOWLEDGE, HONESTY & HARD-WORKING.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 active:scale-[0.99] transition-all">"TO CONTRIBUTE TO THE OVERALL GROWTH..."</button>
-                  <button type="button" onclick="setObjectivePreset('TO WORK IN A HIGHLY MOTIVATED AND CHALLENGING ENVIRONMENT WHERE I CAN ENHANCE MY SKILLS AND CONTRIBUTE TO THE SUCCESS OF THE COMPANY.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 active:scale-[0.99] transition-all">"TO WORK IN A CHALLENGING ENVIRONMENT..."</button>
-                  <button type="button" onclick="setObjectivePreset('SEEKING A CHALLENGING POSITION TO UTILIZE MY SKILLS AND ABILITIES IN THE INDUSTRY THAT OFFERS PROFESSIONAL GROWTH WHILE BEING RESOURCEFUL, INNOVATIVE AND FLEXIBLE.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 active:scale-[0.99] transition-all">"SEEKING A CHALLENGING POSITION TO UTILIZE..."</button>
+                  <button type="button" onclick="setObjectivePreset('TO CONTRIBUTE TO THE OVERALL GROWTH OF YOUR ORGANIZATION BY APPLYING MY SKILLS, KNOWLEDGE, HONESTY & HARD-WORKING.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO CONTRIBUTE TO THE OVERALL GROWTH..."</button>
+                  <button type="button" onclick="setObjectivePreset('TO WORK IN A HIGHLY MOTIVATED AND CHALLENGING ENVIRONMENT WHERE I CAN ENHANCE MY SKILLS AND CONTRIBUTE TO THE SUCCESS OF THE COMPANY.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO WORK IN A CHALLENGING ENVIRONMENT..."</button>
+                  <button type="button" onclick="setObjectivePreset('SEEKING A CHALLENGING POSITION TO UTILIZE MY SKILLS AND ABILITIES IN THE INDUSTRY THAT OFFERS PROFESSIONAL GROWTH WHILE BEING RESOURCEFUL, INNOVATIVE AND FLEXIBLE.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"SEEKING A CHALLENGING POSITION TO UTILIZE..."</button>
                 </div>
               </div>
             </div>
@@ -1174,8 +1145,8 @@
       } else if (currentPage === 3) {
         const academicItems = (cvData.academic || []).map((item, idx) => `
           <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold uppercase outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
+            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
             <button type="button" onclick="removeArrayItem('academic', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
@@ -1185,7 +1156,7 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">ACADEMIC QUALIFICATIONS</h3>
-                <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
+                <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
               </div>
               <div class="space-y-2">${academicItems}</div>
               <div class="pt-2 border-t border-zinc-800 space-y-1.5">
@@ -1205,8 +1176,8 @@
       } else if (currentPage === 4) {
         const otherItems = (cvData.other || []).map((item, idx) => `
           <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold uppercase outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
+            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
             <button type="button" onclick="removeArrayItem('other', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
@@ -1216,7 +1187,7 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">OTHER COURSES & DIPLOMAS</h3>
-                <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
+                <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
               </div>
               <div class="space-y-2">${otherItems}</div>
               <div class="pt-2 border-t border-zinc-800 space-y-1.5">
@@ -1236,8 +1207,8 @@
       } else if (currentPage === 5) {
         const expItems = (cvData.experience || []).map((item, idx) => `
           <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold uppercase outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
+            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
             <button type="button" onclick="removeArrayItem('experience', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
@@ -1247,7 +1218,7 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">WORKING EXPERIENCE</h3>
-                <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
+                <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
               </div>
               <div class="space-y-2">${expItems}</div>
               <div class="pt-2 border-t border-zinc-800 space-y-1.5">
@@ -1276,12 +1247,12 @@
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE OF BIRTH</label>
                 <div class="date-wrapper">
-                  <input type="date" value="${dobInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.details.dob = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.details.dob = ''; } saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                  <input type="date" value="${dobInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.details.dob = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.details.dob = ''; } saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
                 </div>
               </div>
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FATHER'S NAME</label>
-                <input type="text" value="${escapeHtml(cvData.details.father)}" oninput="cvData.details.father = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input type="text" value="${escapeHtml(cvData.details.father)}" oninput="cvData.details.father = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
               </div>
               <div class="grid grid-cols-2 gap-2.5">
                 <div>
@@ -1296,11 +1267,13 @@
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">NATIONALITY</label>
                 ${createCustomDropdown('details.nationality', [{label: 'INDIAN', val: 'INDIAN'}, {label: 'OTHER', val: 'OTHER'}], 'SELECT NATIONALITY')}
-                ${cvData.details.nationality === 'OTHER' ? `<input type="text" placeholder="ENTER NATIONALITY" oninput="cvData.details.customNationality = this.value; saveState();" class="mt-2 w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500 elegant-entry" value="${escapeHtml(cvData.details.customNationality || '')}">` : ''}
+                <div id="custom-nationality-wrapper" style="display: ${cvData.details.nationality === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                   <input type="text" placeholder="ENTER NATIONALITY" oninput="cvData.details.customNationality = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.details.customNationality || '')}">
+                </div>
               </div>
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">LANGUAGE KNOWN</label>
-                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="HINDI & ENGLISH" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="HINDI & ENGLISH" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
                 <div class="flex flex-wrap gap-1.5 mt-2">
                   <button type="button" onclick="setLanguage('HINDI')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ HINDI</button>
                   <button type="button" onclick="setLanguage('ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ ENGLISH</button>
@@ -1309,7 +1282,7 @@
               </div>
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">HOBBIES</label>
-                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="EDITING, LISTENING MUSIC" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="EDITING, LISTENING MUSIC" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
                 <div class="flex flex-wrap gap-1.5 mt-2">
                   <button type="button" onclick="appendHobby('EXCEL')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ EXCEL</button>
                   <button type="button" onclick="appendHobby('WORD')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ WORD</button>
@@ -1330,10 +1303,10 @@
           <div class="space-y-3.5">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-2.5">
               <label class="block text-xs font-bold text-zinc-200 uppercase tracking-wider">DECLARATION STATEMENT</label>
-              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500 leading-relaxed resize-none">${escapeHtml(cvData.declaration)}</textarea>
+              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 leading-relaxed resize-none">${escapeHtml(cvData.declaration)}</textarea>
               <div class="pt-2 border-t border-zinc-800">
                 <span class="text-[11px] font-bold text-zinc-400 block mb-1.5 uppercase">QUICK TEMPLATE:</span>
-                <button type="button" onclick="setDeclarationPreset('I HEREBY DECLARE THAT ALL THE INFORMATION MENTIONED ABOVE IS TRUE TO THE BEST OF MY KNOWLEDGE. IF YOU GIVE ME A CHANCE, I ASSURE MY HARD WORK, DEDICATION AND SINCERITY')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 active:scale-[0.99] transition-all">"I HEREBY DECLARE THAT ALL THE INFORMATION..."</button>
+                <button type="button" onclick="setDeclarationPreset('I HEREBY DECLARE THAT ALL THE INFORMATION MENTIONED ABOVE IS TRUE TO THE BEST OF MY KNOWLEDGE. IF YOU GIVE ME A CHANCE, I ASSURE MY HARD WORK, DEDICATION AND SINCERITY')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"I HEREBY DECLARE THAT ALL THE INFORMATION..."</button>
               </div>
             </div>
           </div>
@@ -1354,16 +1327,16 @@
                   <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE</label>
                     <div class="date-wrapper">
-                      <input type="date" value="${dateInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.footer.date = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.footer.date = ''; } saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                      <input type="date" value="${dateInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.footer.date = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.footer.date = ''; } saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
                     </div>
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">PLACE</label>
-                    <input type="text" value="${escapeHtml(cvData.footer.place)}" oninput="cvData.footer.place = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                    <input type="text" value="${escapeHtml(cvData.footer.place)}" oninput="cvData.footer.place = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">SIGNATURE NAME</label>
-                    <input type="text" value="${escapeHtml(cvData.footer.signName)}" oninput="cvData.footer.signName = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold uppercase outline-none focus:border-indigo-500" />
+                    <input type="text" value="${escapeHtml(cvData.footer.signName)}" oninput="cvData.footer.signName = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
                   </div>
                 </div>
               </div>
@@ -1419,15 +1392,15 @@
             <div class="${animClass} w-full">${stepContentHTML}</div>
           </div>
           <div class="absolute bottom-0 left-0 right-0 z-30 bg-[#0c0c16]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
-            <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold border border-zinc-700/60 active:scale-95 shrink-0 transition-transform uppercase">
+            <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold uppercase border border-zinc-700/60 active:scale-95 shrink-0 transition-transform">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
               <span>PREV</span>
             </button>
-            <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold active:scale-95 shadow-sm transition-transform uppercase">
+            <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold uppercase active:scale-95 shadow-sm transition-transform">
               <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               <span>PREVIEW CV</span>
             </button>
-            <button type="button" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform uppercase">
+            <button type="button" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform">
               <span>${currentPage === TOTAL_STEPS ? 'REVIEW' : 'NEXT'}</span>
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg>
             </button>
@@ -1445,7 +1418,7 @@
       container.innerHTML = `
         <div class="flex-1 flex flex-col overflow-hidden bg-[#06060a] elegant-entry">
           <div class="bg-[#0e0e18] border-b border-zinc-800 px-3 py-2 flex items-center justify-between gap-2 z-20 shrink-0">
-            <button type="button" onclick="closePreview()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-100 text-xs font-bold border border-zinc-700 active:scale-95 uppercase">
+            <button type="button" onclick="closePreview()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95">
               <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
               <span>EDIT</span>
             </button>
@@ -1453,9 +1426,9 @@
               <button type="button" onclick="zoomPreview(-0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
               <span class="text-[11px] font-bold text-zinc-300 min-w-9 text-center tabular-nums">${Math.round(previewZoom * 100)}%</span>
               <button type="button" onclick="zoomPreview(0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
-              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold text-indigo-400 bg-indigo-500/10 active:scale-90 uppercase">FIT</button>
+              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-indigo-400 bg-indigo-500/10 active:scale-90">FIT</button>
             </div>
-            <button type="button" onclick="handleDirectPrint()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-bold border border-zinc-700 active:scale-95 shadow-sm uppercase">
+            <button type="button" onclick="handleDirectPrint()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95 shadow-sm">
               <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
               <span>PRINT</span>
             </button>
@@ -1468,11 +1441,11 @@
             </div>
           </div>
           <div class="fixed bottom-3 left-4 right-4 z-30 flex items-center justify-between gap-3 bg-[#10101c]/95 backdrop-blur-lg px-3 py-2 rounded-2xl border border-zinc-800 shadow-2xl">
-            <button type="button" onclick="closePreview()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-bold active:scale-95 uppercase">
+            <button type="button" onclick="closePreview()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95">
               <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
               <span>EDIT DETAILS</span>
             </button>
-            <button type="button" onclick="handleDirectPrint()" class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold active:scale-95 shadow-lg shadow-emerald-600/30 transition-all uppercase">
+            <button type="button" onclick="handleDirectPrint()" class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase active:scale-95 shadow-lg shadow-emerald-600/30 transition-all">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
               <span>PRINT CV</span>
             </button>
