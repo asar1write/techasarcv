@@ -136,7 +136,7 @@
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & BORDER RETENTION */
+    /* 3. ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & PERFECT BORDERS */
     body.is-printing {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -155,12 +155,14 @@
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
+      
+      /* Locks exactly to 1 A4 Page size */
       html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: hidden !important; }
       
       body > *:not(#cv-print-container) { display: none !important; }
       
       #cv-print-container {
-        display: block !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; margin: 0 !important; padding: 4mm !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-after: avoid !important; page-break-inside: avoid !important; page-break-before: avoid !important; z-index: 999999 !important; visibility: visible !important;
+        display: block !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-after: avoid !important; page-break-inside: avoid !important; page-break-before: avoid !important; z-index: 999999 !important; visibility: visible !important;
       }
       #cv-print-container * { visibility: visible !important; }
     }
@@ -170,7 +172,6 @@
 
   <!-- 1. SCREEN WORKSPACE -->
   <div id="app-screen-workspace" class="h-[100dvh] w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
-    <!-- MAIN VIEW CONTAINER -->
     <div id="main-view-container" class="flex-1 flex flex-col overflow-hidden relative">
       <!-- Dynamically injected UI -->
     </div>
@@ -239,9 +240,9 @@
   <div id="cv-print-container"></div>
 
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v19';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v20';
     
-    // Geographical Data List (States, Districts, Tehsils)
+    // Expanded Geographical Data List 
     const indiaData = {
       states: [
         "ANDAMAN AND NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", "BIHAR",
@@ -254,7 +255,15 @@
       ],
       districts: {
         "UTTAR PRADESH": ["AGRA", "ALIGARH", "PRAYAGRAJ", "AMBEDKAR NAGAR", "AMETHI", "AMROHA", "AURAIYA", "AYODHYA", "AZAMGARH", "BAGHPAT", "BAHRAICH", "BALLIA", "BALRAMPUR", "BANDA", "BARABANKI", "BAREILLY", "BASTI", "BHADOHI", "BIJNOR", "BUDAUN", "BULANDSHAHR", "CHANDAULI", "CHITRAKOOT", "DEORIA", "ETAH", "ETAWAH", "FARRUKHABAD", "FATEHPUR", "FIROZABAD", "GAUTAM BUDDHA NAGAR", "GHAZIABAD", "GHAZIPUR", "GONDA", "GORAKHPUR", "HAMIRPUR", "HAPUR", "HARDOI", "HATHRAS", "JALAUN", "JAUNPUR", "JHANSI", "KANNAUJ", "KANPUR DEHAT", "KANPUR NAGAR", "KASGANJ", "KAUSHAMBI", "LAKHIMPUR KHERI", "KUSHINAGAR", "LALITPUR", "LUCKNOW", "MAHARAJGANJ", "MAHOBA", "MAINPURI", "MATHURA", "MAU", "MEERUT", "MIRZAPUR", "MORADABAD", "MUZAFFARNAGAR", "PILIBHIT", "PRATAPGARH", "RAEBARELI", "RAMPUR", "SAHARANPUR", "SAMBHAL", "SANT KABIR NAGAR", "SHAHJAHANPUR", "SHAMLI", "SHRAVASTI", "SIDDHARTHNAGAR", "SITAPUR", "SONBHADRA", "SULTANPUR", "UNNAO", "VARANASI"],
-        "DELHI": ["CENTRAL DELHI", "EAST DELHI", "NEW DELHI", "NORTH DELHI", "NORTH EAST DELHI", "NORTH WEST DELHI", "SHAHDARA", "SOUTH DELHI", "SOUTH EAST DELHI", "SOUTH WEST DELHI", "WEST DELHI"]
+        "DELHI": ["CENTRAL DELHI", "EAST DELHI", "NEW DELHI", "NORTH DELHI", "NORTH EAST DELHI", "NORTH WEST DELHI", "SHAHDARA", "SOUTH DELHI", "SOUTH EAST DELHI", "SOUTH WEST DELHI", "WEST DELHI"],
+        "BIHAR": ["PATNA", "GAYA", "MUZAFFARPUR", "BHAGALPUR", "DARBHANGA", "AURANGABAD", "BEGUSARAI", "BHOJPUR", "CHAMPARAN"],
+        "MADHYA PRADESH": ["BHOPAL", "INDORE", "GWALIOR", "JABALPUR", "UJJAIN", "SAGAR", "REWA", "SATNA"],
+        "MAHARASHTRA": ["MUMBAI", "PUNE", "NAGPUR", "THANE", "NASHIK", "AURANGABAD", "SOLAPUR", "KOLHAPUR"],
+        "RAJASTHAN": ["JAIPUR", "JODHPUR", "UDAIPUR", "KOTA", "AJMER", "BIKANER", "ALWAR", "BHARATPUR"],
+        "UTTARAKHAND": ["DEHRADUN", "HARIDWAR", "ROORKEE", "HALDWANI", "RUDRAKSH", "NAINITAL"],
+        "HARYANA": ["GURUGRAM", "FARIDABAD", "PANIPAT", "AMBALA", "ROHTAK", "HISAR", "KARNAL"],
+        "PUNJAB": ["LUDHIANA", "AMRITSAR", "JALANDHAR", "PATIALA", "MOHALI", "BATHINDA"],
+        "GUJARAT": ["AHMEDABAD", "SURAT", "VADODARA", "RAJKOT", "GANDHINAGAR", "BHAVNAGAR", "JAMNAGAR"]
       },
       tehsils: {
         "PILIBHIT": ["PURANPUR", "BISALPUR", "AMARIA", "KALINAGAR"],
@@ -271,7 +280,6 @@
     let dropdownOriginX = 0;
     let dropdownOriginY = 0;
 
-    // Wait for Firebase to load
     window.onFirebaseReady = () => {
        window.onAuthStateChanged(window.auth, (user) => {
           currentUser = user;
@@ -311,12 +319,6 @@
     let animDirection = 'next';
     let previewZoom = 0.46;
 
-    const STEP_NAMES = [
-      "PERSONAL DETAILS", "CAREER OBJECTIVE", "ACADEMIC QUALIFICATION", "OTHER QUALIFICATION",
-      "WORKING EXPERIENCE", "PERSONAL DETAILS TABLE", "DECLARATION", "SIGN-OFF", "DOCUMENT SETTINGS"
-    ];
-
-    // Helper functions for nested objects
     function getNested(obj, path) { return path.split('.').reduce((acc, part) => acc && acc[part], obj); }
     function setNested(obj, path, value) {
         const parts = path.split('.'); let current = obj;
@@ -365,7 +367,6 @@
         }, 300);
     }
 
-    // Google Auth Login
     async function loginWithGoogle() {
         if (!window.auth || !window.GoogleAuthProvider) return;
         const provider = new window.GoogleAuthProvider();
@@ -378,11 +379,9 @@
         try { await window.signOut(window.auth); } catch (e) {}
     }
 
-    // BUG FIX: Direct Clean Print Output (No Flash)
+    // BULLETPROOF PRINT ENGINE: Triggers print natively
     function triggerPrint(onComplete = null) {
         renderPrintNode();
-        
-        // Let the @media print CSS exclusively handle showing/hiding to prevent any visual UI flashing.
         setTimeout(() => { 
             window.print(); 
             if(onComplete) onComplete();
@@ -403,10 +402,8 @@
         `;
     }
 
-    // Android Exact XY Origin Container Transform
     function openGlobalDropdown(e, fieldPath, optionsStr, placeholder) {
         const rect = e.currentTarget.getBoundingClientRect();
-        
         dropdownOriginX = (rect.left + rect.width / 2) - (window.innerWidth / 2);
         dropdownOriginY = (rect.top + rect.height / 2) - (window.innerHeight / 2);
 
@@ -461,39 +458,47 @@
         }, 350); 
     }
 
-    // BUG FIX: Silent Dropdown Change (NO SCROLL JUMPS)
+    // NO JUMP SCROLL FIX: Silently update DOM or lock scroll mathematically
     function selectGlobalDropdown(fieldPath, val, label) {
         setNested(cvData, fieldPath, val);
+        let needsReRender = false;
         
         if(fieldPath === 'personal.state') {
             cvData.personal.district = '';
             cvData.personal.tehsil = '';
-            let dBtn = document.getElementById('dd-btn-personal-district'); if(dBtn) dBtn.innerText = 'SELECT DISTRICT';
-            let tBtn = document.getElementById('dd-btn-personal-tehsil'); if(tBtn) tBtn.innerText = 'SELECT TEHSIL';
-            let sw = document.getElementById('custom-state-wrapper'); if(sw) sw.style.display = val === 'OTHER' ? 'block' : 'none';
-            let dw = document.getElementById('custom-district-wrapper'); if(dw) dw.style.display = 'none';
-            let tw = document.getElementById('custom-tehsil-wrapper'); if(tw) tw.style.display = 'none';
+            needsReRender = true;
         } else if(fieldPath === 'personal.district') {
             cvData.personal.tehsil = '';
-            let tBtn = document.getElementById('dd-btn-personal-tehsil'); if(tBtn) tBtn.innerText = 'SELECT TEHSIL';
-            let dw = document.getElementById('custom-district-wrapper'); if(dw) dw.style.display = val === 'OTHER' ? 'block' : 'none';
-            let tw = document.getElementById('custom-tehsil-wrapper'); if(tw) tw.style.display = 'none';
-        } else if (fieldPath === 'personal.tehsil') {
-            let tw = document.getElementById('custom-tehsil-wrapper'); if(tw) tw.style.display = val === 'OTHER' ? 'block' : 'none';
-        } else if (fieldPath === 'details.nationality') {
-            let nw = document.getElementById('custom-nationality-wrapper'); if(nw) nw.style.display = val === 'OTHER' ? 'block' : 'none';
+            needsReRender = true;
+        } else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') {
+            needsReRender = true;
         }
         
         saveState(); 
         closeGlobalDropdown(null, true);
 
-        // Update button text silently without ANY re-renders to strictly preserve user's scroll position.
-        const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
-        const btn = document.getElementById(btnId);
-        if (btn) btn.innerText = label;
+        if (needsReRender && activeView === 'editor') {
+            isNavigating = false;
+            const scrollArea = document.getElementById('editor-scroll-area');
+            const exactScroll = scrollArea ? scrollArea.scrollTop : 0;
+            
+            setTimeout(() => { 
+                renderApp(); 
+                // Physically Force scroll back instantly to avoid jump
+                const newScroll = document.getElementById('editor-scroll-area');
+                if(newScroll) {
+                    newScroll.style.scrollBehavior = 'auto';
+                    newScroll.scrollTop = exactScroll;
+                    setTimeout(() => { newScroll.style.scrollBehavior = 'smooth'; }, 50);
+                }
+            }, 350); 
+        } else {
+            const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
+            const btn = document.getElementById(btnId);
+            if (btn) btn.innerText = label;
+        }
     }
 
-    // Firebase & Local Save State
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
@@ -517,7 +522,6 @@
       } catch(e) {}
     }
 
-    // Silent Updates
     function setLanguage(val) {
       cvData.details.languages = val;
       saveState();
@@ -561,7 +565,7 @@
 
     function addArrayItem(key, val) {
       if (!cvData[key]) cvData[key] = [];
-      cvData[key].push(val.toUpperCase());
+      cvData[key].push(val); // Do NOT push uppercase here, keep original for format engine
       saveState();
       isNavigating = false; 
       renderApp();
@@ -638,25 +642,19 @@
       if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
     }
 
-    // Core HTML Escaping (Removed forced upper/lower so formatter works cleanly)
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // BUG FIX: TRUE PROPER CASE ALGORITHM
+    // TRUE PROPER CASE ALGORITHM
     function formatText(str, tCase) {
       if (!str) return '';
       let cleanStr = escapeHtml(str);
       if (tCase === 'capitalize') {
-          // Force entire string to lowercase first, THEN capitalize first letters.
-          // This fixes the bug where words typed in all caps stayed all caps.
-          return cleanStr.toLowerCase().split(' ').map(word => {
-              if(!word) return '';
-              return word.charAt(0).toUpperCase() + word.slice(1);
-          }).join(' ');
+          // Force string to lowercase, then capitalize the first letter of each word.
+          return cleanStr.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
       }
-      // Fallback to strict uppercase
       return cleanStr.toUpperCase();
     }
 
@@ -676,7 +674,6 @@
       const actualTehsil = p.tehsil === 'OTHER' ? p.customTehsil : p.tehsil;
       const actualNationality = d.nationality === 'OTHER' ? d.customNationality : d.nationality;
 
-      // Contact List construction
       const contactList = [];
       if (p.mobile) contactList.push({ label: 'MOBILE NO.', val: p.mobile });
       if (p.email) contactList.push({ label: 'EMAIL ID', val: p.email });
@@ -685,41 +682,24 @@
       if (actualDistrict) contactList.push({ label: 'DISTRICT', val: actualDistrict });
       if (actualState) contactList.push({ label: 'STATE', val: actualState });
 
-      // HEADER GENERATION - Fixed based on styles
       let contactRowsHTML = '';
-      if (p.headerStyle === 'labeled') {
-        // COLON ALIGNED: Includes NAME : Your Name
-        contactRowsHTML = `
-          ${p.name ? `<tr>
-            <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0; color:#000; width:110px; white-space:nowrap; text-transform:uppercase;">NAME</td>
-            <td style="font-weight:${fWeight}; font-size:12pt; text-align:center; vertical-align:top; padding:2px 0; color:#000; width:15px;">:</td>
-            <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0 2px 6px; color:#000;">${formatText(p.name, tCase)}</td>
-          </tr>` : ''}
-          ${contactList.map((item) => `
-            <tr>
-              <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:110px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
-              <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
-              <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000;">${formatText(item.val, tCase)}</td>
-            </tr>
-          `).join('')}
-        `;
-      } else {
-         // STANDARD TEXT: No labels at all, big bold name.
-         const detailsArr = [];
-         if (p.mobile) detailsArr.push(p.mobile);
-         if (p.email) detailsArr.push(p.email);
-         if (p.villagePost) detailsArr.push(p.villagePost);
-         if (actualTehsil) detailsArr.push(actualTehsil);
-         if (actualDistrict) detailsArr.push(actualDistrict);
-         if (actualState) detailsArr.push(actualState);
+      
+      // FIXED HEADER LAYOUT
+      contactRowsHTML = `
+        ${p.name ? `<tr>
+          <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">NAME</td>
+          <td style="font-weight:${fWeight}; font-size:12pt; text-align:center; vertical-align:top; padding:2px 0; color:#000; width:20px;">:</td>
+          <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0 2px 6px; color:#000; word-break:break-word;">${formatText(p.name, tCase)}</td>
+        </tr>` : ''}
+        ${contactList.map((item) => `
+          <tr>
+            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
+            <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:20px;">:</td>
+            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000; word-break:break-word;">${formatText(item.val, tCase)}</td>
+          </tr>
+        `).join('')}
+      `;
 
-         contactRowsHTML = `<tr><td style="padding-top:4px;">
-            ${p.name ? `<div style="font-size:18pt; font-weight:bold; color:#000; margin-bottom:8px; line-height:1.2;">${formatText(p.name, tCase)}</div>` : ''}
-            ${detailsArr.map(val => `<div style="font-size:11pt; font-weight:${fWeight}; color:#000; margin-bottom:4px;">${formatText(val, tCase)}</div>`).join('')}
-         </td></tr>`;
-      }
-
-      // PERSONAL DETAILS SECTION
       const personalDetails = [
         { l: 'NAME', v: p.name },
         { l: 'DATE OF BIRTH', v: d.dob },
@@ -733,34 +713,32 @@
 
       const personalDetailsHTML = personalDetails.map(item => `
         <tr>
-          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:155px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
+          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:160px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
           <td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:15px;">:</td>
-          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000;">${formatText(item.v, tCase)}</td>
+          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; word-break:break-word;">${formatText(item.v, tCase)}</td>
         </tr>
       `).join('');
 
-      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${formatText(x, tCase)}</li>`).join('');
-      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${formatText(x, tCase)}</li>`).join('');
-      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000;">${formatText(x, tCase)}</li>`).join('');
+      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
+      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
+      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
 
       const photoBoxHTML = p.photo ? `<img src="${p.photo}" alt="Photo" style="width:115px !important; height:145px !important; min-width:115px !important; min-height:145px !important; max-width:115px !important; max-height:145px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : `<div style="width:115px; height:145px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; box-sizing:border-box;"><div style="width:90%; height:92%; border:1px dashed #71717a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fafafa;"><span style="font-size:8pt; font-weight:bold; color:#000; text-transform:uppercase;">PHOTO</span></div></div>`;
 
       const outerWidth = isPrintMode ? '100%' : '794px';
-      
-      // BUG FIX: Strict 297mm height boundary limits A4 pages to 1 exact page. Flexbox organically squishes contents to fit.
-      const outerMinH = isPrintMode ? '297mm' : '1123px';
-      const innerMinH = isPrintMode ? '100%' : '1085px';
+      const outerHeight = isPrintMode ? '100%' : '1123px'; 
 
+      // PERFECT ONE PAGE BORDER LOCK
       return `
-        <div id="${id}" style="width:${outerWidth}; height:${outerMinH}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; font-weight:${fWeight} !important;">
-          <div style="width:100%; height:${innerMinH}; border:1.5px solid #000000; padding:2.5px; box-sizing:border-box; background-color:#ffffff;">
-            <div style="width:100%; height:100%; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between;">
+        <div id="${id}" style="width:${outerWidth}; height:${outerHeight}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:8mm; font-family:${font}; font-weight:${fWeight} !important;">
+          <div style="width:100%; height:100%; border:1.5px solid #000000; padding:3px; box-sizing:border-box; background-color:#ffffff;">
+            <div style="width:100%; height:100%; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
               <div style="flex-shrink:0;">
                 <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:24pt; font-weight:bold; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:uppercase;">CURRICULUM VITAE</h1>
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
                   <tbody><tr>
                       <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
-                        ${contactList.length > 0 || p.name ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:110px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
+                        ${contactList.length > 0 || p.name ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:125px;" /><col style="width:20px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
                       </td>
                       <td style="width:120px; min-width:120px; max-width:120px; vertical-align:top; text-align:right; border:none;">
                         <div style="width:115px; height:145px; min-width:115px; min-height:145px; max-width:115px; max-height:145px; border:1.5px solid #000000; display:block; overflow:hidden; background-color:#ffffff; box-sizing:border-box; text-align:center; margin-left:auto;">${photoBoxHTML}</div>
@@ -769,13 +747,13 @@
                 </table>
                 <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
               </div>
-              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; overflow:hidden; margin:2px 0; gap:8px; font-size:11pt; color:#000;">
-                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
+              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; margin:2px 0; gap:6px; font-size:11pt; color:#000; overflow:hidden;">
+                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000; word-break:break-word;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
                 ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
                 ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
                 ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
-                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:155px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
-                ${cvData.declaration && cvData.declaration.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
+                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:160px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
+                ${cvData.declaration && cvData.declaration.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000; word-break:break-word;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
               </div>
               <div style="flex-shrink:0; padding-top:8px;">
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:${fWeight}; color:#000;">
@@ -1079,19 +1057,28 @@
         let distOpts = [];
         if (selectedState && selectedState !== 'OTHER') {
             let dists = indiaData.districts[selectedState] || [];
-            if(dists.length === 0) dists = ["DISTRICT 1", "DISTRICT 2"];
             distOpts = dists.map(d => ({label: d, val: d}));
         }
-        distOpts.push({label: 'OTHER', val: 'OTHER'});
+        // Intelligent Fallback: If no districts exist, strictly enforce 'OTHER' to auto-show input
+        if(distOpts.length === 0) {
+            distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
+            if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
+        } else {
+            distOpts.push({label: 'OTHER', val: 'OTHER'});
+        }
 
         let selectedDist = cvData.personal.district || '';
         let tehsilOpts = [];
         if (selectedDist && selectedDist !== 'OTHER') {
             let tehsils = indiaData.tehsils[selectedDist] || [];
-            if(tehsils.length === 0) tehsils = ["TEHSIL 1", "TEHSIL 2"];
             tehsilOpts = tehsils.map(t => ({label: t, val: t}));
         }
-        tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
+        if(tehsilOpts.length === 0) {
+            tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
+            if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
+        } else {
+            tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
+        }
 
         stepContentHTML = `
           <div class="space-y-3.5">
@@ -1138,14 +1125,14 @@
                 <div class="min-w-0">
                   <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">STATE</label>
                   ${createCustomDropdown('personal.state', stateOpts, 'SELECT STATE')}
-                  <div id="custom-state-wrapper" style="display: ${selectedState === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                  <div id="custom-state-wrapper" style="display: ${cvData.personal.state === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
                      <input type="text" placeholder="ENTER STATE" oninput="cvData.personal.customState = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customState || '')}">
                   </div>
                 </div>
                 <div class="min-w-0">
                   <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DISTRICT</label>
                   ${createCustomDropdown('personal.district', distOpts, 'SELECT DISTRICT')}
-                  <div id="custom-district-wrapper" style="display: ${selectedDist === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                  <div id="custom-district-wrapper" style="display: ${cvData.personal.district === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
                      <input type="text" placeholder="ENTER DISTRICT" oninput="cvData.personal.customDistrict = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customDistrict || '')}">
                   </div>
                 </div>
@@ -1390,10 +1377,6 @@
                     ${createCustomDropdown('font', [{label: 'TIMES NEW ROMAN', val: 'Times New Roman'}, {label: 'ARIAL', val: 'Arial'}, {label: 'CALIBRI', val: 'Calibri'}, {label: 'ALGERIAN', val: 'Algerian'}], 'SELECT FONT')}
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">HEADER FORMAT</label>
-                    ${createCustomDropdown('personal.headerStyle', [{label: 'COLON ALIGNED TABLE', val: 'labeled'}, {label: 'STANDARD TEXT STYLE', val: 'standard'}], 'SELECT FORMAT')}
-                  </div>
-                  <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEXT WEIGHT</label>
                     ${createCustomDropdown('fontWeight', [{label: 'BOLD TEXT', val: 'bold'}, {label: 'NORMAL TEXT', val: 'normal'}], 'SELECT TEXT WEIGHT')}
                   </div>
@@ -1408,7 +1391,6 @@
         `;
       }
 
-      // Redesigned Unified Editor Header
       container.innerHTML = `
         <div class="flex-1 flex flex-col overflow-hidden relative">
           <div class="h-14 px-3 bg-[#11111c] border-b border-zinc-800/80 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-sm relative">
