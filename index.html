@@ -52,6 +52,7 @@
     *, *::before, *::after {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation; /* Removes 300ms click delay on mobile */
     }
 
     input, textarea {
@@ -67,6 +68,17 @@
     .font-algerian { font-family: 'Algerian', 'Times New Roman', serif !important; }
 
     /* HARDWARE-ACCELERATED ULTRA-SMOOTH ANIMATIONS */
+    #main-view-container {
+        will-change: opacity, transform;
+    }
+
+    .xy-modal-anim {
+        will-change: transform, opacity, border-radius;
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                    opacity 0.3s ease, 
+                    border-radius 0.4s ease !important;
+    }
+
     @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(20px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-20px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 10px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
@@ -116,7 +128,7 @@
   <script type="module">
     try {
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
       const { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
       const firebaseConfig = {
@@ -133,7 +145,7 @@
       window.auth = getAuth(app);
       window.db = getFirestore(app);
       window.GoogleAuthProvider = GoogleAuthProvider;
-      window.signInWithPopup = signInWithPopup;
+      window.signInWithRedirect = signInWithRedirect;
       window.onAuthStateChanged = onAuthStateChanged;
       window.signOut = signOut;
       window.collection = collection;
@@ -309,9 +321,27 @@
     async function loginWithGoogle() {
         if (!window.auth || !window.GoogleAuthProvider) return showUIAlert("ERROR", "OFFLINE MODE", false);
         const provider = new window.GoogleAuthProvider();
-        try { await window.signInWithPopup(window.auth, provider); } catch (err) { showUIAlert("LOGIN INFO", "GOOGLE LOGIN NOT COMPLETED.", false); }
+        try { 
+            await window.signInWithRedirect(window.auth, provider); 
+        } catch (err) { 
+            showUIAlert("LOGIN INFO", "GOOGLE LOGIN NOT COMPLETED.", false); 
+        }
     }
     async function logoutApp() { if (!window.auth) return; try { await window.signOut(window.auth); } catch (e) {} }
+
+    function createNewCV() {
+        cvData = JSON.parse(JSON.stringify(defaultCVData)); 
+        currentCvId = 'cv_' + Date.now(); 
+        localStorage.setItem('techasar_current_cv_id', currentCvId);
+        saveState();
+        
+        appStarted = true; 
+        enteringEditor = true; 
+        isNavigating = true; 
+        currentPage = 1; 
+        activeView = 'editor';
+        renderApp(); 
+    }
 
     function tryCreateNewCV() {
         if (!currentUser) return showUIAlert("ACCESS RESTRICTED", "PLEASE LOGIN WITH GOOGLE TO CREATE A CV.", false);
@@ -334,43 +364,73 @@
     // PERFECT UNIVERSAL SMOOTH XY ANIMATION ENGINE
     let activeXYBox = null;
     function launchXYModal(triggerEl, boxId) {
-      const modal = document.getElementById('xy-modal-overlay'); const box = document.getElementById(boxId); if (!modal || !box) return;
-      activeXYBox = box;
-      // Hide all boxes first
-      ['xy-box-dropdown', 'xy-box-steps', 'xy-box-custom-input'].forEach(id => { const b = document.getElementById(id); if(b) b.classList.add('hidden'); });
-      
-      let rect = triggerEl ? triggerEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
-      lastTriggerRect = rect;
-      const triggerCenterX = rect.left + (rect.width / 2); const triggerCenterY = rect.top + (rect.height / 2);
+        const modal = document.getElementById('xy-modal-overlay'); 
+        const box = document.getElementById(boxId); 
+        if (!modal || !box) return;
+        activeXYBox = box;
+        
+        ['xy-box-dropdown', 'xy-box-steps', 'xy-box-custom-input'].forEach(id => { 
+            const b = document.getElementById(id); if(b) b.classList.add('hidden'); 
+        });
+        
+        let rect = triggerEl ? triggerEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+        lastTriggerRect = rect;
+        const triggerCenterX = rect.left + (rect.width / 2); 
+        const triggerCenterY = rect.top + (rect.height / 2);
 
-      box.style.transition = 'none';
-      box.style.left = `${triggerCenterX}px`; box.style.top = `${triggerCenterY}px`;
-      box.style.transform = `translate(-50%, -50%) scale(0.05)`; box.style.opacity = '0'; box.style.borderRadius = '40px';
+        // Initial State (X-Y Origin)
+        box.style.transition = 'none';
+        box.style.left = `${triggerCenterX}px`; 
+        box.style.top = `${triggerCenterY}px`;
+        box.style.transform = `translate(-50%, -50%) scale(0)`; 
+        box.style.opacity = '0'; 
+        box.style.borderRadius = '50px';
+        box.classList.remove('hidden');
+        box.classList.add('xy-modal-anim'); 
+        
+        modal.classList.remove('hidden'); 
+        modal.classList.add('block'); 
+        void box.offsetWidth; // Force Reflow
 
-      box.classList.remove('hidden');
-      modal.classList.remove('hidden'); modal.classList.add('block'); 
-      void box.offsetWidth; // Force Reflow
-
-      box.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, border-radius 0.35s ease';
-      const screenCenterX = window.innerWidth / 2; const screenCenterY = window.innerHeight / 2;
-      
-      modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
-      box.style.left = `${screenCenterX}px`; box.style.top = `${screenCenterY}px`;
-      box.style.transform = `translate(-50%, -50%) scale(1)`; box.style.opacity = '1'; box.style.borderRadius = '24px';
+        // Final State
+        const screenCenterX = window.innerWidth / 2; 
+        const screenCenterY = window.innerHeight / 2;
+        modal.classList.remove('opacity-0'); 
+        modal.classList.add('opacity-100');
+        box.style.left = `${screenCenterX}px`; 
+        box.style.top = `${screenCenterY}px`;
+        box.style.transform = `translate(-50%, -50%) scale(1)`; 
+        box.style.opacity = '1'; 
+        box.style.borderRadius = '24px';
     }
 
     function closeXYModal(onFinished = null) {
-      const modal = document.getElementById('xy-modal-overlay'); const box = activeXYBox; if (!modal || !box) return;
-      let targetX = window.innerWidth / 2; let targetY = window.innerHeight / 2;
-      if (lastTriggerRect) { targetX = lastTriggerRect.left + (lastTriggerRect.width / 2); targetY = lastTriggerRect.top + (lastTriggerRect.height / 2); }
+        const modal = document.getElementById('xy-modal-overlay'); 
+        const box = activeXYBox; 
+        if (!modal || !box) return;
+        
+        let targetX = window.innerWidth / 2; let targetY = window.innerHeight / 2;
+        if (lastTriggerRect) { 
+            targetX = lastTriggerRect.left + (lastTriggerRect.width / 2); 
+            targetY = lastTriggerRect.top + (lastTriggerRect.height / 2); 
+        }
 
-      box.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-      modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-      box.style.left = `${targetX}px`; box.style.top = `${targetY}px`;
-      box.style.transform = `translate(-50%, -50%) scale(0.05)`; box.style.opacity = '0'; box.style.borderRadius = '40px';
+        modal.classList.remove('opacity-100'); 
+        modal.classList.add('opacity-0');
+        box.style.left = `${targetX}px`; 
+        box.style.top = `${targetY}px`;
+        box.style.transform = `translate(-50%, -50%) scale(0)`; 
+        box.style.opacity = '0'; 
+        box.style.borderRadius = '50px';
 
-      activeXYBox = null;
-      setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('block'); box.classList.add('hidden'); if (onFinished) onFinished(); }, 300);
+        activeXYBox = null;
+        setTimeout(() => { 
+            modal.classList.add('hidden'); 
+            modal.classList.remove('block'); 
+            box.classList.remove('xy-modal-anim');
+            box.classList.add('hidden'); 
+            if (onFinished) onFinished(); 
+        }, 350);
     }
 
     // Step Selector (Long Press on Prev Button)
@@ -624,13 +684,29 @@
 
     async function renderHistoryList() {
       const container = document.getElementById('history-list-container');
-      container.innerHTML = `<div class="flex flex-col items-center justify-center py-12 opacity-80"><div class="w-8 h-8 border-[3px] border-zinc-800 border-t-indigo-500 rounded-full animate-spin mb-4"></div><div class="text-zinc-500 text-xs font-bold uppercase tracking-widest">FETCHING HISTORY...</div></div>`;
       if (!currentUser || !window.db) { container.innerHTML = '<div class="text-zinc-400 text-xs text-center py-8 font-bold uppercase">PLEASE SIGN IN TO ACCESS CLOUD HISTORY.</div>'; return; }
+      
+      const cachedHistory = localStorage.getItem(`hist_${currentUser.uid}`);
+      if (cachedHistory) {
+          renderHistoryHTML(container, JSON.parse(cachedHistory));
+      } else {
+          container.innerHTML = `<div class="flex flex-col items-center justify-center py-12 opacity-80"><div class="w-8 h-8 border-[3px] border-zinc-800 border-t-indigo-500 rounded-full animate-spin mb-4"></div><div class="text-zinc-500 text-xs font-bold uppercase tracking-widest">FETCHING HISTORY...</div></div>`;
+      }
+
       try {
           const querySnapshot = await window.getDocs(window.collection(window.db, `users/${currentUser.uid}/cvs`));
-          let hist = []; querySnapshot.forEach((doc) => { hist.push(doc.data()); }); hist.sort((a,b) => b.timestamp - a.timestamp);
-          if (hist.length === 0) { container.innerHTML = '<div class="text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND IN HISTORY.</div>'; return; }
-          container.innerHTML = hist.map(h => `
+          let hist = []; querySnapshot.forEach((doc) => { hist.push(doc.data()); }); 
+          hist.sort((a,b) => b.timestamp - a.timestamp);
+          localStorage.setItem(`hist_${currentUser.uid}`, JSON.stringify(hist));
+          renderHistoryHTML(container, hist);
+      } catch(e) { 
+          if(!cachedHistory) container.innerHTML = '<div class="text-red-400 text-sm text-center py-8 font-bold uppercase">ERROR LOADING HISTORY.</div>'; 
+      }
+    }
+
+    function renderHistoryHTML(container, hist) {
+        if (hist.length === 0) { container.innerHTML = '<div class="text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND IN HISTORY.</div>'; return; }
+        container.innerHTML = hist.map(h => `
             <div class="flex items-center justify-between p-3 bg-white/[0.03] border border-white/[0.08] hover:border-white/20 rounded-2xl mb-2 transition-all">
               <div class="flex flex-col flex-1 min-w-0 cursor-pointer py-1" onclick="loadCVFromHistory(event, '${h.id}')"><span class="text-zinc-100 font-bold text-sm truncate uppercase">${escapeHtml(h.name)}</span><span class="text-zinc-500 text-[11px] mt-0.5 font-bold uppercase">${h.date || 'SAVED RECENTLY'}</span></div>
               <div class="flex items-center gap-2 shrink-0 ml-3">
@@ -639,8 +715,7 @@
                 <button type="button" onclick="deleteFromHistory(event, '${h.id}')" class="p-2 bg-white/[0.06] hover:bg-red-500/20 rounded-xl text-zinc-400 hover:text-red-400 active:scale-95 transition-all" title="Delete"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
               </div>
             </div>
-          `).join('');
-      } catch(e) { container.innerHTML = '<div class="text-red-400 text-sm text-center py-8 font-bold uppercase">ERROR LOADING HISTORY.</div>'; }
+        `).join('');
     }
 
     async function loadCVFromHistory(e, id) {
