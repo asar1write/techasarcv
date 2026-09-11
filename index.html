@@ -96,22 +96,20 @@
     .date-wrapper { position: relative; }
     .date-wrapper::after {
       content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-size: contain;
     }
 
-    /* ==================================================
-       2. ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS 
-       ================================================== */
+    /* ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS */
     @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes elegantFadeOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -15px, 0); } }
 
-    .anim-next { animation: smoothSlideRight 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: smoothSlideLeft 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .elegant-entry { animation: elegantFadeIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; will-change: transform, opacity; }
+    .anim-next { animation: smoothSlideRight 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .anim-prev { animation: smoothSlideLeft 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .elegant-entry { animation: elegantFadeIn 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; will-change: transform, opacity; }
     .zoom-transition { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
     /* Custom Scrollbar for dropdown */
@@ -136,7 +134,7 @@
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & PERFECT BORDERS */
+    /* ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & PERFECT BORDERS */
     body.is-printing {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -196,8 +194,8 @@
         <p class="text-xs text-zinc-400 mt-1 uppercase">CLEAR ALL INPUTS AND START FRESH?</p>
       </div>
       <div class="grid grid-cols-2 gap-2 pt-1">
-        <button type="button" onclick="closeResetDialog()" class="py-1.5 px-3 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
-        <button type="button" onclick="confirmReset()" class="py-1.5 px-3 rounded-lg bg-red-600 text-white text-xs font-bold uppercase active:scale-95 transition-all">RESET</button>
+        <button type="button" onclick="closeResetDialog()" class="py-2 px-3 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+        <button type="button" onclick="confirmReset()" class="py-2 px-3 rounded-xl bg-red-600 text-white text-xs font-bold uppercase active:scale-95 transition-all">RESET</button>
       </div>
     </div>
   </div>
@@ -231,7 +229,7 @@
       </div>
       <!-- SEARCH BAR SECTION -->
       <div class="p-2.5 border-b border-zinc-800/80 bg-[#181826] shrink-0">
-        <div class="flex items-center gap-2 bg-[#11111c] border border-zinc-700/50 rounded-xl px-3 py-2.5 shadow-inner">
+        <div class="flex items-center gap-2 bg-[#11111c] border border-zinc-700/50 rounded-xl px-3 py-2 shadow-inner">
           <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           <input type="text" id="global-dropdown-search" oninput="filterGlobalDropdown(this.value)" placeholder="SEARCH..." class="bg-transparent border-none outline-none text-[13px] text-zinc-100 font-bold uppercase w-full placeholder:text-zinc-600" autocomplete="off" />
         </div>
@@ -391,15 +389,29 @@
         }, 150);
     }
 
-    function createCustomDropdown(fieldPath, options, placeholder) {
+    // Clean Input Box with Label inside on top (Clean, Modern UI)
+    function createTextInput(label, val, onInputCode, type = "text", placeholder = "") {
+        return `
+          <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+            <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">${label}</span>
+            <input type="${type}" value="${escapeHtml(val || '')}" oninput="${onInputCode}" placeholder="${placeholder}" class="uppercase w-full bg-transparent border-none text-[14px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" />
+          </div>
+        `;
+    }
+
+    // Clean Dropdown Box with Label inside on top
+    function createCustomDropdown(fieldPath, options, label, placeholder) {
         const val = getNested(cvData, fieldPath);
         const displayLabel = options.find(o => o.val === val)?.label || placeholder;
         const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
         const optionsStr = encodeURIComponent(JSON.stringify(options));
         return `
-            <div onclick="openGlobalDropdown(event, '${fieldPath}', '${optionsStr}', '${placeholder}')" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-100 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform">
-                <span id="${btnId}" class="truncate pr-2">${displayLabel}</span>
-                <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            <div onclick="openGlobalDropdown(event, '${fieldPath}', '${optionsStr}', '${placeholder}')" class="w-full bg-[#131320] border border-zinc-800/90 hover:border-zinc-700 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none">
+                <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 pointer-events-none">${label}</span>
+                <div class="flex items-center justify-between">
+                    <span id="${btnId}" class="truncate pr-2 text-[14px] sm:text-sm font-bold text-zinc-100 uppercase">${displayLabel}</span>
+                    <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </div>
             </div>
         `;
     }
@@ -447,7 +459,7 @@
         if(searchInput) searchInput.value = '';
 
         list.innerHTML = options.map(opt => `
-            <div onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label}')" class="dropdown-item px-4 py-3.5 rounded-xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-zinc-800/80 text-zinc-300 bg-zinc-900/30'}">
+            <div onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label}')" class="dropdown-item px-4 py-3 rounded-xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-zinc-800/80 text-zinc-300 bg-zinc-900/30'}">
                 <span>${opt.label}</span>
                 ${currentVal === opt.val ? `<svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>` : ''}
             </div>
@@ -456,7 +468,6 @@
         const modal = document.getElementById('global-dropdown-modal');
         const box = document.getElementById('global-dropdown-box');
         
-        // FREEZE LAYOUT HEIGHT TO PREVENT KEYBOARD JUMP BUG
         modal.style.height = window.innerHeight + 'px';
         document.body.style.overflow = 'hidden';
         
@@ -476,8 +487,6 @@
             box.style.transform = `translate(0px, 0px) scale(1)`;
             box.style.opacity = '1';
             modal.style.opacity = '1';
-            
-            // INTENTIONALLY REMOVED AUTO-FOCUS TO PREVENT KEYBOARD FROM OPENING INSTANTLY
         });
     }
 
@@ -1108,182 +1117,170 @@
         }
 
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5">
-              <div class="flex items-center gap-3.5">
-                <div id="photo-container" class="w-[72px] h-[88px] rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden shrink-0 bg-cover bg-top relative" style="background-image: ${cvData.personal.photo ? `url('${cvData.personal.photo}')` : 'none'}; border-style: ${cvData.personal.photo ? 'solid' : 'dashed'}; border-color: ${cvData.personal.photo ? '#6366f1' : undefined};">
-                  <div id="photo-placeholder" class="flex flex-col items-center gap-1 text-[10px] text-zinc-400 uppercase font-bold" style="display: ${cvData.personal.photo ? 'none' : 'flex'}">
-                    <svg class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    <span>PHOTO</span>
-                  </div>
+          <div class="space-y-3">
+            <!-- Compact Modern Photo Uploader -->
+            <div class="flex items-center gap-3.5 bg-[#131320] border border-zinc-800/90 rounded-2xl p-3">
+              <div id="photo-container" class="w-[64px] h-[78px] rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden shrink-0 bg-cover bg-top relative" style="background-image: ${cvData.personal.photo ? `url('${cvData.personal.photo}')` : 'none'}; border-style: ${cvData.personal.photo ? 'solid' : 'dashed'}; border-color: ${cvData.personal.photo ? '#6366f1' : undefined};">
+                <div id="photo-placeholder" class="flex flex-col items-center gap-1 text-[9px] text-zinc-400 uppercase font-bold" style="display: ${cvData.personal.photo ? 'none' : 'flex'}">
+                  <svg class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span>PHOTO</span>
                 </div>
-                <div class="flex-1 min-w-0 space-y-2">
-                  <span class="text-xs font-bold text-zinc-200 block uppercase">PASSPORT PHOTO</span>
-                  <div class="flex items-center gap-2">
-                    <button type="button" onclick="document.getElementById('file-input-photo').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold active:scale-95 uppercase">
-                      <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                      <span id="photo-btn-text">${cvData.personal.photo ? 'CHANGE' : 'UPLOAD'}</span>
-                    </button>
-                    <button id="photo-remove-btn" type="button" onclick="removePhoto()" class="p-1.5 rounded-xl bg-red-500/15 text-red-400 text-xs active:scale-95 shrink-0" style="display: ${cvData.personal.photo ? 'block' : 'none'}"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
-                    <input id="file-input-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
-                  </div>
+              </div>
+              <div class="flex-1 min-w-0 space-y-1.5">
+                <span class="text-[11px] font-bold text-zinc-300 block uppercase tracking-wider">PASSPORT PHOTO</span>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('file-input-photo').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-bold active:scale-95 uppercase transition-all">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    <span id="photo-btn-text">${cvData.personal.photo ? 'CHANGE' : 'UPLOAD'}</span>
+                  </button>
+                  <button id="photo-remove-btn" type="button" onclick="removePhoto()" class="p-1.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 text-xs active:scale-95 shrink-0 transition-all" style="display: ${cvData.personal.photo ? 'block' : 'none'}"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                  <input id="file-input-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
                 </div>
               </div>
             </div>
 
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FULL NAME *</label>
-                <input type="text" value="${escapeHtml(cvData.personal.name)}" oninput="cvData.personal.name = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">MOBILE NUMBER *</label>
-                <input type="tel" value="${escapeHtml(cvData.personal.mobile)}" oninput="cvData.personal.mobile = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">EMAIL ADDRESS</label>
-                <input type="email" value="${escapeHtml(cvData.personal.email)}" oninput="cvData.personal.email = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">ADDRESS (VILL & POST / MOHALLA)</label>
-                <input type="text" value="${escapeHtml(cvData.personal.villagePost)}" oninput="cvData.personal.villagePost = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-              </div>
-              <div class="grid grid-cols-2 gap-2.5 w-full">
-                <div class="min-w-0">
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">STATE</label>
-                  ${createCustomDropdown('personal.state', stateOpts, 'SELECT STATE')}
-                  <div id="custom-state-wrapper" style="display: ${cvData.personal.state === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                     <input type="text" placeholder="ENTER STATE" oninput="cvData.personal.customState = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customState || '')}">
-                  </div>
-                </div>
-                <div class="min-w-0">
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DISTRICT</label>
-                  ${!selectedState || selectedState === '' 
-                    ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span>SELECT DISTRICT</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>`
-                    : createCustomDropdown('personal.district', distOpts, 'SELECT DISTRICT')}
-                  <div id="custom-district-wrapper" style="display: ${cvData.personal.district === 'OTHER' && selectedState ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                     <input type="text" placeholder="ENTER DISTRICT" oninput="cvData.personal.customDistrict = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customDistrict || '')}">
-                  </div>
+            <!-- Unified Clean Inputs (Label on top inside the box, No outer bulky wrapper) -->
+            ${createTextInput('FULL NAME *', cvData.personal.name, 'cvData.personal.name = this.value; saveState();')}
+            ${createTextInput('MOBILE NUMBER *', cvData.personal.mobile, 'cvData.personal.mobile = this.value; saveState();', 'tel')}
+            ${createTextInput('EMAIL ADDRESS', cvData.personal.email, 'cvData.personal.email = this.value; saveState();', 'email')}
+            ${createTextInput('ADDRESS (VILL & POST / MOHALLA)', cvData.personal.villagePost, 'cvData.personal.villagePost = this.value; saveState();')}
+
+            <div class="grid grid-cols-2 gap-2.5 w-full">
+              <div class="min-w-0">
+                ${createCustomDropdown('personal.state', stateOpts, 'STATE', 'SELECT STATE')}
+                <div id="custom-state-wrapper" style="display: ${cvData.personal.state === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                  ${createTextInput('CUSTOM STATE', cvData.personal.customState, 'cvData.personal.customState = this.value; saveState();', 'text', 'ENTER STATE')}
                 </div>
               </div>
-              <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEHSIL</label>
+              <div class="min-w-0">
                 ${!selectedState || selectedState === '' 
-                  ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span>SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>`
-                  : (!selectedDist || selectedDist === ''
-                    ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT DISTRICT FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span>SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>`
-                    : createCustomDropdown('personal.tehsil', tehsilOpts, 'SELECT TEHSIL'))}
-                <div id="custom-tehsil-wrapper" style="display: ${cvData.personal.tehsil === 'OTHER' && selectedDist ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                   <input type="text" placeholder="ENTER TEHSIL" oninput="cvData.personal.customTehsil = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customTehsil || '')}">
+                  ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#131320] border border-zinc-800/90 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">DISTRICT</span><div class="flex justify-between items-center"><span class="text-[14px] sm:text-sm font-bold uppercase text-zinc-500">SELECT DISTRICT</span><svg class="w-4 h-4 text-zinc-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`
+                  : createCustomDropdown('personal.district', distOpts, 'DISTRICT', 'SELECT DISTRICT')}
+                <div id="custom-district-wrapper" style="display: ${cvData.personal.district === 'OTHER' && selectedState ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                  ${createTextInput('CUSTOM DISTRICT', cvData.personal.customDistrict, 'cvData.personal.customDistrict = this.value; saveState();', 'text', 'ENTER DISTRICT')}
                 </div>
+              </div>
+            </div>
+
+            <div class="w-full">
+              ${!selectedState || selectedState === '' 
+                ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#131320] border border-zinc-800/90 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">TEHSIL</span><div class="flex justify-between items-center"><span class="text-[14px] sm:text-sm font-bold uppercase text-zinc-500">SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`
+                : (!selectedDist || selectedDist === ''
+                  ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT DISTRICT FIRST', false)" class="w-full bg-[#131320] border border-zinc-800/90 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">TEHSIL</span><div class="flex justify-between items-center"><span class="text-[14px] sm:text-sm font-bold uppercase text-zinc-500">SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`
+                  : createCustomDropdown('personal.tehsil', tehsilOpts, 'TEHSIL', 'SELECT TEHSIL'))}
+              <div id="custom-tehsil-wrapper" style="display: ${cvData.personal.tehsil === 'OTHER' && selectedDist ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                ${createTextInput('CUSTOM TEHSIL', cvData.personal.customTehsil, 'cvData.personal.customTehsil = this.value; saveState();', 'text', 'ENTER TEHSIL')}
               </div>
             </div>
           </div>
         `;
       } else if (currentPage === 2) {
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <label class="block text-xs font-bold text-zinc-200 uppercase">CAREER OBJECTIVE STATEMENT</label>
-              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none focus:border-indigo-500 resize-none">${escapeHtml(cvData.objective)}</textarea>
-              <div class="pt-2 border-t border-zinc-800">
-                <span class="text-[11px] font-bold text-zinc-400 block mb-1.5 uppercase">QUICK TEMPLATES:</span>
-                <div class="space-y-1.5">
-                  <button type="button" onclick="setObjectivePreset('TO CONTRIBUTE TO THE OVERALL GROWTH OF YOUR ORGANIZATION BY APPLYING MY SKILLS, KNOWLEDGE, HONESTY & HARD-WORKING.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO CONTRIBUTE TO THE OVERALL GROWTH..."</button>
-                  <button type="button" onclick="setObjectivePreset('TO WORK IN A HIGHLY MOTIVATED AND CHALLENGING ENVIRONMENT WHERE I CAN ENHANCE MY SKILLS AND CONTRIBUTE TO THE SUCCESS OF THE COMPANY.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO WORK IN A CHALLENGING ENVIRONMENT..."</button>
-                  <button type="button" onclick="setObjectivePreset('SEEKING A CHALLENGING POSITION TO UTILIZE MY SKILLS AND ABILITIES IN THE INDUSTRY THAT OFFERS PROFESSIONAL GROWTH WHILE BEING RESOURCEFUL, INNOVATIVE AND FLEXIBLE.')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"SEEKING A CHALLENGING POSITION TO UTILIZE..."</button>
-                </div>
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl p-3.5 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-1.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">CAREER OBJECTIVE STATEMENT</span>
+              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="uppercase w-full min-h-[105px] bg-transparent border-none text-[14px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none resize-none p-0 placeholder:text-zinc-600">${escapeHtml(cvData.objective)}</textarea>
+            </div>
+            <div class="pt-1 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">QUICK TEMPLATES</span>
+              <div class="space-y-1.5">
+                <button type="button" onclick="setObjectivePreset('TO CONTRIBUTE TO THE OVERALL GROWTH OF YOUR ORGANIZATION BY APPLYING MY SKILLS, KNOWLEDGE, HONESTY & HARD-WORKING.')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO CONTRIBUTE TO THE OVERALL GROWTH..."</button>
+                <button type="button" onclick="setObjectivePreset('TO WORK IN A HIGHLY MOTIVATED AND CHALLENGING ENVIRONMENT WHERE I CAN ENHANCE MY SKILLS AND CONTRIBUTE TO THE SUCCESS OF THE COMPANY.')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO WORK IN A CHALLENGING ENVIRONMENT..."</button>
+                <button type="button" onclick="setObjectivePreset('SEEKING A CHALLENGING POSITION TO UTILIZE MY SKILLS AND ABILITIES IN THE INDUSTRY THAT OFFERS PROFESSIONAL GROWTH WHILE BEING RESOURCEFUL, INNOVATIVE AND FLEXIBLE.')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"SEEKING A CHALLENGING POSITION TO UTILIZE..."</button>
               </div>
             </div>
           </div>
         `;
       } else if (currentPage === 3) {
         const academicItems = (cvData.academic || []).map((item, idx) => `
-          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
-            <button type="button" onclick="removeArrayItem('academic', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          <div class="flex items-center gap-2 bg-[#131320] px-3.5 py-2.5 rounded-2xl border border-zinc-800/90 focus-within:border-indigo-500/80 w-full transition-all">
+            <span class="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 22px;">${escapeHtml(item)}</textarea>
+            <button type="button" onclick="removeArrayItem('academic', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
 
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">ACADEMIC QUALIFICATIONS</h3>
-                <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
-              </div>
-              <div class="space-y-2">${academicItems}</div>
-              <div class="pt-2 border-t border-zinc-800 space-y-1.5">
-                <span class="text-[11px] font-bold text-zinc-400 block uppercase">1-TAP ADD:</span>
-                <div class="flex flex-wrap gap-1.5">
-                  <button type="button" onclick="addArrayItem('academic', 'HIGH SCHOOL PASSED FROM U.P BOARD IN 2020')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ HIGH SCHOOL</button>
-                  <button type="button" onclick="addArrayItem('academic', 'INTERMEDIATE PASSED FROM U.P BOARD IN 2022')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ INTERMEDIATE</button>
-                  <button type="button" onclick="addArrayItem('academic', 'B.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY BAREILLY IN 2025')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ B.A DEGREE</button>
-                  <button type="button" onclick="addArrayItem('academic', 'B.SC PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ B.SC</button>
-                  <button type="button" onclick="addArrayItem('academic', 'B.COM PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ B.COM</button>
-                  <button type="button" onclick="addArrayItem('academic', 'M.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ M.A</button>
-                </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-300">ACADEMIC QUALIFICATIONS</span>
+              <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <span>ADD</span>
+              </button>
+            </div>
+            <div class="space-y-2">${academicItems}</div>
+            <div class="pt-2 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">1-TAP QUICK ADD</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="addArrayItem('academic', 'HIGH SCHOOL PASSED FROM U.P BOARD IN 2020')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ HIGH SCHOOL</button>
+                <button type="button" onclick="addArrayItem('academic', 'INTERMEDIATE PASSED FROM U.P BOARD IN 2022')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ INTERMEDIATE</button>
+                <button type="button" onclick="addArrayItem('academic', 'B.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY BAREILLY IN 2025')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ B.A DEGREE</button>
+                <button type="button" onclick="addArrayItem('academic', 'B.SC PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ B.SC</button>
+                <button type="button" onclick="addArrayItem('academic', 'B.COM PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ B.COM</button>
+                <button type="button" onclick="addArrayItem('academic', 'M.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ M.A</button>
               </div>
             </div>
           </div>
         `;
       } else if (currentPage === 4) {
         const otherItems = (cvData.other || []).map((item, idx) => `
-          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
-            <button type="button" onclick="removeArrayItem('other', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          <div class="flex items-center gap-2 bg-[#131320] px-3.5 py-2.5 rounded-2xl border border-zinc-800/90 focus-within:border-indigo-500/80 w-full transition-all">
+            <span class="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 22px;">${escapeHtml(item)}</textarea>
+            <button type="button" onclick="removeArrayItem('other', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
 
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">OTHER COURSES & DIPLOMAS</h3>
-                <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
-              </div>
-              <div class="space-y-2">${otherItems}</div>
-              <div class="pt-2 border-t border-zinc-800 space-y-1.5">
-                <span class="text-[11px] font-bold text-zinc-400 block uppercase">1-TAP ADD:</span>
-                <div class="flex flex-wrap gap-1.5">
-                  <button type="button" onclick="addArrayItem('other', 'COURSE ON COMPUTER CONCEPTS DIPLOMA (CCC)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ CCC DIPLOMA</button>
-                  <button type="button" onclick="addArrayItem('other', 'DIPLOMA IN COMPUTER APPLICATION (DCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ DCA DIPLOMA</button>
-                  <button type="button" onclick="addArrayItem('other', 'ADVANCED DIPLOMA IN COMPUTER APPLICATION (ADCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ ADCA</button>
-                  <button type="button" onclick="addArrayItem('other', 'O LEVEL COMPLETED FROM NIELIT')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ O LEVEL</button>
-                  <button type="button" onclick="addArrayItem('other', 'HINDI & ENGLISH TYPING SPEED 35 W.P.M.')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ TYPING</button>
-                  <button type="button" onclick="addArrayItem('other', 'ENGLISH SPEAKING COURSE COMPLETED')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ SPOKEN ENG.</button>
-                </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-300">OTHER COURSES & DIPLOMAS</span>
+              <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <span>ADD</span>
+              </button>
+            </div>
+            <div class="space-y-2">${otherItems}</div>
+            <div class="pt-2 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">1-TAP QUICK ADD</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="addArrayItem('other', 'COURSE ON COMPUTER CONCEPTS DIPLOMA (CCC)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ CCC DIPLOMA</button>
+                <button type="button" onclick="addArrayItem('other', 'DIPLOMA IN COMPUTER APPLICATION (DCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ DCA DIPLOMA</button>
+                <button type="button" onclick="addArrayItem('other', 'ADVANCED DIPLOMA IN COMPUTER APPLICATION (ADCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ ADCA</button>
+                <button type="button" onclick="addArrayItem('other', 'O LEVEL COMPLETED FROM NIELIT')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ O LEVEL</button>
+                <button type="button" onclick="addArrayItem('other', 'HINDI & ENGLISH TYPING SPEED 35 W.P.M.')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ TYPING</button>
+                <button type="button" onclick="addArrayItem('other', 'ENGLISH SPEAKING COURSE COMPLETED')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ SPOKEN ENG.</button>
               </div>
             </div>
           </div>
         `;
       } else if (currentPage === 5) {
         const expItems = (cvData.experience || []).map((item, idx) => `
-          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
-            <button type="button" onclick="removeArrayItem('experience', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          <div class="flex items-center gap-2 bg-[#131320] px-3.5 py-2.5 rounded-2xl border border-zinc-800/90 focus-within:border-indigo-500/80 w-full transition-all">
+            <span class="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 22px;">${escapeHtml(item)}</textarea>
+            <button type="button" onclick="removeArrayItem('experience', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
 
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">WORKING EXPERIENCE</h3>
-                <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
-              </div>
-              <div class="space-y-2">${expItems}</div>
-              <div class="pt-2 border-t border-zinc-800 space-y-1.5">
-                <span class="text-[11px] font-bold text-zinc-400 block uppercase">1-TAP ADD:</span>
-                <div class="flex flex-wrap gap-1.5">
-                  <button type="button" onclick="addArrayItem('experience', '1 YEAR WORKING EXPERIENCE IN DATA ENTRY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ DATA ENTRY</button>
-                  <button type="button" onclick="addArrayItem('experience', '2 YEARS WORKING EXPERIENCE IN CYBER CAFE')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ CYBER CAFE</button>
-                  <button type="button" onclick="addArrayItem('experience', '6 MONTHS WORKING EXPERIENCE AS A CASHIER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ CASHIER</button>
-                  <button type="button" onclick="addArrayItem('experience', 'FRESHER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ FRESHER</button>
-                </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-300">WORKING EXPERIENCE</span>
+              <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <span>ADD</span>
+              </button>
+            </div>
+            <div class="space-y-2">${expItems}</div>
+            <div class="pt-2 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">1-TAP QUICK ADD</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="addArrayItem('experience', '1 YEAR WORKING EXPERIENCE IN DATA ENTRY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ DATA ENTRY</button>
+                <button type="button" onclick="addArrayItem('experience', '2 YEARS WORKING EXPERIENCE IN CYBER CAFE')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ CYBER CAFE</button>
+                <button type="button" onclick="addArrayItem('experience', '6 MONTHS WORKING EXPERIENCE AS A CASHIER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ CASHIER</button>
+                <button type="button" onclick="addArrayItem('experience', 'FRESHER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ FRESHER</button>
               </div>
             </div>
           </div>
@@ -1292,77 +1289,73 @@
         let dobInputVal = '';
         if (cvData.details.dob && cvData.details.dob.includes('/')) {
             const parts = cvData.details.dob.split('/');
-            if(parts.length === 3) dobInputVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            if(parts.length === 3) dobInputVal = `${parts[2]}-${parts}-${parts[0]}`;
         } else { dobInputVal = cvData.details.dob; }
 
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">PERSONAL DETAILS TABLE</h3>
-              <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE OF BIRTH</label>
-                <div class="date-wrapper">
-                  <input type="date" value="${dobInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.details.dob = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.details.dob = ''; } saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                </div>
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">DATE OF BIRTH</span>
+              <div class="date-wrapper">
+                <input type="date" value="${dobInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.details.dob = parts[2]+'/'+parts+'/'+parts[0]; } else { cvData.details.dob = ''; } saveState();" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0" />
               </div>
-              <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FATHER'S NAME</label>
-                <input type="text" value="${escapeHtml(cvData.details.father)}" oninput="cvData.details.father = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+            </div>
+
+            ${createTextInput("FATHER'S NAME", cvData.details.father, 'cvData.details.father = this.value; saveState();')}
+
+            <div class="grid grid-cols-2 gap-2.5">
+              ${createCustomDropdown('details.gender', [{label: 'MALE', val: 'MALE'}, {label: 'FEMALE', val: 'FEMALE'}, {label: 'OTHER', val: 'OTHER'}], 'GENDER', 'SELECT GENDER')}
+              ${createCustomDropdown('details.marital', [{label: 'UNMARRIED', val: 'UNMARRIED'}, {label: 'MARRIED', val: 'MARRIED'}], 'MARITAL STATUS', 'SELECT STATUS')}
+            </div>
+
+            <div>
+              ${createCustomDropdown('details.nationality', [{label: 'INDIAN', val: 'INDIAN'}, {label: 'OTHER', val: 'OTHER'}], 'NATIONALITY', 'SELECT NATIONALITY')}
+              <div id="custom-nationality-wrapper" style="display: ${cvData.details.nationality === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                ${createTextInput('CUSTOM NATIONALITY', cvData.details.customNationality, 'cvData.details.customNationality = this.value; saveState();', 'text', 'ENTER NATIONALITY')}
               </div>
-              <div class="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">GENDER</label>
-                  ${createCustomDropdown('details.gender', [{label: 'MALE', val: 'MALE'}, {label: 'FEMALE', val: 'FEMALE'}, {label: 'OTHER', val: 'OTHER'}], 'SELECT GENDER')}
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">MARITAL STATUS</label>
-                  ${createCustomDropdown('details.marital', [{label: 'UNMARRIED', val: 'UNMARRIED'}, {label: 'MARRIED', val: 'MARRIED'}], 'SELECT STATUS')}
-                </div>
+            </div>
+
+            <div>
+              <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+                <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">LANGUAGES KNOWN</span>
+                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="HINDI & ENGLISH" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" />
               </div>
-              <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">NATIONALITY</label>
-                ${createCustomDropdown('details.nationality', [{label: 'INDIAN', val: 'INDIAN'}, {label: 'OTHER', val: 'OTHER'}], 'SELECT NATIONALITY')}
-                <div id="custom-nationality-wrapper" style="display: ${cvData.details.nationality === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                   <input type="text" placeholder="ENTER NATIONALITY" oninput="cvData.details.customNationality = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.details.customNationality || '')}">
-                </div>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <button type="button" onclick="setLanguage('HINDI')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ HINDI</button>
+                <button type="button" onclick="setLanguage('ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ ENGLISH</button>
+                <button type="button" onclick="setLanguage('HINDI & ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ HINDI & ENGLISH</button>
               </div>
-              <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">LANGUAGE KNOWN</label>
-                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="HINDI & ENGLISH" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                <div class="flex flex-wrap gap-1.5 mt-2">
-                  <button type="button" onclick="setLanguage('HINDI')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ HINDI</button>
-                  <button type="button" onclick="setLanguage('ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ ENGLISH</button>
-                  <button type="button" onclick="setLanguage('HINDI & ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ HINDI & ENGLISH</button>
-                </div>
+            </div>
+
+            <div>
+              <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+                <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">HOBBIES</span>
+                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="EDITING, MUSIC" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" />
               </div>
-              <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">HOBBIES</label>
-                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="EDITING, LISTENING MUSIC" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                <div class="flex flex-wrap gap-1.5 mt-2">
-                  <button type="button" onclick="appendHobby('EXCEL')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ EXCEL</button>
-                  <button type="button" onclick="appendHobby('WORD')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ WORD</button>
-                  <button type="button" onclick="appendHobby('AI LEARNING TECH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ AI LEARNING</button>
-                  <button type="button" onclick="appendHobby('MUSIC')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ MUSIC</button>
-                  <button type="button" onclick="appendHobby('LISTENING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ LISTENING</button>
-                  <button type="button" onclick="appendHobby('GAMING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ GAMING</button>
-                  <button type="button" onclick="appendHobby('EDITING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ EDITING</button>
-                  <button type="button" onclick="appendHobby('READING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ READING</button>
-                  <button type="button" onclick="appendHobby('TRAVELING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ TRAVELING</button>
-                </div>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <button type="button" onclick="appendHobby('EXCEL')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ EXCEL</button>
+                <button type="button" onclick="appendHobby('WORD')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ WORD</button>
+                <button type="button" onclick="appendHobby('AI LEARNING TECH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ AI LEARNING</button>
+                <button type="button" onclick="appendHobby('MUSIC')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ MUSIC</button>
+                <button type="button" onclick="appendHobby('LISTENING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ LISTENING</button>
+                <button type="button" onclick="appendHobby('GAMING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ GAMING</button>
+                <button type="button" onclick="appendHobby('EDITING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ EDITING</button>
+                <button type="button" onclick="appendHobby('READING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ READING</button>
+                <button type="button" onclick="appendHobby('TRAVELING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ TRAVELING</button>
               </div>
             </div>
           </div>
         `;
       } else if (currentPage === 7) {
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-2.5">
-              <label class="block text-xs font-bold text-zinc-200 uppercase tracking-wider">DECLARATION STATEMENT</label>
-              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 leading-relaxed resize-none">${escapeHtml(cvData.declaration)}</textarea>
-              <div class="pt-2 border-t border-zinc-800">
-                <span class="text-[11px] font-bold text-zinc-400 block mb-1.5 uppercase">QUICK TEMPLATE:</span>
-                <button type="button" onclick="setDeclarationPreset('I HEREBY DECLARE THAT ALL THE INFORMATION MENTIONED ABOVE IS TRUE TO THE BEST OF MY KNOWLEDGE. IF YOU GIVE ME A CHANCE, I ASSURE MY HARD WORK, DEDICATION AND SINCERITY')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"I HEREBY DECLARE THAT ALL THE INFORMATION..."</button>
-              </div>
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl p-3.5 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-1.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">DECLARATION STATEMENT</span>
+              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="uppercase w-full min-h-[105px] bg-transparent border-none text-[14px] sm:text-sm text-zinc-100 font-bold outline-none leading-relaxed resize-none p-0 placeholder:text-zinc-600">${escapeHtml(cvData.declaration)}</textarea>
+            </div>
+            <div class="pt-1">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block mb-1.5 uppercase px-1">QUICK TEMPLATE</span>
+              <button type="button" onclick="setDeclarationPreset('I HEREBY DECLARE THAT ALL THE INFORMATION MENTIONED ABOVE IS TRUE TO THE BEST OF MY KNOWLEDGE. IF YOU GIVE ME A CHANCE, I ASSURE MY HARD WORK, DEDICATION AND SINCERITY')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"I HEREBY DECLARE THAT ALL THE INFORMATION..."</button>
             </div>
           </div>
         `;
@@ -1370,94 +1363,68 @@
         let dateInputVal = '';
         if (cvData.footer.date && cvData.footer.date.includes('/')) {
             const parts = cvData.footer.date.split('/');
-            if(parts.length === 3) dateInputVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            if(parts.length === 3) dateInputVal = `${parts[2]}-${parts}-${parts[0]}`;
         } else { dateInputVal = cvData.footer.date; }
 
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-4">
-              <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 border-b border-zinc-800 pb-2 mb-3">SIGN-OFF DETAILS</h3>
-                <div class="space-y-3">
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE</label>
-                    <div class="date-wrapper">
-                      <input type="date" value="${dateInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.footer.date = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.footer.date = ''; } saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">PLACE</label>
-                    <input type="text" value="${escapeHtml(cvData.footer.place)}" oninput="cvData.footer.place = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">SIGNATURE NAME</label>
-                    <input type="text" value="${escapeHtml(cvData.footer.signName)}" oninput="cvData.footer.signName = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                  </div>
-                </div>
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">DATE</span>
+              <div class="date-wrapper">
+                <input type="date" value="${dateInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.footer.date = parts[2]+'/'+parts+'/'+parts[0]; } else { cvData.footer.date = ''; } saveState();" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0" />
               </div>
             </div>
+
+            ${createTextInput('PLACE', cvData.footer.place, 'cvData.footer.place = this.value; saveState();')}
+            ${createTextInput('SIGNATURE NAME', cvData.footer.signName, 'cvData.footer.signName = this.value; saveState();')}
           </div>
         `;
       } else if (currentPage === 9) {
         stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-4">
-              <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 border-b border-zinc-800 pb-2 mb-3">DOCUMENT SETTINGS</h3>
-                <div class="space-y-3">
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DOCUMENT TITLE</label>
-                    ${createCustomDropdown('documentTitle', [{label: 'CURRICULUM VITAE', val: 'CURRICULUM VITAE'}, {label: 'RESUME', val: 'RESUME'}], 'SELECT TITLE')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DOCUMENT FONT</label>
-                    ${createCustomDropdown('font', [{label: 'TIMES NEW ROMAN', val: 'Times New Roman'}, {label: 'ARIAL', val: 'Arial'}, {label: 'CALIBRI', val: 'Calibri'}, {label: 'ALGERIAN', val: 'Algerian'}], 'SELECT FONT')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEXT WEIGHT</label>
-                    ${createCustomDropdown('fontWeight', [{label: 'BOLD TEXT', val: 'bold'}, {label: 'NORMAL TEXT', val: 'normal'}], 'SELECT TEXT WEIGHT')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEXT CASE</label>
-                    ${createCustomDropdown('textCase', [{label: 'UPPERCASE (ALL CAPITAL)', val: 'uppercase'}, {label: 'PROPER CASE (FIRST LETTER CAPITAL)', val: 'capitalize'}], 'SELECT TEXT CASE')}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="space-y-3">
+            ${createCustomDropdown('documentTitle', [{label: 'CURRICULUM VITAE', val: 'CURRICULUM VITAE'}, {label: 'RESUME', val: 'RESUME'}], 'DOCUMENT TITLE', 'SELECT TITLE')}
+            ${createCustomDropdown('font', [{label: 'TIMES NEW ROMAN', val: 'Times New Roman'}, {label: 'ARIAL', val: 'Arial'}, {label: 'CALIBRI', val: 'Calibri'}, {label: 'ALGERIAN', val: 'Algerian'}], 'DOCUMENT FONT', 'SELECT FONT')}
+            ${createCustomDropdown('fontWeight', [{label: 'BOLD TEXT', val: 'bold'}, {label: 'NORMAL TEXT', val: 'normal'}], 'TEXT WEIGHT', 'SELECT TEXT WEIGHT')}
+            ${createCustomDropdown('textCase', [{label: 'UPPERCASE (ALL CAPITAL)', val: 'uppercase'}, {label: 'PROPER CASE (FIRST LETTER CAPITAL)', val: 'capitalize'}], 'TEXT CASE', 'SELECT TEXT CASE')}
           </div>
         `;
       }
 
       container.innerHTML = `
         <div class="flex-1 flex flex-col overflow-hidden relative">
-          <div class="h-14 px-3 bg-[#11111c] border-b border-zinc-800/80 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-sm relative">
-            <button type="button" onclick="goToHome()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-white active:scale-95 transition-all relative z-10">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          <!-- Clean Transparent Header (No Background Card, Only Icon Toggles) -->
+          <div class="h-14 px-4 flex items-center justify-between shrink-0 sticky top-0 z-30 bg-transparent">
+            <button type="button" onclick="goToHome()" title="HOME" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-white bg-zinc-900/40 hover:bg-zinc-800/60 border border-zinc-800/60 backdrop-blur-sm active:scale-90 transition-all">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <span class="absolute inset-0 flex items-center justify-center pointer-events-none text-[15px] font-black text-zinc-100 tracking-widest uppercase">
-                STEP ${currentPage}/${TOTAL_STEPS}
-            </span>
-            <button type="button" onclick="openResetDialog()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-red-400 active:scale-95 transition-all relative z-10">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+            <div class="px-3.5 py-1 rounded-full bg-zinc-900/50 border border-zinc-800/80 backdrop-blur-sm shadow-sm">
+              <span class="text-xs font-black text-zinc-200 tracking-wider">STEP ${currentPage}/${TOTAL_STEPS}</span>
+            </div>
+            <button type="button" onclick="openResetDialog()" title="RESET CV" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-red-400 bg-zinc-900/40 hover:bg-zinc-800/60 border border-zinc-800/60 backdrop-blur-sm active:scale-90 transition-all">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
             </button>
           </div>
           
-          <div id="editor-scroll-area" class="flex-1 overflow-y-auto px-3.5 py-4 pb-28 w-full overflow-x-hidden relative scroll-smooth bg-[#08080e]">
-            <div class="${animClass} w-full">${stepContentHTML}</div>
+          <div id="editor-scroll-area" class="flex-1 overflow-y-auto px-4 py-3 pb-28 w-full overflow-x-hidden relative scroll-smooth bg-[#08080e]">
+            <div class="${animClass} w-full max-w-lg mx-auto">${stepContentHTML}</div>
           </div>
-          <div class="absolute bottom-0 left-0 right-0 z-30 bg-[#0c0c16]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
-            <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold uppercase border border-zinc-700/60 active:scale-95 shrink-0 transition-transform">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
-              <span>PREV</span>
-            </button>
-            <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold uppercase active:scale-95 shadow-sm transition-transform">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              <span>PREVIEW CV</span>
-            </button>
-            <button type="button" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform">
-              <span>${currentPage === TOTAL_STEPS ? 'REVIEW' : 'NEXT'}</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg>
-            </button>
+
+          <!-- Clean Floating Bottom Icon Bar (No Background Card, Only Icon Toggles) -->
+          <div class="absolute bottom-4 left-0 right-0 z-30 pointer-events-none flex justify-center items-center pb-[max(0px,env(safe-area-inset-bottom))]">
+            <div class="pointer-events-auto flex items-center justify-between px-6 max-w-xs w-full">
+              <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" title="PREVIOUS STEP" class="w-12 h-12 rounded-full flex items-center justify-center bg-[#141422]/90 border border-zinc-700/80 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none active:scale-90 transition-all shadow-xl backdrop-blur-md">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+              </button>
+              <button type="button" onclick="openPreview()" title="PREVIEW CV" class="w-14 h-14 rounded-full flex items-center justify-center bg-[#18182a]/95 border border-zinc-600/90 text-emerald-400 hover:text-emerald-300 active:scale-90 transition-all shadow-2xl shadow-emerald-500/10 backdrop-blur-md">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              </button>
+              <button type="button" onclick="goNextStep()" title="${currentPage === TOTAL_STEPS ? 'REVIEW CV' : 'NEXT STEP'}" class="w-12 h-12 rounded-full flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white active:scale-90 transition-all shadow-xl shadow-indigo-600/40 backdrop-blur-md">
+                ${currentPage === TOTAL_STEPS 
+                  ? '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>'
+                  : '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6" /></svg>'
+                }
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -1470,39 +1437,41 @@
       const scaledH = Math.round(1123 * previewZoom);
 
       container.innerHTML = `
-        <div class="flex-1 flex flex-col overflow-hidden bg-[#06060a] elegant-entry">
-          <div class="bg-[#0e0e18] border-b border-zinc-800 px-3 py-2 flex items-center justify-between gap-2 z-20 shrink-0">
-            <button type="button" onclick="closePreview()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95">
-              <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
-              <span>EDIT</span>
+        <div class="flex-1 flex flex-col overflow-hidden bg-[#06060a] elegant-entry relative">
+          <!-- Transparent Header in Preview (No Background Card) -->
+          <div class="h-14 px-4 flex items-center justify-between shrink-0 bg-transparent z-20">
+            <button type="button" onclick="closePreview()" title="BACK TO EDIT" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-300 hover:text-white bg-zinc-900/60 border border-zinc-800 backdrop-blur-md active:scale-90 transition-all">
+              <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
-            <div class="flex items-center gap-1 bg-[#141422] p-1 rounded-lg border border-zinc-800">
-              <button type="button" onclick="zoomPreview(-0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
-              <span class="text-[11px] font-bold text-zinc-300 min-w-9 text-center tabular-nums">${Math.round(previewZoom * 100)}%</span>
-              <button type="button" onclick="zoomPreview(0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
-              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-indigo-400 bg-indigo-500/10 active:scale-90">FIT</button>
+            <div class="flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md px-2 py-1 rounded-full">
+              <button type="button" onclick="zoomPreview(-0.1)" class="w-7 h-7 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
+              <span class="text-[11px] font-bold text-zinc-300 min-w-8 text-center tabular-nums">${Math.round(previewZoom * 100)}%</span>
+              <button type="button" onclick="zoomPreview(0.1)" class="w-7 h-7 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
+              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-indigo-400 bg-indigo-500/15 active:scale-90">FIT</button>
             </div>
-            <button type="button" onclick="handleDirectPrint()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95 shadow-sm">
-              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-              <span>PRINT</span>
+            <button type="button" onclick="handleDirectPrint()" title="PRINT CV" class="w-10 h-10 flex items-center justify-center rounded-full text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 backdrop-blur-md active:scale-90 transition-all">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
             </button>
           </div>
-          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-20 flex flex-col items-center relative" style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;">
+
+          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-24 flex flex-col items-center relative" style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;">
             <div class="relative my-auto shrink-0 bg-white zoom-transition" style="width: ${scaledW}px; height: ${scaledH}px; min-height: ${scaledH}px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 15px 35px -5px rgba(0, 0, 0, 0.85);">
               <div style="width: 794px; min-height: 1123px; transform: scale(${previewZoom}); transform-origin: top left; position: absolute; top: 0; left: 0;" class="zoom-transition">
                 ${getDocumentHTML('cv-screen-preview-node', false)}
               </div>
             </div>
           </div>
-          <div class="fixed bottom-3 left-4 right-4 z-30 flex items-center justify-between gap-3 bg-[#10101c]/95 backdrop-blur-lg px-3 py-2 rounded-2xl border border-zinc-800 shadow-2xl">
-            <button type="button" onclick="closePreview()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95">
-              <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-              <span>EDIT DETAILS</span>
-            </button>
-            <button type="button" onclick="handleDirectPrint()" class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase active:scale-95 shadow-lg shadow-emerald-600/30 transition-all">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-              <span>PRINT CV</span>
-            </button>
+
+          <!-- Clean Floating Bottom Icon Bar in Preview (No Background Card) -->
+          <div class="absolute bottom-4 left-0 right-0 z-30 pointer-events-none flex justify-center items-center pb-[max(0px,env(safe-area-inset-bottom))]">
+            <div class="pointer-events-auto flex items-center justify-between px-6 max-w-xs w-full">
+              <button type="button" onclick="closePreview()" title="EDIT DETAILS" class="w-12 h-12 rounded-full flex items-center justify-center bg-[#141422]/90 border border-zinc-700/80 text-zinc-300 hover:text-white active:scale-90 transition-all shadow-xl backdrop-blur-md">
+                <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              </button>
+              <button type="button" onclick="handleDirectPrint()" title="PRINT CV" class="w-14 h-14 rounded-full flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white active:scale-90 transition-all shadow-2xl shadow-emerald-600/40 backdrop-blur-md">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -1542,6 +1511,8 @@
 
     function fitPreviewWidth() {
       const container = document.getElementById('preview-viewport-container');
+      const w = container ? container {
+      const container = document.getElementById('preview-viewport-container');
       const w = container ? container.clientWidth - 16 : window.innerWidth - 16;
       previewZoom = Number(Math.max(0.35, Math.min(1.1, w / 794)).toFixed(2));
       if (activeView === 'preview') renderApp();
@@ -1579,7 +1550,4 @@
     }
 
     window.addEventListener('resize', () => { if (activeView === 'preview') fitPreviewWidth(); });
-    document.addEventListener('DOMContentLoaded', () => { renderApp(); });
-  </script>
-</body>
-</html>
+    document.addEventListener('DOMContentLoaded', () => {
