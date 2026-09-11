@@ -103,16 +103,18 @@
     /* ==================================================
        2. ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS 
        ================================================== */
-    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes elegantFadeOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -15px, 0); } }
+    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translateX(35px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translateX(-35px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes elegantFadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes elegantFadeOut { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-15px); } }
+    @keyframes bootUpScale { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    .anim-next { animation: smoothSlideRight 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: smoothSlideLeft 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .elegant-entry { animation: elegantFadeIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; will-change: transform, opacity; }
-    .zoom-transition { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .anim-next { animation: smoothSlideRight 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
+    .anim-prev { animation: smoothSlideLeft 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
+    .elegant-entry { animation: elegantFadeIn 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
+    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; will-change: transform, opacity; }
+    .zoom-transition { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+    .bootup-anim { animation: bootUpScale 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
 
     /* Custom Scrollbar for dropdown */
     .custom-scrollbar::-webkit-scrollbar { width: 4px !important; display: block !important; }
@@ -125,22 +127,21 @@
     .blob-1 { animation: blobFloat1 12s ease-in-out infinite; will-change: transform; }
     .blob-2 { animation: blobFloat2 15s ease-in-out infinite; will-change: transform; }
 
-    @keyframes fadeUpEntry { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    .stagger-entry { opacity: 0; animation: fadeUpEntry 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .stagger-entry { opacity: 0; animation: elegantFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
     .d-0 { animation-delay: 0ms; } .d-1 { animation-delay: 60ms; } .d-2 { animation-delay: 120ms; } .d-3 { animation-delay: 180ms; }
 
     @media (prefers-reduced-motion: reduce) {
-      .elegant-exit, .elegant-entry, .anim-next, .anim-prev { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .elegant-exit, .elegant-entry, .anim-next, .anim-prev, .bootup-anim { animation: none !important; opacity: 1 !important; transform: none !important; }
     }
 
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & PERFECT BORDERS */
+    /* 3. ROCK-SOLID PRINT ENGINE FIX - ALLOWS OVERFLOW FOR MULTIPLE PAGES WITHOUT CUTOFF */
     body.is-printing {
         background-color: #ffffff !important;
         color: #000000 !important;
-        overflow: hidden !important;
+        overflow: visible !important;
     }
     body.is-printing > *:not(#cv-print-container) {
         display: none !important;
@@ -156,12 +157,12 @@
       @page { size: A4 portrait; margin: 0 !important; }
       *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
       
-      html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: hidden !important; }
+      html, body { width: 210mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: visible !important; }
       
       body > *:not(#cv-print-container) { display: none !important; }
       
       #cv-print-container {
-        display: block !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-after: avoid !important; page-break-inside: avoid !important; page-break-before: avoid !important; z-index: 999999 !important; visibility: visible !important;
+        display: block !important; position: static !important; width: 210mm !important; height: auto !important; min-height: 297mm !important; max-height: none !important; margin: 0 auto !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: visible !important; z-index: 999999 !important; visibility: visible !important;
       }
       #cv-print-container * { visibility: visible !important; }
     }
@@ -246,7 +247,7 @@
   <div id="cv-print-container"></div>
 
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v23';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v24';
     
     // Expanded Geographical Data List 
     const indiaData = {
@@ -280,15 +281,27 @@
     let currentUser = null;
     let authLoading = true;
     let saveTimeout = null;
+    let justLoggedIn = false; // Controls the splash animation
 
     let dropdownOriginX = 0;
     let dropdownOriginY = 0;
 
     window.onFirebaseReady = () => {
        window.onAuthStateChanged(window.auth, (user) => {
+          const wasLoggedOut = (currentUser === null && user !== null && !authLoading);
           currentUser = user;
           authLoading = false;
-          renderApp(); 
+          
+          if (wasLoggedOut) {
+              justLoggedIn = true;
+              renderApp();
+              setTimeout(() => {
+                  justLoggedIn = false;
+                  renderApp();
+              }, 2200); // Wait for Splash to finish
+          } else {
+              renderApp(); 
+          }
        });
     };
 
@@ -374,8 +387,17 @@
     async function loginWithGoogle() {
         if (!window.auth || !window.GoogleAuthProvider) return;
         const provider = new window.GoogleAuthProvider();
-        try { await window.signInWithPopup(window.auth, provider); } 
-        catch (error) { showUIAlert("LOGIN FAILED", "Please try again later.", false); console.error(error); }
+        try { 
+            await window.signInWithPopup(window.auth, provider); 
+        } 
+        catch (error) { 
+            if(error.code === 'auth/popup-blocked') {
+                showUIAlert("POPUP BLOCKED", "Please allow popups in your browser to login with Google.", false);
+            } else {
+                showUIAlert("LOGIN FAILED", "Network or browser error. Please try again.", false); 
+            }
+            console.error(error); 
+        }
     }
 
     async function logoutGoogle() {
@@ -470,14 +492,12 @@
         modal.classList.add('flex', 'items-center', 'justify-center'); 
         
         requestAnimationFrame(() => {
-            box.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease';
+            box.style.transition = 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease';
             modal.style.transition = 'opacity 0.35s ease';
             
             box.style.transform = `translate(0px, 0px) scale(1)`;
             box.style.opacity = '1';
             modal.style.opacity = '1';
-            
-            // INTENTIONALLY REMOVED AUTO-FOCUS TO PREVENT KEYBOARD FROM OPENING INSTANTLY
         });
     }
 
@@ -765,12 +785,13 @@
 
       const titleDisplay = formatText(cvData.documentTitle || 'CURRICULUM VITAE', tCase);
 
+      // ALGERIAN PIXELATION FIX: Applied -webkit-text-stroke & exact font smoothing rendering styles
       return `
-        <div id="${id}" style="width:${outerWidth}; height:${outerHeight}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:8mm; font-family:${font}; font-weight:${fWeight} !important;">
-          <div style="width:100%; height:100%; border:1.5px solid #000000; padding:3px; box-sizing:border-box; background-color:#ffffff;">
-            <div style="width:100%; height:100%; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
+        <div id="${id}" style="width:${outerWidth}; min-height:${outerHeight}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:8mm; font-family:${font}; font-weight:${fWeight} !important;">
+          <div style="width:100%; min-height:100%; border:1.5px solid #000000; padding:3px; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column;">
+            <div style="width:100%; flex:1; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:visible;">
               <div style="flex-shrink:0;">
-                <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:24pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-stroke: 0.4px #000; text-shadow: 0 0 1px rgba(0,0,0,0.5);">${titleDisplay}</h1>
+                <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:25pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-stroke: 0.6px #000; text-shadow: 0px 0px 1px #000;">${titleDisplay}</h1>
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
                   <tbody><tr>
                       <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
@@ -783,7 +804,7 @@
                 </table>
                 <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
               </div>
-              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; margin:2px 0; gap:6px; font-size:11pt; color:#000; overflow:hidden;">
+              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; margin:2px 0; gap:6px; font-size:11pt; color:#000; overflow:visible;">
                 ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000; word-break:break-word;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
                 ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
                 ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
@@ -817,10 +838,33 @@
       if (container) { container.innerHTML = getDocumentHTML('cv-actual-print-node', true); }
     }
 
+    // Google Boot-up Animation Splash Screen
+    function renderBootupSplash(container) {
+      container.innerHTML = `
+        <div class="absolute inset-0 w-full h-full bg-[#08080e] flex flex-col items-center justify-center z-[100] elegant-entry">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.15)] bootup-anim mb-8">
+                <svg class="w-12 h-12" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            </div>
+            <h2 class="text-[22px] sm:text-2xl font-black text-white uppercase tracking-widest bootup-anim" style="animation-delay: 0.1s; opacity: 0;">WELCOME</h2>
+            <p class="text-indigo-400 text-sm font-bold mt-2 uppercase tracking-[0.2em] bootup-anim" style="animation-delay: 0.2s; opacity: 0;">${currentUser.displayName.split(' ')[0]}</p>
+            <div class="mt-10 flex gap-2">
+                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></div>
+                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+            </div>
+        </div>
+      `;
+    }
+
     function renderApp() {
       const container = document.getElementById('main-view-container');
       const scrollArea = document.getElementById('editor-scroll-area');
       const currentScroll = scrollArea ? scrollArea.scrollTop : 0;
+
+      if (justLoggedIn && currentUser && !appStarted) {
+          renderBootupSplash(container);
+          return;
+      }
 
       if (!appStarted) {
         renderWelcomeScreen(container);
@@ -1514,6 +1558,10 @@
         currentPage++;
         isNavigating = true;
         renderApp();
+        requestAnimationFrame(() => {
+           const scrollArea = document.getElementById('editor-scroll-area');
+           if(scrollArea) scrollArea.scrollTop = 0;
+        });
       } else {
         openPreview();
       }
@@ -1525,6 +1573,10 @@
         currentPage--;
         isNavigating = true;
         renderApp();
+        requestAnimationFrame(() => {
+           const scrollArea = document.getElementById('editor-scroll-area');
+           if(scrollArea) scrollArea.scrollTop = 0;
+        });
       }
     }
 
