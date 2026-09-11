@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <!-- KEYBOARD LOCK META TAG: Prevents Android Webview from resizing the page when keyboard opens -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content" />
   <title>TECH ASAR CV</title>
 
   <!-- Tailwind CSS CDN -->
@@ -26,7 +27,7 @@
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/algerian">
 
   <style>
-    /* PREVENT APP CREATOR 24 WHITE/BLACK SCREEN FLASH */
+    /* PREVENT APP CREATOR 24 WHITE/BLACK SCREEN FLASH AND BOUNCE */
     html, body {
       background-color: #08080e !important;
       color: #f4f4f5;
@@ -35,6 +36,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden; /* Prevent bounce scroll */
+      overscroll-behavior: none; /* Stops pull-to-refresh and rubber-banding */
     }
 
     @font-face {
@@ -50,50 +52,31 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* HIDE ALL SCROLLBARS GLOBALLY */
+    /* HIDE ALL SCROLLBARS GLOBALLY YET KEEP SCROLLING */
     * {
       -ms-overflow-style: none !important;
       scrollbar-width: none !important;
     }
     *::-webkit-scrollbar,
-    ::-webkit-scrollbar {
+    ::-webkit-scrollbar,
+    .hide-scroll::-webkit-scrollbar {
       display: none !important;
       width: 0px !important;
       height: 0px !important;
       background: transparent !important;
     }
+    .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-    .font-algerian {
-      font-family: 'Algerian', 'Times New Roman', serif !important;
-    }
+    .font-algerian { font-family: 'Algerian', 'Times New Roman', serif !important; }
 
     /* HARDWARE-ACCELERATED ULTRA-SMOOTH ANIMATIONS */
-    @keyframes smoothSlideRight {
-      0% { opacity: 0; transform: translate3d(20px, 0, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes smoothSlideLeft {
-      0% { opacity: 0; transform: translate3d(-20px, 0, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes elegantFadeIn {
-      0% { opacity: 0; transform: translate3d(0, 10px, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes elegantFadeOut {
-      0% { opacity: 1; transform: translate3d(0, 0, 0); }
-      100% { opacity: 0; transform: translate3d(0, -10px, 0); }
-    }
+    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(20px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-20px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 10px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes elegantFadeOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -10px, 0); } }
 
-    .smooth-item-entry {
-      animation: smoothItemExpand 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-      will-change: transform, opacity, max-height;
-    }
-
-    @keyframes smoothItemExpand {
-      0% { opacity: 0; transform: translate3d(0, -12px, 0) scale(0.96); max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
-      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); max-height: 140px; margin-bottom: 8px; }
-    }
+    .smooth-item-entry { animation: smoothItemExpand 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity, max-height; }
+    @keyframes smoothItemExpand { 0% { opacity: 0; transform: translate3d(0, -12px, 0) scale(0.96); max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; } 100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); max-height: 140px; margin-bottom: 8px; } }
 
     .anim-next { animation: smoothSlideRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
     .anim-prev { animation: smoothSlideLeft 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
@@ -180,7 +163,7 @@
 </head>
 <body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans font-bold min-h-screen">
 
-  <!-- INSTANT NATIVE LOADING SCREEN (Fixes App Creator 24 Black Screen) -->
+  <!-- INSTANT NATIVE LOADING SCREEN -->
   <div id="app-splash-screen" class="fixed inset-0 z-[9999] bg-[#08080e] flex flex-col items-center justify-center transition-opacity duration-500 pointer-events-none">
     <div class="absolute top-[30%] left-[20%] w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] blob-1"></div>
     <div class="absolute bottom-[30%] right-[20%] w-80 h-80 bg-fuchsia-600/15 rounded-full blur-[100px] blob-2"></div>
@@ -198,9 +181,9 @@
     </div>
   </div>
 
-  <!-- Auth Modals: Sign In -->
-  <div id="signin-modal" class="fixed inset-0 z-[160] bg-black/70 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-    <div id="signin-box" class="m-auto bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[340px] w-[92vw] shadow-2xl flex flex-col transform scale-95 opacity-0 transition-all duration-300 relative">
+  <!-- Auth Modals: Sign In (Locked pt-20 avoids keyboard push up) -->
+  <div id="signin-modal" class="fixed inset-0 z-[160] bg-black/70 backdrop-blur-md hidden justify-center items-start pt-20 sm:pt-24 opacity-0 transition-opacity duration-300">
+    <div id="signin-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[340px] w-[92vw] shadow-2xl flex flex-col transform scale-95 opacity-0 transition-all duration-300 relative hide-scroll overflow-y-auto max-h-[80vh]">
        <button type="button" onclick="closeSignInModal()" class="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.05] active:scale-95 transition-all">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
        </button>
@@ -229,9 +212,9 @@
     </div>
   </div>
 
-  <!-- Auth Modals: Sign Up -->
-  <div id="signup-modal" class="fixed inset-0 z-[170] bg-black/70 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-    <div id="signup-box" class="m-auto bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[340px] w-[92vw] shadow-2xl flex flex-col transform scale-95 opacity-0 transition-all duration-300 relative">
+  <!-- Auth Modals: Sign Up (Locked pt-20 avoids keyboard push up) -->
+  <div id="signup-modal" class="fixed inset-0 z-[170] bg-black/70 backdrop-blur-md hidden justify-center items-start pt-20 sm:pt-24 opacity-0 transition-opacity duration-300">
+    <div id="signup-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[340px] w-[92vw] shadow-2xl flex flex-col transform scale-95 opacity-0 transition-all duration-300 relative hide-scroll overflow-y-auto max-h-[80vh]">
        <button type="button" onclick="closeSignUpModal()" class="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.05] active:scale-95 transition-all">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
        </button>
@@ -282,9 +265,9 @@
     </div>
   </div>
 
-  <!-- History Modal -->
-  <div id="cv-history-modal" class="fixed inset-0 z-[110] bg-black/70 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-    <div id="cv-history-box" class="m-auto bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300">
+  <!-- History Modal (Locked pt-20) -->
+  <div id="cv-history-modal" class="fixed inset-0 z-[110] bg-black/70 backdrop-blur-md hidden justify-center items-start pt-20 sm:pt-24 opacity-0 transition-opacity duration-300">
+    <div id="cv-history-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[80vh] transform scale-95 opacity-0 transition-all duration-300 hide-scroll">
       <div class="flex items-center justify-between p-4 border-b border-white/[0.08] bg-white/[0.03]">
          <div class="flex items-center gap-2">
            <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -324,7 +307,7 @@
   <div id="cv-print-container"></div>
 
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v26';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v27';
     let alertCallback = null;
     let lastTriggerRect = null;
     
@@ -348,30 +331,18 @@
     // Remove splash screen cleanly
     function removeSplashScreen() {
         const splash = document.getElementById('app-splash-screen');
-        if (splash) {
-            splash.style.opacity = '0';
-            setTimeout(() => { splash.remove(); }, 500);
-        }
+        if (splash) { splash.style.opacity = '0'; setTimeout(() => { splash.remove(); }, 500); }
     }
 
     // Wait for DOM to prevent execution crashes
     document.addEventListener('DOMContentLoaded', () => {
-        isAppReady = true;
-        renderApp();
-        setTimeout(removeSplashScreen, 300); // Allow Webview time to paint
+        isAppReady = true; renderApp(); setTimeout(removeSplashScreen, 300); // Allow Webview time to paint
     });
 
     window.onFirebaseReady = () => {
        if (window.auth && window.onAuthStateChanged) {
-         window.onAuthStateChanged(window.auth, (user) => {
-            currentUser = user;
-            authLoading = false;
-            if (isAppReady) renderApp(); 
-         });
-       } else {
-         authLoading = false;
-         if (isAppReady) renderApp();
-       }
+         window.onAuthStateChanged(window.auth, (user) => { currentUser = user; authLoading = false; if (isAppReady) renderApp(); });
+       } else { authLoading = false; if (isAppReady) renderApp(); }
     };
 
     const defaultCVData = {
@@ -385,13 +356,7 @@
     let cvData = (function() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            let data = JSON.parse(saved);
-            data.fontWeight = data.fontWeight || "bold";
-            data.textCase = data.textCase || "uppercase";
-            data.documentTitle = data.documentTitle || "CURRICULUM VITAE";
-            return data;
-        }
+        if (saved) { let data = JSON.parse(saved); data.fontWeight = data.fontWeight || "bold"; data.textCase = data.textCase || "uppercase"; data.documentTitle = data.documentTitle || "CURRICULUM VITAE"; return data; }
       } catch(e) {}
       return JSON.parse(JSON.stringify(defaultCVData));
     })();
@@ -442,8 +407,7 @@
         setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300);
     }
     function openSignUpModal() {
-        closeSignInModal();
-        const modal = document.getElementById('signup-modal'); const box = document.getElementById('signup-box');
+        closeSignInModal(); const modal = document.getElementById('signup-modal'); const box = document.getElementById('signup-box');
         modal.classList.remove('hidden'); modal.classList.add('flex');
         requestAnimationFrame(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); });
     }
@@ -454,8 +418,7 @@
     }
 
     async function handleSignIn(e) {
-        e.preventDefault();
-        if (!window.auth) return showUIAlert("ERROR", "SYSTEM OFFLINE", false);
+        e.preventDefault(); if (!window.auth) return showUIAlert("ERROR", "SYSTEM OFFLINE", false);
         const email = document.getElementById('signin-email').value.trim(); const pass = document.getElementById('signin-password').value;
         const btn = document.getElementById('signin-submit-btn'); btn.innerText = "SIGNING IN..."; btn.disabled = true;
         try {
@@ -467,15 +430,13 @@
     }
 
     async function handleSignUp(e) {
-        e.preventDefault();
-        if (!window.auth) return showUIAlert("ERROR", "SYSTEM OFFLINE", false);
+        e.preventDefault(); if (!window.auth) return showUIAlert("ERROR", "SYSTEM OFFLINE", false);
         const name = document.getElementById('signup-name').value.trim(); const email = document.getElementById('signup-email').value.trim();
         const pass = document.getElementById('signup-password').value;
         const btn = document.getElementById('signup-submit-btn'); btn.innerText = "CREATING..."; btn.disabled = true;
         try {
             const userCred = await window.createUserWithEmailAndPassword(window.auth, email, pass);
-            await window.updateProfile(userCred.user, { displayName: name });
-            await window.sendEmailVerification(userCred.user);
+            await window.updateProfile(userCred.user, { displayName: name }); await window.sendEmailVerification(userCred.user);
             showUIAlert("SUCCESS", "ACCOUNT CREATED! A VERIFICATION LINK HAS BEEN SENT TO YOUR EMAIL. PLEASE VERIFY BEFORE LOGGING IN.", false);
             await window.signOut(window.auth); closeSignUpModal();
         } catch (err) { showUIAlert("SIGN UP FAILED", err.message, false); }
@@ -483,8 +444,7 @@
     }
 
     async function handleForgetPassword() {
-        if (!window.auth) return;
-        const email = document.getElementById('signin-email').value.trim();
+        if (!window.auth) return; const email = document.getElementById('signin-email').value.trim();
         if (!email) return showUIAlert("REQUIRED", "PLEASE ENTER YOUR EMAIL ADDRESS FIRST.", false);
         try { await window.sendPasswordResetEmail(window.auth, email); showUIAlert("SUCCESS", "PASSWORD RESET LINK HAS BEEN SENT TO YOUR EMAIL.", false);
         } catch (err) { showUIAlert("ERROR", err.message, false); }
@@ -510,14 +470,13 @@
       const triggerCenterX = rect.left + (rect.width / 2);
       const triggerCenterY = rect.top + (rect.height / 2);
 
-      // Pre-position without triggering layout reflow jerk
       box.style.transition = 'none';
       box.style.left = `${triggerCenterX}px`; box.style.top = `${triggerCenterY}px`;
       box.style.transform = `translate(-50%, -50%) scale(0.05)`;
       box.style.opacity = '0'; box.style.borderRadius = '40px';
 
       modal.classList.remove('hidden'); modal.classList.add('block'); 
-      void box.offsetWidth; // Force Reflow
+      void box.offsetWidth;
 
       box.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, border-radius 0.35s ease';
       const screenCenterX = window.innerWidth / 2; const screenCenterY = window.innerHeight / 2;
