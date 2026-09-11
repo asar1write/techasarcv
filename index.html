@@ -90,27 +90,25 @@
       font-family: 'Algerian', 'Times New Roman', serif !important;
     }
 
-    /* Dark Mode Date Picker */
-    input[type="date"] { position: relative; color-scheme: dark; }
-    input[type="date"]::-webkit-calendar-picker-indicator { background: transparent; bottom: 0; color: transparent; cursor: pointer; height: auto; left: 0; position: absolute; right: 0; top: 0; width: auto; }
-    .date-wrapper { position: relative; }
-    .date-wrapper::after {
-      content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-size: contain;
+    /* Select Dropdown Reset */
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background: transparent;
     }
 
     /* ==================================================
        2. ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS 
        ================================================== */
-    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translateX(35px); } 100% { opacity: 1; transform: translateX(0); } }
-    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translateX(-35px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translateX(45px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translateX(-45px); } 100% { opacity: 1; transform: translateX(0); } }
     @keyframes elegantFadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes elegantFadeOut { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-15px); } }
     @keyframes bootUpScale { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    .anim-next { animation: smoothSlideRight 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: smoothSlideLeft 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
+    .anim-next { animation: smoothSlideRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
+    .anim-prev { animation: smoothSlideLeft 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
     .elegant-entry { animation: elegantFadeIn 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
     .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; will-change: transform, opacity; }
     .zoom-transition { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
@@ -137,7 +135,7 @@
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX - ALLOWS OVERFLOW FOR MULTIPLE PAGES WITHOUT CUTOFF */
+    /* 3. ROCK-SOLID PRINT ENGINE FIX */
     body.is-printing {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -405,12 +403,37 @@
         try { await window.signOut(window.auth); } catch (e) {}
     }
 
+    // Auto fit CV algorithm for preventing second page overflow
+    function autoFitCV(containerId) {
+      const container = document.getElementById(containerId);
+      if(!container) return;
+      const innerWrapper = container.querySelector('.cv-inner-wrapper');
+      if(!innerWrapper) return;
+      
+      // Reset transformations
+      innerWrapper.style.transform = 'scale(1)';
+      innerWrapper.style.transformOrigin = 'top center';
+      
+      // Calculate height (A4 is ~1123px. Inside borders safe area is around 1040px)
+      const maxSafeHeight = 1040;
+      const currentHeight = innerWrapper.scrollHeight;
+      
+      if (currentHeight > maxSafeHeight) {
+          const scaleAmount = maxSafeHeight / currentHeight;
+          innerWrapper.style.transform = `scale(${scaleAmount})`;
+          innerWrapper.style.height = `${currentHeight}px`; 
+      }
+    }
+
     function triggerPrint(onComplete = null) {
         renderPrintNode();
         setTimeout(() => { 
-            window.print(); 
-            if(onComplete) onComplete();
-        }, 150);
+            autoFitCV('cv-actual-print-node');
+            setTimeout(() => {
+                window.print(); 
+                if(onComplete) onComplete();
+            }, 100);
+        }, 50);
     }
 
     function createCustomDropdown(fieldPath, options, placeholder) {
@@ -424,6 +447,54 @@
                 <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </div>
         `;
+    }
+    
+    function generateDateSelects(currentVal, fieldPath) {
+       let dd = '', mm = '', yyyy = '';
+       if (currentVal && currentVal.includes('/')) {
+           const parts = currentVal.split('/');
+           dd = parts[0]; mm = parts[1]; yyyy = parts[2];
+       }
+       
+       let ddOpts = '<option value="">DD</option>';
+       for(let i=1; i<=31; i++) {
+           let val = i < 10 ? '0'+i : i;
+           ddOpts += `<option value="${val}" ${dd===val.toString()?'selected':''}>${val}</option>`;
+       }
+       
+       let mmOpts = '<option value="">MM</option>';
+       for(let i=1; i<=12; i++) {
+           let val = i < 10 ? '0'+i : i;
+           mmOpts += `<option value="${val}" ${mm===val.toString()?'selected':''}>${val}</option>`;
+       }
+       
+       let yyyyOpts = '<option value="">YYYY</option>';
+       const currentYear = new Date().getFullYear() + 5;
+       for(let i=currentYear; i>=1950; i--) {
+           yyyyOpts += `<option value="${i}" ${yyyy===i.toString()?'selected':''}>${i}</option>`;
+       }
+
+       const onInputStr = `const p = this.parentElement.parentElement; const d = p.querySelector('.dd-sel').value; const m = p.querySelector('.mm-sel').value; const y = p.querySelector('.yyyy-sel').value; if(d && m && y){ setNested(cvData, '${fieldPath}', d+'/'+m+'/'+y); } else { setNested(cvData, '${fieldPath}', ''); } saveState();`;
+
+       return `
+          <div class="flex gap-2 w-full date-picker-custom">
+             <div class="relative flex-1">
+                 <select onchange="${onInputStr}" class="dd-sel uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none cursor-pointer focus:border-indigo-500 text-center">
+                    ${ddOpts}
+                 </select>
+             </div>
+             <div class="relative flex-1">
+                 <select onchange="${onInputStr}" class="mm-sel uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none cursor-pointer focus:border-indigo-500 text-center">
+                    ${mmOpts}
+                 </select>
+             </div>
+             <div class="relative flex-[1.5]">
+                 <select onchange="${onInputStr}" class="yyyy-sel uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none cursor-pointer focus:border-indigo-500 text-center">
+                    ${yyyyOpts}
+                 </select>
+             </div>
+          </div>
+       `;
     }
 
     function filterGlobalDropdown(val) {
@@ -492,8 +563,8 @@
         modal.classList.add('flex', 'items-center', 'justify-center'); 
         
         requestAnimationFrame(() => {
-            box.style.transition = 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease';
-            modal.style.transition = 'opacity 0.35s ease';
+            box.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
+            modal.style.transition = 'opacity 0.3s ease';
             
             box.style.transform = `translate(0px, 0px) scale(1)`;
             box.style.opacity = '1';
@@ -516,7 +587,7 @@
             modal.classList.remove('flex', 'items-center', 'justify-center');
             modal.style.height = '';
             document.body.style.overflow = '';
-        }, 350); 
+        }, 400); 
     }
 
     function selectGlobalDropdown(fieldPath, val, label) {
@@ -785,47 +856,48 @@
 
       const titleDisplay = formatText(cvData.documentTitle || 'CURRICULUM VITAE', tCase);
 
-      // ALGERIAN PIXELATION FIX: Applied -webkit-text-stroke & exact font smoothing rendering styles
       return `
         <div id="${id}" style="width:${outerWidth}; min-height:${outerHeight}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:8mm; font-family:${font}; font-weight:${fWeight} !important;">
           <div style="width:100%; min-height:100%; border:1.5px solid #000000; padding:3px; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column;">
-            <div style="width:100%; flex:1; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:visible;">
-              <div style="flex-shrink:0;">
-                <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:25pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-stroke: 0.6px #000; text-shadow: 0px 0px 1px #000;">${titleDisplay}</h1>
-                <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
-                  <tbody><tr>
-                      <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
-                        ${contactList.length > 0 || p.name ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:125px;" /><col style="width:20px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
-                      </td>
-                      <td style="width:120px; min-width:120px; max-width:120px; vertical-align:top; text-align:right; border:none;">
-                        <div style="width:115px; height:145px; min-width:115px; min-height:145px; max-width:115px; max-height:145px; border:1.5px solid #000000; display:block; overflow:hidden; background-color:#ffffff; box-sizing:border-box; text-align:center; margin-left:auto;">${photoBoxHTML}</div>
-                      </td>
-                    </tr></tbody>
-                </table>
-                <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
-              </div>
-              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; margin:2px 0; gap:6px; font-size:11pt; color:#000; overflow:visible;">
-                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000; word-break:break-word;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
-                ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
-                ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
-                ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
-                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:160px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
-                ${cvData.declaration && cvData.declaration.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000; word-break:break-word;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
-              </div>
-              <div style="flex-shrink:0; padding-top:8px;">
-                <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:${fWeight}; color:#000;">
-                  <tbody>
-                    <tr>
-                      <td style="vertical-align:bottom; text-align:left; border:none;">
-                        ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${formatText(f.date, tCase)}</div>` : ''}
-                        ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${formatText(f.place, tCase)}</div>` : ''}
-                      </td>
-                      <td style="vertical-align:bottom; text-align:right; padding-right:8px; border:none;">
-                        <div>( ${formatText(f.signName, tCase) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div style="width:100%; flex:1; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
+              <div class="cv-inner-wrapper" style="width:100%; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+                  <div style="flex-shrink:0;">
+                    <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:25pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-stroke: 0.6px #000; text-shadow: 0px 0px 1px #000;">${titleDisplay}</h1>
+                    <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
+                      <tbody><tr>
+                          <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
+                            ${contactList.length > 0 || p.name ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:125px;" /><col style="width:20px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
+                          </td>
+                          <td style="width:120px; min-width:120px; max-width:120px; vertical-align:top; text-align:right; border:none;">
+                            <div style="width:115px; height:145px; min-width:115px; min-height:145px; max-width:115px; max-height:145px; border:1.5px solid #000000; display:block; overflow:hidden; background-color:#ffffff; box-sizing:border-box; text-align:center; margin-left:auto;">${photoBoxHTML}</div>
+                          </td>
+                        </tr></tbody>
+                    </table>
+                    <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; margin:2px 0; gap:6px; font-size:11pt; color:#000; overflow:visible;">
+                    ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000; word-break:break-word;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
+                    ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
+                    ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
+                    ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
+                    ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:160px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
+                    ${cvData.declaration && cvData.declaration.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000; word-break:break-word;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
+                  </div>
+                  <div style="flex-shrink:0; padding-top:8px;">
+                    <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:${fWeight}; color:#000;">
+                      <tbody>
+                        <tr>
+                          <td style="vertical-align:bottom; text-align:left; border:none;">
+                            ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${formatText(f.date, tCase)}</div>` : ''}
+                            ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${formatText(f.place, tCase)}</div>` : ''}
+                          </td>
+                          <td style="vertical-align:bottom; text-align:right; padding-right:8px; border:none;">
+                            <div>( ${formatText(f.signName, tCase) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
               </div>
             </div>
           </div>
@@ -840,10 +912,11 @@
 
     // Google Boot-up Animation Splash Screen
     function renderBootupSplash(container) {
+      const userInitial = currentUser && currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U';
       container.innerHTML = `
         <div class="absolute inset-0 w-full h-full bg-[#08080e] flex flex-col items-center justify-center z-[100] elegant-entry">
             <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.15)] bootup-anim mb-8">
-                <svg class="w-12 h-12" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                <span class="text-[54px] font-black text-indigo-600">${userInitial}</span>
             </div>
             <h2 class="text-[22px] sm:text-2xl font-black text-white uppercase tracking-widest bootup-anim" style="animation-delay: 0.1s; opacity: 0;">WELCOME</h2>
             <p class="text-indigo-400 text-sm font-bold mt-2 uppercase tracking-[0.2em] bootup-anim" style="animation-delay: 0.2s; opacity: 0;">${currentUser.displayName.split(' ')[0]}</p>
@@ -858,6 +931,8 @@
 
     function renderApp() {
       const container = document.getElementById('main-view-container');
+      
+      // Preserve exact scroll position so no visual jump happens
       const scrollArea = document.getElementById('editor-scroll-area');
       const currentScroll = scrollArea ? scrollArea.scrollTop : 0;
 
@@ -1108,6 +1183,51 @@
     }
 
     function renderEditorView(container) {
+      // PREVENT SLIDE BLINKING: Maintain persistent shell layout, just update the inner container 
+      let layout = document.getElementById('editor-layout-shell');
+      if (!layout) {
+          container.innerHTML = `
+            <div id="editor-layout-shell" class="flex-1 flex flex-col overflow-hidden relative">
+              <div class="h-14 px-3 bg-[#11111c] border-b border-zinc-800/80 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-sm relative">
+                <button type="button" onclick="goToHome()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-white active:scale-95 transition-all relative z-10">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <span id="nav-step-counter" class="absolute inset-0 flex items-center justify-center pointer-events-none text-[15px] font-black text-zinc-100 tracking-widest uppercase">
+                    STEP 1/9
+                </span>
+                <button type="button" onclick="openResetDialog()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-red-400 active:scale-95 transition-all relative z-10">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                </button>
+              </div>
+              
+              <div id="editor-scroll-area" class="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth bg-[#08080e]">
+                <!-- Slide Wrapper -->
+                <div id="slide-wrapper" class="absolute inset-0 px-3.5 py-4 pb-28 w-full"></div>
+              </div>
+
+              <div class="absolute bottom-0 left-0 right-0 z-30 bg-[#0c0c16]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
+                <button type="button" id="nav-prev-btn" onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold uppercase border border-zinc-700/60 active:scale-95 shrink-0 transition-transform">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
+                  <span>PREV</span>
+                </button>
+                <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold uppercase active:scale-95 shadow-sm transition-transform">
+                  <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  <span>PREVIEW CV</span>
+                </button>
+                <button type="button" id="nav-next-btn" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform">
+                  <span id="nav-next-txt">NEXT</span>
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
+              </div>
+            </div>
+          `;
+      }
+
+      // Update Nav Buttons Text/State
+      document.getElementById('nav-step-counter').innerText = `STEP ${currentPage}/${TOTAL_STEPS}`;
+      document.getElementById('nav-prev-btn').disabled = (currentPage === 1);
+      document.getElementById('nav-next-txt').innerText = (currentPage === TOTAL_STEPS ? 'REVIEW' : 'NEXT');
+
       let animClass = '';
       if (enteringEditor) { animClass = 'elegant-entry'; enteringEditor = false; } 
       else if (isNavigating) { animClass = animDirection === 'next' ? 'anim-next' : 'anim-prev'; } 
@@ -1152,7 +1272,7 @@
         }
 
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5">
               <div class="flex items-center gap-3.5">
                 <div id="photo-container" class="w-[72px] h-[88px] rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden shrink-0 bg-cover bg-top relative" style="background-image: ${cvData.personal.photo ? `url('${cvData.personal.photo}')` : 'none'}; border-style: ${cvData.personal.photo ? 'solid' : 'dashed'}; border-color: ${cvData.personal.photo ? '#6366f1' : undefined};">
@@ -1226,7 +1346,7 @@
         `;
       } else if (currentPage === 2) {
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <label class="block text-xs font-bold text-zinc-200 uppercase">CAREER OBJECTIVE STATEMENT</label>
               <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none focus:border-indigo-500 resize-none">${escapeHtml(cvData.objective)}</textarea>
@@ -1251,7 +1371,7 @@
         `).join('');
 
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">ACADEMIC QUALIFICATIONS</h3>
@@ -1282,7 +1402,7 @@
         `).join('');
 
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">OTHER COURSES & DIPLOMAS</h3>
@@ -1313,7 +1433,7 @@
         `).join('');
 
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">WORKING EXPERIENCE</h3>
@@ -1333,21 +1453,13 @@
           </div>
         `;
       } else if (currentPage === 6) {
-        let dobInputVal = '';
-        if (cvData.details.dob && cvData.details.dob.includes('/')) {
-            const parts = cvData.details.dob.split('/');
-            if(parts.length === 3) dobInputVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        } else { dobInputVal = cvData.details.dob; }
-
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">PERSONAL DETAILS TABLE</h3>
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE OF BIRTH</label>
-                <div class="date-wrapper">
-                  <input type="date" value="${dobInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.details.dob = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.details.dob = ''; } saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                </div>
+                ${generateDateSelects(cvData.details.dob, 'details.dob')}
               </div>
               <div>
                 <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FATHER'S NAME</label>
@@ -1399,7 +1511,7 @@
         `;
       } else if (currentPage === 7) {
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-2.5">
               <label class="block text-xs font-bold text-zinc-200 uppercase tracking-wider">DECLARATION STATEMENT</label>
               <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 leading-relaxed resize-none">${escapeHtml(cvData.declaration)}</textarea>
@@ -1411,23 +1523,15 @@
           </div>
         `;
       } else if (currentPage === 8) {
-        let dateInputVal = '';
-        if (cvData.footer.date && cvData.footer.date.includes('/')) {
-            const parts = cvData.footer.date.split('/');
-            if(parts.length === 3) dateInputVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        } else { dateInputVal = cvData.footer.date; }
-
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-4">
               <div>
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 border-b border-zinc-800 pb-2 mb-3">SIGN-OFF DETAILS</h3>
                 <div class="space-y-3">
                   <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE</label>
-                    <div class="date-wrapper">
-                      <input type="date" value="${dateInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.footer.date = parts[2]+'/'+parts[1]+'/'+parts[0]; } else { cvData.footer.date = ''; } saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                    </div>
+                    ${generateDateSelects(cvData.footer.date, 'footer.date')}
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">PLACE</label>
@@ -1444,7 +1548,7 @@
         `;
       } else if (currentPage === 9) {
         stepContentHTML = `
-          <div class="space-y-3.5">
+          <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-4">
               <div>
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 border-b border-zinc-800 pb-2 mb-3">DOCUMENT SETTINGS</h3>
@@ -1472,41 +1576,13 @@
         `;
       }
 
-      container.innerHTML = `
-        <div class="flex-1 flex flex-col overflow-hidden relative">
-          <div class="h-14 px-3 bg-[#11111c] border-b border-zinc-800/80 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-sm relative">
-            <button type="button" onclick="goToHome()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-white active:scale-95 transition-all relative z-10">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            <span class="absolute inset-0 flex items-center justify-center pointer-events-none text-[15px] font-black text-zinc-100 tracking-widest uppercase">
-                STEP ${currentPage}/${TOTAL_STEPS}
-            </span>
-            <button type="button" onclick="openResetDialog()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-red-400 active:scale-95 transition-all relative z-10">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-            </button>
-          </div>
-          
-          <div id="editor-scroll-area" class="flex-1 overflow-y-auto px-3.5 py-4 pb-28 w-full overflow-x-hidden relative scroll-smooth bg-[#08080e]">
-            <div class="${animClass} w-full">${stepContentHTML}</div>
-          </div>
-          <div class="absolute bottom-0 left-0 right-0 z-30 bg-[#0c0c16]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
-            <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold uppercase border border-zinc-700/60 active:scale-95 shrink-0 transition-transform">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
-              <span>PREV</span>
-            </button>
-            <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold uppercase active:scale-95 shadow-sm transition-transform">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              <span>PREVIEW CV</span>
-            </button>
-            <button type="button" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform">
-              <span>${currentPage === TOTAL_STEPS ? 'REVIEW' : 'NEXT'}</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg>
-            </button>
-          </div>
-        </div>
-      `;
-
-      requestAnimationFrame(() => { container.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el)); });
+      // Instead of replacing outer layout, just replace the slider container
+      const slideWrapper = document.getElementById('slide-wrapper');
+      slideWrapper.innerHTML = `<div class="${animClass} w-full">${stepContentHTML}</div>`;
+      
+      requestAnimationFrame(() => { 
+          slideWrapper.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el)); 
+      });
     }
 
     function renderPreviewView(container) {
@@ -1550,6 +1626,8 @@
           </div>
         </div>
       `;
+      // Apply Auto-Fit algorithm for preview node to simulate single-page
+      setTimeout(() => { autoFitCV('cv-screen-preview-node'); }, 50);
     }
 
     function goNextStep() {
@@ -1627,6 +1705,9 @@
       localStorage.removeItem('techasar_current_cv_id');
       saveState();
       closeResetDialog();
+      // Reset DOM Shell to remove persistent header block
+      const container = document.getElementById('main-view-container');
+      if(container) container.innerHTML = '';
       renderApp();
     }
 
