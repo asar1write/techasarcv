@@ -37,6 +37,8 @@
       height: 100%;
       overflow: hidden; /* Prevent bounce scroll */
       overscroll-behavior: none; /* Stops pull-to-refresh and rubber-banding */
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     @font-face {
@@ -52,20 +54,15 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    input, textarea {
+      -webkit-user-select: auto;
+      user-select: auto;
+    }
+
     /* HIDE ALL SCROLLBARS GLOBALLY YET KEEP SCROLLING */
-    * {
-      -ms-overflow-style: none !important;
-      scrollbar-width: none !important;
-    }
-    *::-webkit-scrollbar,
-    ::-webkit-scrollbar,
-    .hide-scroll::-webkit-scrollbar {
-      display: none !important;
-      width: 0px !important;
-      height: 0px !important;
-      background: transparent !important;
-    }
-    .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+    *::-webkit-scrollbar, ::-webkit-scrollbar, .hide-scroll::-webkit-scrollbar { display: none !important; width: 0px !important; height: 0px !important; background: transparent !important; }
+    .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; overscroll-behavior-y: none; }
 
     .font-algerian { font-family: 'Algerian', 'Times New Roman', serif !important; }
 
@@ -115,15 +112,11 @@
     }
   </style>
 
-  <!-- SAFE FIREBASE MODULE SETUP WITH EMAIL/PASSWORD AUTH -->
+  <!-- PURE GOOGLE AUTHENTICATION FIREBASE SETUP -->
   <script type="module">
     try {
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { 
-          getAuth, onAuthStateChanged, signOut, 
-          signInWithEmailAndPassword, createUserWithEmailAndPassword, 
-          sendEmailVerification, sendPasswordResetEmail, updateProfile 
-      } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
       const { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
       const firebaseConfig = {
@@ -139,13 +132,10 @@
       
       window.auth = getAuth(app);
       window.db = getFirestore(app);
+      window.GoogleAuthProvider = GoogleAuthProvider;
+      window.signInWithPopup = signInWithPopup;
       window.onAuthStateChanged = onAuthStateChanged;
       window.signOut = signOut;
-      window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-      window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-      window.sendEmailVerification = sendEmailVerification;
-      window.sendPasswordResetEmail = sendPasswordResetEmail;
-      window.updateProfile = updateProfile;
       window.collection = collection;
       window.doc = doc;
       window.setDoc = setDoc;
@@ -155,15 +145,13 @@
     } catch (err) {
       console.warn("Firebase not available or network offline:", err);
     } finally {
-      if (window.onFirebaseReady) {
-        window.onFirebaseReady();
-      }
+      if (window.onFirebaseReady) window.onFirebaseReady();
     }
   </script>
 </head>
 <body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans font-bold min-h-screen">
 
-  <!-- INSTANT NATIVE LOADING SCREEN -->
+  <!-- INSTANT NATIVE LOADING SCREEN (Fixes Black Screen/Flicker completely) -->
   <div id="app-splash-screen" class="fixed inset-0 z-[9999] bg-[#08080e] flex flex-col items-center justify-center transition-opacity duration-500 pointer-events-none">
     <div class="absolute top-[30%] left-[20%] w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] blob-1"></div>
     <div class="absolute bottom-[30%] right-[20%] w-80 h-80 bg-fuchsia-600/15 rounded-full blur-[100px] blob-2"></div>
@@ -181,79 +169,19 @@
     </div>
   </div>
 
-  <!-- Auth Modals: Sign In (Locked pt-20 avoids keyboard push up) -->
-  <div id="signin-modal" class="fixed inset-0 z-[160] bg-black/70 backdrop-blur-md hidden justify-center items-start pt-20 sm:pt-24 opacity-0 transition-opacity duration-300">
-    <div id="signin-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[340px] w-[92vw] shadow-2xl flex flex-col transform scale-95 opacity-0 transition-all duration-300 relative hide-scroll overflow-y-auto max-h-[80vh]">
-       <button type="button" onclick="closeSignInModal()" class="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.05] active:scale-95 transition-all">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-       </button>
-       <h3 class="font-black text-white text-lg tracking-wide uppercase mb-1">SIGN IN</h3>
-       <p class="text-xs font-bold text-zinc-400 uppercase mb-5">ACCESS YOUR SAVED CVs</p>
-       
-       <form onsubmit="handleSignIn(event)" class="space-y-4">
-          <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2 transition-all">
-             <span class="block text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">EMAIL ADDRESS</span>
-             <input type="email" id="signin-email" required class="w-full bg-transparent border-none outline-none text-sm text-white font-bold p-0" />
-          </div>
-          <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2 transition-all">
-             <span class="block text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">PASSWORD</span>
-             <input type="password" id="signin-password" required class="w-full bg-transparent border-none outline-none text-sm text-white font-bold p-0" />
-          </div>
-          <div class="flex justify-end">
-             <button type="button" onclick="handleForgetPassword()" class="text-[11px] text-indigo-400 font-bold uppercase hover:text-indigo-300 active:scale-95">FORGOT PASSWORD?</button>
-          </div>
-          <button id="signin-submit-btn" type="submit" class="w-full py-3.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">SIGN IN</button>
-       </form>
-       
-       <div class="mt-6 flex flex-col items-center justify-center gap-2 border-t border-white/5 pt-4">
-          <span class="text-[11px] font-bold text-zinc-500 uppercase">NEW USER?</span>
-          <button type="button" onclick="openSignUpModal()" class="w-full py-3.5 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm font-bold uppercase active:scale-95 transition-all">CREATE AN ACCOUNT</button>
-       </div>
-    </div>
-  </div>
-
-  <!-- Auth Modals: Sign Up (Locked pt-20 avoids keyboard push up) -->
-  <div id="signup-modal" class="fixed inset-0 z-[170] bg-black/70 backdrop-blur-md hidden justify-center items-start pt-20 sm:pt-24 opacity-0 transition-opacity duration-300">
-    <div id="signup-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[340px] w-[92vw] shadow-2xl flex flex-col transform scale-95 opacity-0 transition-all duration-300 relative hide-scroll overflow-y-auto max-h-[80vh]">
-       <button type="button" onclick="closeSignUpModal()" class="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.05] active:scale-95 transition-all">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-       </button>
-       <h3 class="font-black text-white text-lg tracking-wide uppercase mb-1">SIGN UP</h3>
-       <p class="text-xs font-bold text-zinc-400 uppercase mb-5">CREATE A NEW ACCOUNT</p>
-       
-       <form onsubmit="handleSignUp(event)" class="space-y-3.5">
-          <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2 transition-all">
-             <span class="block text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">FULL NAME</span>
-             <input type="text" id="signup-name" required class="w-full bg-transparent border-none outline-none text-sm text-white font-bold p-0" />
-          </div>
-          <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2 transition-all">
-             <span class="block text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">EMAIL ADDRESS</span>
-             <input type="email" id="signup-email" required class="w-full bg-transparent border-none outline-none text-sm text-white font-bold p-0" />
-          </div>
-          <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2 transition-all">
-             <span class="block text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">PASSWORD (MIN 6 CHARS)</span>
-             <input type="password" id="signup-password" required minlength="6" class="w-full bg-transparent border-none outline-none text-sm text-white font-bold p-0" />
-          </div>
-          <button id="signup-submit-btn" type="submit" class="w-full py-3.5 mt-2 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">SIGN UP & VERIFY</button>
-       </form>
-    </div>
-  </div>
-
-  <!-- Custom Alert/Confirm UI Modal -->
-  <div id="custom-alert-modal" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md hidden items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-    <div id="custom-alert-box" class="bg-[#141424]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-[320px] w-full shadow-2xl text-center space-y-4 transform scale-90 opacity-0 transition-all duration-200">
+  <!-- Custom Alert/Confirm UI Modal (Locked Top avoids keyboard push up) -->
+  <div id="custom-alert-modal" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md hidden justify-center items-start pt-[30vh] opacity-0 transition-opacity duration-200">
+    <div id="custom-alert-box" class="bg-[#141424]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-[320px] w-[90vw] shadow-2xl text-center space-y-4 transform scale-90 opacity-0 transition-all duration-200">
        <h3 id="custom-alert-title" class="font-bold text-zinc-100 text-[15px] uppercase tracking-wide"></h3>
        <p id="custom-alert-msg" class="text-xs font-bold text-zinc-400 uppercase leading-relaxed"></p>
        <div id="custom-alert-actions" class="flex gap-2.5 justify-center pt-2"></div>
     </div>
   </div>
 
-  <!-- Reset Modal -->
-  <div id="reset-modal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-[#141424]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-xs w-full shadow-2xl text-center space-y-3.5 elegant-entry">
-      <div class="w-10 h-10 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-      </div>
+  <!-- Reset Modal (Locked Top) -->
+  <div id="reset-modal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md hidden justify-center items-start pt-[30vh]">
+    <div class="bg-[#141424]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-xs w-[90vw] shadow-2xl text-center space-y-3.5 elegant-entry">
+      <div class="w-10 h-10 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg></div>
       <div>
         <h3 class="font-bold text-sm text-zinc-100 uppercase">RESET CV DATA?</h3>
         <p class="text-xs text-zinc-400 mt-1 uppercase">CLEAR ALL INPUTS AND START FRESH?</p>
@@ -265,79 +193,77 @@
     </div>
   </div>
 
-  <!-- History Modal (Locked pt-20) -->
+  <!-- History Modal (Locked Top avoids bounce) -->
   <div id="cv-history-modal" class="fixed inset-0 z-[110] bg-black/70 backdrop-blur-md hidden justify-center items-start pt-20 sm:pt-24 opacity-0 transition-opacity duration-300">
-    <div id="cv-history-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[80vh] transform scale-95 opacity-0 transition-all duration-300 hide-scroll">
+    <div id="cv-history-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-[92vw] max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[80vh] transform scale-95 opacity-0 transition-all duration-300 hide-scroll">
       <div class="flex items-center justify-between p-4 border-b border-white/[0.08] bg-white/[0.03]">
-         <div class="flex items-center gap-2">
-           <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-           <h3 class="font-bold text-zinc-100 text-sm uppercase">CV HISTORY</h3>
-         </div>
-         <button type="button" onclick="closeHistory()" class="text-zinc-400 hover:text-white p-1.5 rounded-full hover:bg-white/[0.08] active:scale-95 transition-all">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-         </button>
+         <div class="flex items-center gap-2"><svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><h3 class="font-bold text-zinc-100 text-sm uppercase">CV HISTORY</h3></div>
+         <button type="button" onclick="closeHistory()" class="text-zinc-400 hover:text-white p-1.5 rounded-full hover:bg-white/[0.08] active:scale-95 transition-all"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
       </div>
       <div id="history-list-container" class="p-3 overflow-y-auto flex-1 space-y-2"></div>
     </div>
   </div>
 
-  <!-- GLOBAL HIGH-PERFORMANCE XY ANIMATED MODAL (SMOOTH, NO JERK) -->
-  <div id="global-dropdown-modal" class="fixed inset-0 z-[150] bg-black/65 backdrop-blur-md hidden opacity-0 transition-opacity duration-300" onclick="closeGlobalDropdown(event)">
-    <div id="global-dropdown-box" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl absolute w-[340px] max-w-[92vw] will-change-transform" onclick="event.stopPropagation();">
+  <!-- UNIVERSAL XY ANIMATED MODAL ENGINE (Perfect Origin Tracking, No Jerk) -->
+  <div id="xy-modal-overlay" class="fixed inset-0 z-[150] bg-black/65 backdrop-blur-md hidden opacity-0 transition-opacity duration-300" onclick="closeXYModal()">
+    
+    <!-- 1. Global Dropdown Box -->
+    <div id="xy-box-dropdown" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl absolute w-[340px] max-w-[92vw] will-change-transform hidden" onclick="event.stopPropagation();">
       <div class="flex items-center justify-between p-3.5 border-b border-white/[0.08] bg-white/[0.03]">
          <span id="global-dropdown-title" class="text-[13px] font-bold text-zinc-100 uppercase tracking-wider">SELECT</span>
-         <button type="button" onclick="closeGlobalDropdown(null, true)" class="p-1.5 rounded-full text-zinc-400 hover:text-white active:scale-95 bg-white/[0.06] transition-all">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-         </button>
+         <button type="button" onclick="closeXYModal()" class="p-1.5 rounded-full text-zinc-400 hover:text-white active:scale-95 bg-white/[0.06] transition-all"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
       </div>
-      <!-- OPTIONAL QUICK ADD / ACTION BAR -->
-      <div id="global-dropdown-action-bar" class="p-2.5 border-b border-white/[0.08] bg-black/20 hidden"></div>
-      <!-- SEARCH BAR SECTION -->
       <div id="global-dropdown-search-wrapper" class="p-2.5 border-b border-white/[0.08] bg-black/20 shrink-0">
-        <div class="flex items-center gap-2 bg-zinc-900/60 border border-white/[0.08] rounded-xl px-3 py-2 shadow-inner">
-          <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input type="text" id="global-dropdown-search" oninput="filterGlobalDropdown(this.value)" placeholder="SEARCH..." class="bg-transparent border-none outline-none text-[13px] text-zinc-100 font-bold uppercase w-full placeholder:text-zinc-600" autocomplete="off" />
-        </div>
+        <div class="flex items-center gap-2 bg-zinc-900/60 border border-white/[0.08] rounded-xl px-3 py-2 shadow-inner"><svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg><input type="text" id="global-dropdown-search" oninput="filterGlobalDropdown(this.value)" placeholder="SEARCH..." class="bg-transparent border-none outline-none text-[13px] text-zinc-100 font-bold uppercase w-full placeholder:text-zinc-600" autocomplete="off" /></div>
       </div>
-      <div id="global-dropdown-list" class="flex-1 overflow-y-auto p-2.5 custom-scrollbar space-y-1 relative" style="max-height: 48vh;"></div>
+      <div id="global-dropdown-list" class="flex-1 overflow-y-auto p-2.5 custom-scrollbar space-y-1 relative" style="max-height: 45vh;"></div>
     </div>
+
+    <!-- 2. Step Selector Box (For Long Press) -->
+    <div id="xy-box-steps" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl absolute w-[300px] max-w-[90vw] will-change-transform hidden" onclick="event.stopPropagation();">
+      <div class="p-4 border-b border-white/[0.08] bg-white/[0.03] text-center">
+         <span class="text-[13px] font-black text-indigo-400 uppercase tracking-widest">JUMP TO STEP</span>
+      </div>
+      <div class="p-3.5 grid grid-cols-3 gap-2" id="step-selector-grid"></div>
+    </div>
+
+    <!-- 3. Custom Input Box (For Step 8 Add New Place/Sign) -->
+    <div id="xy-box-custom-input" class="bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl absolute w-[320px] max-w-[90vw] will-change-transform hidden" onclick="event.stopPropagation();">
+      <div class="p-5 space-y-4">
+         <h3 id="custom-input-title" class="font-black text-indigo-400 text-[14px] uppercase tracking-wider text-center">ADD NEW</h3>
+         <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2.5 transition-all">
+           <input type="text" id="custom-input-field" class="w-full bg-transparent border-none outline-none text-sm text-white font-bold p-0 uppercase placeholder:text-zinc-600" placeholder="ENTER TEXT..." />
+         </div>
+         <div class="flex gap-2">
+            <button type="button" onclick="closeXYModal()" class="flex-1 py-3 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+            <button type="button" onclick="saveCustomInput()" class="flex-1 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">SAVE</button>
+         </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- 2. DEDICATED PRINT CONTAINER -->
   <div id="cv-print-container"></div>
 
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v27';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v28';
     let alertCallback = null;
     let lastTriggerRect = null;
+    let isAppReady = false;
+    let currentUser = null;
+    let authLoading = true;
+    let saveTimeout = null;
     
     // Geographic database
     const indiaData = {
       states: ["ANDAMAN AND NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", "BIHAR", "CHANDIGARH", "CHHATTISGARH", "DADRA AND NAGAR HAVELI", "DAMAN AND DIU", "DELHI", "GOA", "GUJARAT", "HARYANA", "HIMACHAL PRADESH", "JAMMU AND KASHMIR", "JHARKHAND", "KARNATAKA", "KERALA", "LADAKH", "LAKSHADWEEP", "MADHYA PRADESH", "MAHARASHTRA", "MANIPUR", "MEGHALAYA", "MIZORAM", "NAGALAND", "ODISHA", "PUDUCHERRY", "PUNJAB", "RAJASTHAN", "SIKKIM", "TAMIL NADU", "TELANGANA", "TRIPURA", "UTTAR PRADESH", "UTTARAKHAND", "WEST BENGAL"],
-      districts: {
-        "UTTAR PRADESH": ["AGRA", "ALIGARH", "PRAYAGRAJ", "AMBEDKAR NAGAR", "AMETHI", "AMROHA", "AURAIYA", "AYODHYA", "AZAMGARH", "BAGHPAT", "BAHRAICH", "BALLIA", "BALRAMPUR", "BANDA", "BARABANKI", "BAREILLY", "BASTI", "BHADOHI", "BIJNOR", "BUDAUN", "BULANDSHAHR", "CHANDAULI", "CHITRAKOOT", "DEORIA", "ETAH", "ETAWAH", "FARRUKHABAD", "FATEHPUR", "FIROZABAD", "GAUTAM BUDDHA NAGAR", "GHAZIABAD", "GHAZIPUR", "GONDA", "GORAKHPUR", "HAMIRPUR", "HAPUR", "HARDOI", "HATHRAS", "JALAUN", "JAUNPUR", "JHANSI", "KANNAUJ", "KANPUR DEHAT", "KANPUR NAGAR", "KASGANJ", "KAUSHAMBI", "LAKHIMPUR KHERI", "KUSHINAGAR", "LALITPUR", "LUCKNOW", "MAHARAJGANJ", "MAHOBA", "MAINPURI", "MATHURA", "MAU", "MEERUT", "MIRZAPUR", "MORADABAD", "MUZAFFARNAGAR", "PILIBHIT", "PRATAPGARH", "RAEBARELI", "RAMPUR", "SAHARANPUR", "SAMBHAL", "SANT KABIR NAGAR", "SHAHJAHANPUR", "SHAMLI", "SHRAVASTI", "SIDDHARTHNAGAR", "SITAPUR", "SONBHADRA", "SULTANPUR", "UNNAO", "VARANASI"]
-      },
-      tehsils: {
-        "PILIBHIT": ["PURANPUR", "BISALPUR", "AMARIA", "KALINAGAR"],
-        "LAKHIMPUR KHERI": ["LAKHIMPUR", "MOHAMMADI", "GOLA GOKARAN NATH", "NIGHASAN", "DHAURAHRA", "MITAULI", "PALIA"]
-      }
+      districts: { "UTTAR PRADESH": ["AGRA", "ALIGARH", "PRAYAGRAJ", "AMBEDKAR NAGAR", "AMETHI", "AMROHA", "AURAIYA", "AYODHYA", "AZAMGARH", "BAGHPAT", "BAHRAICH", "BALLIA", "BALRAMPUR", "BANDA", "BARABANKI", "BAREILLY", "BASTI", "BHADOHI", "BIJNOR", "BUDAUN", "BULANDSHAHR", "CHANDAULI", "CHITRAKOOT", "DEORIA", "ETAH", "ETAWAH", "FARRUKHABAD", "FATEHPUR", "FIROZABAD", "GAUTAM BUDDHA NAGAR", "GHAZIABAD", "GHAZIPUR", "GONDA", "GORAKHPUR", "HAMIRPUR", "HAPUR", "HARDOI", "HATHRAS", "JALAUN", "JAUNPUR", "JHANSI", "KANNAUJ", "KANPUR DEHAT", "KANPUR NAGAR", "KASGANJ", "KAUSHAMBI", "LAKHIMPUR KHERI", "KUSHINAGAR", "LALITPUR", "LUCKNOW", "MAHARAJGANJ", "MAHOBA", "MAINPURI", "MATHURA", "MAU", "MEERUT", "MIRZAPUR", "MORADABAD", "MUZAFFARNAGAR", "PILIBHIT", "PRATAPGARH", "RAEBARELI", "RAMPUR", "SAHARANPUR", "SAMBHAL", "SANT KABIR NAGAR", "SHAHJAHANPUR", "SHAMLI", "SHRAVASTI", "SIDDHARTHNAGAR", "SITAPUR", "SONBHADRA", "SULTANPUR", "UNNAO", "VARANASI"] },
+      tehsils: { "PILIBHIT": ["PURANPUR", "BISALPUR", "AMARIA", "KALINAGAR"], "LAKHIMPUR KHERI": ["LAKHIMPUR", "MOHAMMADI", "GOLA GOKARAN NATH", "NIGHASAN", "DHAURAHRA", "MITAULI", "PALIA"] }
     };
     
-    let currentUser = null;
-    let authLoading = true;
-    let saveTimeout = null;
-    let isAppReady = false;
-
-    // Remove splash screen cleanly
-    function removeSplashScreen() {
-        const splash = document.getElementById('app-splash-screen');
-        if (splash) { splash.style.opacity = '0'; setTimeout(() => { splash.remove(); }, 500); }
-    }
-
-    // Wait for DOM to prevent execution crashes
-    document.addEventListener('DOMContentLoaded', () => {
-        isAppReady = true; renderApp(); setTimeout(removeSplashScreen, 300); // Allow Webview time to paint
-    });
+    function removeSplashScreen() { const splash = document.getElementById('app-splash-screen'); if (splash) { splash.style.opacity = '0'; setTimeout(() => { splash.remove(); }, 500); } }
+    document.addEventListener('DOMContentLoaded', () => { isAppReady = true; renderApp(); setTimeout(removeSplashScreen, 300); });
 
     window.onFirebaseReady = () => {
        if (window.auth && window.onAuthStateChanged) {
@@ -345,22 +271,9 @@
        } else { authLoading = false; if (isAppReady) renderApp(); }
     };
 
-    const defaultCVData = {
-      documentTitle: "CURRICULUM VITAE", font: "Times New Roman", fontWeight: "bold", textCase: "uppercase",
-      personal: { photo: "", name: "", villagePost: "", tehsil: "", customTehsil: "", district: "", customDistrict: "", state: "", customState: "", mobile: "", email: "", headerStyle: "labeled" },
-      objective: "", academic: [], other: [], experience: [],
-      details: { dob: "", father: "", gender: "MALE", marital: "UNMARRIED", nationality: "INDIAN", customNationality: "", languages: "", hobbies: "" },
-      declaration: "", footer: { date: "", place: "", signName: "" }
-    };
-
-    let cvData = (function() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) { let data = JSON.parse(saved); data.fontWeight = data.fontWeight || "bold"; data.textCase = data.textCase || "uppercase"; data.documentTitle = data.documentTitle || "CURRICULUM VITAE"; return data; }
-      } catch(e) {}
-      return JSON.parse(JSON.stringify(defaultCVData));
-    })();
-
+    const defaultCVData = { documentTitle: "CURRICULUM VITAE", font: "Times New Roman", fontWeight: "bold", textCase: "uppercase", personal: { photo: "", name: "", villagePost: "", tehsil: "", customTehsil: "", district: "", customDistrict: "", state: "", customState: "", mobile: "", email: "", headerStyle: "labeled" }, objective: "", academic: [], other: [], experience: [], details: { dob: "", father: "", gender: "MALE", marital: "UNMARRIED", nationality: "INDIAN", customNationality: "", languages: "", hobbies: "" }, declaration: "", footer: { date: "", place: "", signName: "" } };
+    let cvData = (function() { try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) { let data = JSON.parse(saved); data.fontWeight = data.fontWeight || "bold"; data.textCase = data.textCase || "uppercase"; data.documentTitle = data.documentTitle || "CURRICULUM VITAE"; return data; } } catch(e) {} return JSON.parse(JSON.stringify(defaultCVData)); })();
+    
     let currentCvId = localStorage.getItem('techasar_current_cv_id');
     let appStarted = false; let enteringEditor = false; let isNavigating = true; 
     let currentPage = 1; const TOTAL_STEPS = 9; let activeView = 'editor';
@@ -386,71 +299,28 @@
           requestAnimationFrame(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-90', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); });
         }
     }
-
     function closeUIAlert(result) {
         const modal = document.getElementById('custom-alert-modal'); const box = document.getElementById('custom-alert-box');
-        if (modal && box) {
-          modal.classList.add('opacity-0'); box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-90', 'opacity-0');
-          setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); if (alertCallback) alertCallback(result); }, 200);
+        if (modal && box) { modal.classList.add('opacity-0'); box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-90', 'opacity-0'); setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); if (alertCallback) alertCallback(result); }, 200);
         } else { if (alertCallback) alertCallback(result); }
     }
 
-    // -- EMAIL AUTHENTICATION SYSTEM -- //
-    function openSignInModal() {
-        const modal = document.getElementById('signin-modal'); const box = document.getElementById('signin-box');
-        modal.classList.remove('hidden'); modal.classList.add('flex');
-        requestAnimationFrame(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); });
+    // -- GOOGLE AUTH SYSTEM --
+    async function loginWithGoogle() {
+        if (!window.auth || !window.GoogleAuthProvider) return showUIAlert("ERROR", "OFFLINE MODE", false);
+        const provider = new window.GoogleAuthProvider();
+        try { await window.signInWithPopup(window.auth, provider); } catch (err) { showUIAlert("LOGIN INFO", "GOOGLE LOGIN NOT COMPLETED.", false); }
     }
-    function closeSignInModal() {
-        const modal = document.getElementById('signin-modal'); const box = document.getElementById('signin-box');
-        modal.classList.add('opacity-0'); box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300);
-    }
-    function openSignUpModal() {
-        closeSignInModal(); const modal = document.getElementById('signup-modal'); const box = document.getElementById('signup-box');
-        modal.classList.remove('hidden'); modal.classList.add('flex');
-        requestAnimationFrame(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); });
-    }
-    function closeSignUpModal() {
-        const modal = document.getElementById('signup-modal'); const box = document.getElementById('signup-box');
-        modal.classList.add('opacity-0'); box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300);
-    }
-
-    async function handleSignIn(e) {
-        e.preventDefault(); if (!window.auth) return showUIAlert("ERROR", "SYSTEM OFFLINE", false);
-        const email = document.getElementById('signin-email').value.trim(); const pass = document.getElementById('signin-password').value;
-        const btn = document.getElementById('signin-submit-btn'); btn.innerText = "SIGNING IN..."; btn.disabled = true;
-        try {
-            const userCred = await window.signInWithEmailAndPassword(window.auth, email, pass);
-            if (!userCred.user.emailVerified) { showUIAlert("UNVERIFIED", "PLEASE VERIFY YOUR EMAIL BEFORE LOGGING IN. CHECK YOUR INBOX.", false); await window.signOut(window.auth); } 
-            else { closeSignInModal(); }
-        } catch (err) { showUIAlert("LOGIN FAILED", err.message, false); }
-        btn.innerText = "SIGN IN"; btn.disabled = false;
-    }
-
-    async function handleSignUp(e) {
-        e.preventDefault(); if (!window.auth) return showUIAlert("ERROR", "SYSTEM OFFLINE", false);
-        const name = document.getElementById('signup-name').value.trim(); const email = document.getElementById('signup-email').value.trim();
-        const pass = document.getElementById('signup-password').value;
-        const btn = document.getElementById('signup-submit-btn'); btn.innerText = "CREATING..."; btn.disabled = true;
-        try {
-            const userCred = await window.createUserWithEmailAndPassword(window.auth, email, pass);
-            await window.updateProfile(userCred.user, { displayName: name }); await window.sendEmailVerification(userCred.user);
-            showUIAlert("SUCCESS", "ACCOUNT CREATED! A VERIFICATION LINK HAS BEEN SENT TO YOUR EMAIL. PLEASE VERIFY BEFORE LOGGING IN.", false);
-            await window.signOut(window.auth); closeSignUpModal();
-        } catch (err) { showUIAlert("SIGN UP FAILED", err.message, false); }
-        btn.innerText = "SIGN UP & VERIFY"; btn.disabled = false;
-    }
-
-    async function handleForgetPassword() {
-        if (!window.auth) return; const email = document.getElementById('signin-email').value.trim();
-        if (!email) return showUIAlert("REQUIRED", "PLEASE ENTER YOUR EMAIL ADDRESS FIRST.", false);
-        try { await window.sendPasswordResetEmail(window.auth, email); showUIAlert("SUCCESS", "PASSWORD RESET LINK HAS BEEN SENT TO YOUR EMAIL.", false);
-        } catch (err) { showUIAlert("ERROR", err.message, false); }
-    }
-
     async function logoutApp() { if (!window.auth) return; try { await window.signOut(window.auth); } catch (e) {} }
+
+    function tryCreateNewCV() {
+        if (!currentUser) return showUIAlert("ACCESS RESTRICTED", "PLEASE LOGIN WITH GOOGLE TO CREATE A CV.", false);
+        createNewCV();
+    }
+    function tryOpenHistory() {
+        if (!currentUser) return showUIAlert("ACCESS RESTRICTED", "PLEASE LOGIN WITH GOOGLE TO VIEW HISTORY.", false);
+        openHistory();
+    }
 
     function triggerPrint(onComplete = null) { renderPrintNode(); setTimeout(() => { window.print(); if (onComplete) onComplete(); }, 150); }
 
@@ -461,22 +331,25 @@
         return `<div onclick="openGlobalDropdown(event, '${fieldPath}', '${optionsStr}', '${placeholder}')" class="w-full h-[58px] min-h-[58px] max-h-[58px] bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] rounded-2xl px-3.5 py-1.5 flex flex-col justify-center cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.25)] active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-tight mb-0.5 pointer-events-none">${label}</span><div class="flex items-center justify-between min-w-0"><span id="${btnId}" class="truncate whitespace-nowrap pr-2 text-[13px] sm:text-sm font-bold text-zinc-100 uppercase">${displayLabel}</span><svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`;
     }
 
-    // PERFECT SMOOTH XY ANIMATION ENGINE (Fixes "Jhatke")
-    function launchModalFromOrigin(triggerEl, modalId, boxId) {
-      const modal = document.getElementById(modalId); const box = document.getElementById(boxId); if (!modal || !box) return;
+    // PERFECT UNIVERSAL SMOOTH XY ANIMATION ENGINE
+    let activeXYBox = null;
+    function launchXYModal(triggerEl, boxId) {
+      const modal = document.getElementById('xy-modal-overlay'); const box = document.getElementById(boxId); if (!modal || !box) return;
+      activeXYBox = box;
+      // Hide all boxes first
+      ['xy-box-dropdown', 'xy-box-steps', 'xy-box-custom-input'].forEach(id => { const b = document.getElementById(id); if(b) b.classList.add('hidden'); });
+      
       let rect = triggerEl ? triggerEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
       lastTriggerRect = rect;
-      
-      const triggerCenterX = rect.left + (rect.width / 2);
-      const triggerCenterY = rect.top + (rect.height / 2);
+      const triggerCenterX = rect.left + (rect.width / 2); const triggerCenterY = rect.top + (rect.height / 2);
 
       box.style.transition = 'none';
       box.style.left = `${triggerCenterX}px`; box.style.top = `${triggerCenterY}px`;
-      box.style.transform = `translate(-50%, -50%) scale(0.05)`;
-      box.style.opacity = '0'; box.style.borderRadius = '40px';
+      box.style.transform = `translate(-50%, -50%) scale(0.05)`; box.style.opacity = '0'; box.style.borderRadius = '40px';
 
+      box.classList.remove('hidden');
       modal.classList.remove('hidden'); modal.classList.add('block'); 
-      void box.offsetWidth;
+      void box.offsetWidth; // Force Reflow
 
       box.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, border-radius 0.35s ease';
       const screenCenterX = window.innerWidth / 2; const screenCenterY = window.innerHeight / 2;
@@ -486,8 +359,8 @@
       box.style.transform = `translate(-50%, -50%) scale(1)`; box.style.opacity = '1'; box.style.borderRadius = '24px';
     }
 
-    function collapseModalToOrigin(modalId, boxId, onFinished = null) {
-      const modal = document.getElementById(modalId); const box = document.getElementById(boxId); if (!modal || !box) return;
+    function closeXYModal(onFinished = null) {
+      const modal = document.getElementById('xy-modal-overlay'); const box = activeXYBox; if (!modal || !box) return;
       let targetX = window.innerWidth / 2; let targetY = window.innerHeight / 2;
       if (lastTriggerRect) { targetX = lastTriggerRect.left + (lastTriggerRect.width / 2); targetY = lastTriggerRect.top + (lastTriggerRect.height / 2); }
 
@@ -496,9 +369,36 @@
       box.style.left = `${targetX}px`; box.style.top = `${targetY}px`;
       box.style.transform = `translate(-50%, -50%) scale(0.05)`; box.style.opacity = '0'; box.style.borderRadius = '40px';
 
-      setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('block'); if (onFinished) onFinished(); }, 300);
+      activeXYBox = null;
+      setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('block'); box.classList.add('hidden'); if (onFinished) onFinished(); }, 300);
     }
 
+    // Step Selector (Long Press on Prev Button)
+    let pressTimer; let isPressing = false; let didLongPress = false;
+    function startPress(e) {
+        if(currentPage === 1) return;
+        isPressing = true; didLongPress = false; const btn = e.currentTarget;
+        pressTimer = setTimeout(() => { if(isPressing) { didLongPress = true; openStepSelector(btn); } }, 500);
+    }
+    function endPress(e) {
+        isPressing = false; clearTimeout(pressTimer);
+        if(!didLongPress) { goPrevStep(); }
+    }
+    function cancelPress() { isPressing = false; clearTimeout(pressTimer); }
+
+    function openStepSelector(triggerEl) {
+        const grid = document.getElementById('step-selector-grid');
+        grid.innerHTML = Array.from({length: TOTAL_STEPS}).map((_, i) => {
+            const step = i + 1; const isActive = step === currentPage;
+            return `<button type="button" onclick="jumpToStep(${step})" class="py-3 rounded-2xl font-bold text-xs uppercase active:scale-95 transition-all ${isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300'}">STEP ${step}</button>`;
+        }).join('');
+        launchXYModal(triggerEl, 'xy-box-steps');
+    }
+    function jumpToStep(n) {
+        closeXYModal(() => { if(n !== currentPage) { animDirection = n > currentPage ? 'next' : 'prev'; currentPage = n; isNavigating = true; renderApp(); } });
+    }
+
+    // Dropdown System
     function filterGlobalDropdown(val) {
         const query = val.toUpperCase(); const items = document.querySelectorAll('.dropdown-item'); let hasVisible = false;
         items.forEach(el => { if (el.innerText.toUpperCase().includes(query)) { el.style.display = 'flex'; hasVisible = true; } else { el.style.display = 'none'; } });
@@ -509,26 +409,49 @@
 
     function openGlobalDropdown(e, fieldPath, optionsStr, placeholder) {
         const trigger = e ? (e.currentTarget || e.target) : null; const options = JSON.parse(decodeURIComponent(optionsStr)); const currentVal = getNested(cvData, fieldPath);
-        document.getElementById('global-dropdown-title').innerText = placeholder; document.getElementById('global-dropdown-action-bar').classList.add('hidden'); document.getElementById('global-dropdown-search-wrapper').classList.remove('hidden');
+        document.getElementById('global-dropdown-title').innerText = placeholder; document.getElementById('global-dropdown-search-wrapper').classList.remove('hidden');
         const searchInput = document.getElementById('global-dropdown-search'); if (searchInput) searchInput.value = '';
         document.getElementById('global-dropdown-list').innerHTML = options.map(opt => `
             <div onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label.replace(/'/g, "\\'")}')" class="dropdown-item px-4 py-3 rounded-2xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-white/[0.06] text-zinc-300 bg-white/[0.02]'}"><span class="truncate pr-2">${opt.label}</span>${currentVal === opt.val ? `<svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>` : ''}</div>
         `).join('');
-        launchModalFromOrigin(trigger, 'global-dropdown-modal', 'global-dropdown-box');
+        launchXYModal(trigger, 'xy-box-dropdown');
     }
-
-    function closeGlobalDropdown(e, force = false) { if (!force && e && e.target.id !== 'global-dropdown-modal') return; collapseModalToOrigin('global-dropdown-modal', 'global-dropdown-box'); }
 
     function selectGlobalDropdown(fieldPath, val, label) {
         setNested(cvData, fieldPath, val); let needsReRender = false;
         if (fieldPath === 'personal.state') { cvData.personal.district = ''; cvData.personal.tehsil = ''; needsReRender = true; } 
         else if (fieldPath === 'personal.district') { cvData.personal.tehsil = ''; needsReRender = true; } 
         else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') { needsReRender = true; }
+        else if (fieldPath === 'footer.place' || fieldPath === 'footer.signName') { needsReRender = true; }
         saveState(); 
-        collapseModalToOrigin('global-dropdown-modal', 'global-dropdown-box', () => {
+        closeXYModal(() => {
           if (needsReRender && activeView === 'editor') { isNavigating = false; const scrollArea = document.getElementById('editor-scroll-area'); const exactScroll = scrollArea ? scrollArea.scrollTop : 0; renderApp(); const newScroll = document.getElementById('editor-scroll-area'); if (newScroll) { newScroll.scrollTop = exactScroll; }
           } else { const btn = document.getElementById('dd-btn-' + fieldPath.replace('.', '-')); if (btn) btn.innerText = label; }
         });
+    }
+
+    // Add Custom Place / Signature (Step 8 Plus Button)
+    let currentCustomInputType = '';
+    function openAddCustomDataModal(e, type) {
+        currentCustomInputType = type;
+        document.getElementById('custom-input-title').innerText = type === 'place' ? 'ADD NEW PLACE' : 'ADD NEW SIGNATURE';
+        document.getElementById('custom-input-field').value = '';
+        launchXYModal(e ? e.currentTarget : null, 'xy-box-custom-input');
+    }
+
+    function saveCustomInput() {
+        const val = document.getElementById('custom-input-field').value.trim();
+        if(!val) return closeXYModal();
+        const upperVal = val.toUpperCase();
+        if(currentCustomInputType === 'place') {
+            if(!savedPlaces.includes(upperVal)) { savedPlaces.unshift(upperVal); localStorage.setItem('techasar_saved_places', JSON.stringify(savedPlaces)); }
+            cvData.footer.place = upperVal;
+        } else {
+            if(!savedSigns.includes(upperVal)) { savedSigns.unshift(upperVal); localStorage.setItem('techasar_saved_signs', JSON.stringify(savedSigns)); }
+            cvData.footer.signName = upperVal;
+        }
+        saveState();
+        closeXYModal(() => { if(activeView === 'editor') { isNavigating = false; renderApp(); } });
     }
 
     function parseDateParts(dateStr) {
@@ -541,34 +464,6 @@
     function onDateTripleKeydown(prefix, part, e) { if (e.key === 'Backspace' && (!e.target.value || e.target.value.length === 0)) { if (part === 'yyyy') { document.getElementById(`${prefix}-mm`)?.focus(); } else if (part === 'mm') { document.getElementById(`${prefix}-dd`)?.focus(); } } }
     function updateCompositeDate(prefix) { const dd = document.getElementById(`${prefix}-dd`)?.value || ''; const mm = document.getElementById(`${prefix}-mm`)?.value || ''; const yyyy = document.getElementById(`${prefix}-yyyy`)?.value || ''; const formatted = (dd || mm || yyyy) ? `${dd}/${mm}/${yyyy}` : ''; if (prefix === 'dob') cvData.details.dob = formatted; else if (prefix === 'date') cvData.footer.date = formatted; saveState(); }
     function setTodayDate() { const now = new Date(); const dd = String(now.getDate()).padStart(2, '0'); const mm = String(now.getMonth() + 1).padStart(2, '0'); const yyyy = String(now.getFullYear()); document.getElementById('date-dd').value = dd; document.getElementById('date-mm').value = mm; document.getElementById('date-yyyy').value = yyyy; cvData.footer.date = `${dd}/${mm}/${yyyy}`; saveState(); }
-
-    function openPlaceModal(e) {
-      const trigger = e ? (e.currentTarget || e.target) : null; document.getElementById('global-dropdown-title').innerText = 'SELECT OR ADD PLACE'; document.getElementById('global-dropdown-search-wrapper').classList.remove('hidden');
-      const p = cvData.personal || {}; const list = [];
-      if (p.district && p.district !== 'OTHER') list.push(p.district.toUpperCase()); else if (p.customDistrict) list.push(p.customDistrict.toUpperCase());
-      if (p.tehsil && p.tehsil !== 'OTHER' && !list.includes(p.tehsil.toUpperCase())) list.push(p.tehsil.toUpperCase()); else if (p.customTehsil && !list.includes(p.customTehsil.toUpperCase())) list.push(p.customTehsil.toUpperCase());
-      savedPlaces.forEach(item => { if (!list.includes(item)) list.push(item); });
-      const currentPlace = (cvData.footer.place || '').trim().toUpperCase(); const actionBar = document.getElementById('global-dropdown-action-bar');
-      if (currentPlace && !list.includes(currentPlace)) { actionBar.classList.remove('hidden'); actionBar.innerHTML = `<button type="button" onclick="savePlaceItem('${escapeHtml(currentPlace)}')" class="w-full text-left px-3 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase active:scale-95 transition-all"><span>+ SAVE CURRENT "${escapeHtml(currentPlace)}"</span></button>`;
-      } else { actionBar.classList.add('hidden'); }
-      document.getElementById('global-dropdown-list').innerHTML = list.map(item => `<div onclick="selectPlaceItem('${escapeHtml(item)}')" class="dropdown-item px-4 py-3 rounded-2xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentPlace === item ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-white/[0.06] text-zinc-300 bg-white/[0.02]'}"><span class="truncate pr-2">${escapeHtml(item)}</span>${currentPlace === item ? `<svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>` : ''}</div>`).join('');
-      launchModalFromOrigin(trigger, 'global-dropdown-modal', 'global-dropdown-box');
-    }
-    function selectPlaceItem(val) { cvData.footer.place = val; saveState(); document.getElementById('input-place').value = val; collapseModalToOrigin('global-dropdown-modal', 'global-dropdown-box'); }
-    function savePlaceItem(val) { if (val && !savedPlaces.includes(val)) { savedPlaces.unshift(val); localStorage.setItem('techasar_saved_places', JSON.stringify(savedPlaces)); } selectPlaceItem(val); }
-
-    function openSignModal(e) {
-      const trigger = e ? (e.currentTarget || e.target) : null; document.getElementById('global-dropdown-title').innerText = 'SELECT OR ADD SIGNATURE'; document.getElementById('global-dropdown-search-wrapper').classList.remove('hidden');
-      const list = []; if (cvData.personal?.name) list.push(cvData.personal.name.toUpperCase()); if (cvData.details?.father && !list.includes(cvData.details.father.toUpperCase())) list.push(cvData.details.father.toUpperCase());
-      savedSigns.forEach(item => { if (!list.includes(item)) list.push(item); });
-      const currentSign = (cvData.footer.signName || '').trim().toUpperCase(); const actionBar = document.getElementById('global-dropdown-action-bar');
-      if (currentSign && !list.includes(currentSign)) { actionBar.classList.remove('hidden'); actionBar.innerHTML = `<button type="button" onclick="saveSignItem('${escapeHtml(currentSign)}')" class="w-full text-left px-3 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase active:scale-95 transition-all"><span>+ SAVE CURRENT "${escapeHtml(currentSign)}"</span></button>`;
-      } else { actionBar.classList.add('hidden'); }
-      document.getElementById('global-dropdown-list').innerHTML = list.map(item => `<div onclick="selectSignItem('${escapeHtml(item)}')" class="dropdown-item px-4 py-3 rounded-2xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentSign === item ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-white/[0.06] text-zinc-300 bg-white/[0.02]'}"><span class="truncate pr-2">${escapeHtml(item)}</span>${currentSign === item ? `<svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>` : ''}</div>`).join('');
-      launchModalFromOrigin(trigger, 'global-dropdown-modal', 'global-dropdown-box');
-    }
-    function selectSignItem(val) { cvData.footer.signName = val; saveState(); document.getElementById('input-sign-name').value = val; collapseModalToOrigin('global-dropdown-modal', 'global-dropdown-box'); }
-    function saveSignItem(val) { if (val && !savedSigns.includes(val)) { savedSigns.unshift(val); localStorage.setItem('techasar_saved_signs', JSON.stringify(savedSigns)); } selectSignItem(val); }
 
     function saveState() {
       try {
@@ -625,6 +520,7 @@
     }
     function removePhoto() { cvData.personal.photo = ''; saveState(); document.getElementById('photo-container').style.backgroundImage = 'none'; document.getElementById('photo-container').style.borderStyle = 'dashed'; document.getElementById('photo-container').style.borderColor = '#3f3f46'; document.getElementById('photo-placeholder').style.display = 'flex'; document.getElementById('photo-btn-text').innerText = 'UPLOAD'; document.getElementById('photo-remove-btn').style.display = 'none'; }
 
+    // Text & Proper Case Handling
     function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function toProperCase(str) { if (!str) return ''; return str.toLowerCase().replace(/(?:^|\s|[-_\/.,():])[a-z]/g, function(match) { return match.toUpperCase(); }); }
     function formatText(str, tCase) { if (!str) return ''; let cleanStr = escapeHtml(str); if (tCase === 'capitalize') { return toProperCase(cleanStr); } return cleanStr.toUpperCase(); }
@@ -692,14 +588,13 @@
     }
 
     function goToHome() { const container = document.getElementById('main-view-container'); if (container) container.classList.add('elegant-exit'); setTimeout(() => { appStarted = false; enteringEditor = false; isNavigating = true; renderApp(); }, 250); }
-    function createNewCV() { cvData = JSON.parse(JSON.stringify(defaultCVData)); currentCvId = Date.now().toString(); localStorage.setItem('techasar_current_cv_id', currentCvId); saveState(); const card = document.getElementById('welcome-container'); if (card) card.classList.add('elegant-exit'); setTimeout(() => { appStarted = true; enteringEditor = true; isNavigating = true; currentPage = 1; activeView = 'editor'; renderApp(); }, 260); }
 
     function renderWelcomeScreen(container) {
       container.classList.remove('elegant-exit');
       container.innerHTML = `
         <div class="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center bg-[#08080e]">
           <div class="absolute top-0 left-0 right-0 p-4 flex justify-end z-20">
-            ${authLoading ? `<div class="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 px-4 py-2 rounded-full animate-pulse"><div class="w-5 h-5 bg-zinc-700/80 rounded-full"></div><div class="w-16 h-2.5 bg-zinc-700/80 rounded-full"></div></div>` : currentUser ? `<div class="flex items-center gap-3 bg-[#141424]/80 border border-white/10 backdrop-blur-xl px-3.5 py-1.5 rounded-full shadow-lg"><div class="w-7 h-7 rounded-full bg-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold text-[10px] uppercase">${currentUser.displayName ? currentUser.displayName.substring(0,2) : 'US'}</div><span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'USER'}</span><button type="button" onclick="logoutApp()" class="text-[10px] font-bold bg-red-500/20 hover:bg-red-500/30 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase transition-all">LOGOUT</button></div>` : `<button type="button" onclick="openSignInModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-indigo-600/30 uppercase"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>SIGN IN</button>`}
+            ${authLoading ? `<div class="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 px-4 py-2 rounded-full animate-pulse"><div class="w-5 h-5 bg-zinc-700/80 rounded-full"></div><div class="w-16 h-2.5 bg-zinc-700/80 rounded-full"></div></div>` : currentUser ? `<div class="flex items-center gap-3 bg-[#141424]/80 border border-white/10 backdrop-blur-xl px-3.5 py-1.5 rounded-full shadow-lg"><div class="w-7 h-7 rounded-full bg-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold text-[10px] uppercase">${currentUser.displayName ? currentUser.displayName.substring(0,2) : 'US'}</div><span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'USER'}</span><button type="button" onclick="logoutApp()" class="text-[10px] font-bold bg-red-500/20 hover:bg-red-500/30 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase transition-all">LOGOUT</button></div>` : `<button type="button" onclick="loginWithGoogle()" class="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-white/10 uppercase"><svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>LOGIN WITH GOOGLE</button>`}
           </div>
           <div class="absolute top-[20%] left-[20%] w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] blob-1 pointer-events-none"></div>
           <div class="absolute bottom-[20%] right-[20%] w-80 h-80 bg-fuchsia-600/15 rounded-full blur-[100px] blob-2 pointer-events-none"></div>
@@ -708,8 +603,8 @@
             <h1 class="uppercase font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-indigo-300 mb-4 stagger-entry d-1" style="font-size: clamp(32px, 6.5vw, 48px); line-height: 1.1;">CREATE YOUR<br>PROFESSIONAL CV</h1>
             <p class="text-[16px] sm:text-[17px] font-bold text-zinc-300/80 mb-10 leading-relaxed stagger-entry d-2 max-w-[320px] uppercase">BUILD A PROFESSIONAL CV IN MINUTES WITH A MODERN, SMOOTH, AND EASY EXPERIENCE.</p>
             <div class="w-full max-w-[340px] stagger-entry d-3 flex flex-col gap-4">
-              <button type="button" onclick="createNewCV()" class="w-full h-[60px] sm:h-[64px] rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[16px] sm:text-[18px] font-bold active:scale-95 transition-all flex items-center justify-center uppercase shadow-lg shadow-indigo-600/30">CREATE NEW CV</button>
-              <button type="button" onclick="openHistory()" class="w-full h-[54px] sm:h-[58px] rounded-full bg-[#141424]/80 border border-white/10 hover:bg-white/[0.08] text-zinc-200 text-[15px] sm:text-[16px] font-bold active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur-xl uppercase shadow-lg"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>CV HISTORY</button>
+              <button type="button" onclick="tryCreateNewCV()" class="w-full h-[60px] sm:h-[64px] rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[16px] sm:text-[18px] font-bold active:scale-95 transition-all flex items-center justify-center uppercase shadow-lg shadow-indigo-600/30">CREATE NEW CV</button>
+              <button type="button" onclick="tryOpenHistory()" class="w-full h-[54px] sm:h-[58px] rounded-full bg-[#141424]/80 border border-white/10 hover:bg-white/[0.08] text-zinc-200 text-[15px] sm:text-[16px] font-bold active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur-xl uppercase shadow-lg"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>CV HISTORY</button>
             </div>
           </div>
         </div>
@@ -766,8 +661,6 @@
         if (e) e.stopPropagation();
         showUIAlert("DELETE CV?", "ARE YOU SURE YOU WANT TO DELETE THIS CV FROM HISTORY?", true, async (res) => { if (res) { try { await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id)); if (currentCvId === id) { cvData = JSON.parse(JSON.stringify(defaultCVData)); currentCvId = null; localStorage.removeItem('techasar_current_cv_id'); saveState(); } renderHistoryList(); } catch(e) {} } });
     }
-
-    function autoResizeTextarea(element) { if (!element) return; element.style.height = 'auto'; element.style.height = (element.scrollHeight) + 'px'; }
 
     function renderEditorView(container) {
       container.classList.remove('elegant-exit'); let animClass = '';
@@ -885,6 +778,19 @@
         `;
       } else if (currentPage === 8) {
         const dateParts = parseDateParts(cvData.footer.date);
+        
+        let dynamicPlaceOpts = [];
+        const p = cvData.personal || {}; 
+        if (p.district && p.district !== 'OTHER') dynamicPlaceOpts.push(p.district.toUpperCase()); else if (p.customDistrict) dynamicPlaceOpts.push(p.customDistrict.toUpperCase());
+        if (p.tehsil && p.tehsil !== 'OTHER' && !dynamicPlaceOpts.includes(p.tehsil.toUpperCase())) dynamicPlaceOpts.push(p.tehsil.toUpperCase()); else if (p.customTehsil && !dynamicPlaceOpts.includes(p.customTehsil.toUpperCase())) dynamicPlaceOpts.push(p.customTehsil.toUpperCase());
+        savedPlaces.forEach(item => { if (!dynamicPlaceOpts.includes(item)) dynamicPlaceOpts.push(item); });
+        let placeOpts = dynamicPlaceOpts.map(x => ({label: x, val: x}));
+
+        let dynamicSignOpts = [];
+        if (p.name) dynamicSignOpts.push(p.name.toUpperCase()); if (cvData.details?.father && !dynamicSignOpts.includes(cvData.details.father.toUpperCase())) dynamicSignOpts.push(cvData.details.father.toUpperCase());
+        savedSigns.forEach(item => { if (!dynamicSignOpts.includes(item)) dynamicSignOpts.push(item); });
+        let signOpts = dynamicSignOpts.map(x => ({label: x, val: x}));
+
         stepContentHTML = `
           <div class="space-y-3">
             <div class="w-full bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] focus-within:border-indigo-500/70 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
@@ -895,13 +801,13 @@
                 <div class="flex-[1.4] bg-black/30 border border-white/[0.06] focus-within:border-indigo-500 rounded-xl px-2 py-1.5 text-center transition-all"><input id="date-yyyy" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="YYYY" value="${escapeHtml(dateParts.yyyy)}" oninput="onDateTripleInput('date', 'yyyy', this)" onkeydown="onDateTripleKeydown('date', 'yyyy', event)" class="w-full bg-transparent border-none outline-none text-center font-bold text-[15px] sm:text-sm text-zinc-100 placeholder:text-zinc-600 p-0" /></div>
               </div>
             </div>
-            <div class="w-full h-[58px] min-h-[58px] max-h-[58px] bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] focus-within:border-indigo-500/70 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-1.5 flex items-center justify-between transition-all group shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <div class="flex-1 min-w-0"><span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-tight mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">PLACE</span><input id="input-place" type="text" value="${escapeHtml(cvData.footer.place || '')}" oninput="cvData.footer.place = this.value; saveState();" placeholder="ENTER PLACE" class="w-full bg-transparent border-none text-[13.5px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" /></div>
-              <button type="button" onclick="openPlaceModal(event)" title="Place Suggestions" class="p-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 active:scale-95 transition-all shrink-0 ml-2 flex items-center justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+            <div class="flex gap-2.5">
+               <div class="flex-1 min-w-0">${createCustomDropdown('footer.place', placeOpts, 'PLACE', 'SELECT PLACE')}</div>
+               <button type="button" onclick="openAddCustomDataModal(event, 'place')" title="ADD NEW PLACE" class="w-[58px] h-[58px] shrink-0 rounded-2xl bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] hover:border-indigo-500/50 hover:bg-indigo-600/20 text-indigo-400 flex items-center justify-center active:scale-95 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.25)]"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg></button>
             </div>
-            <div class="w-full h-[58px] min-h-[58px] max-h-[58px] bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] focus-within:border-indigo-500/70 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-1.5 flex items-center justify-between transition-all group shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
-              <div class="flex-1 min-w-0"><span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-tight mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">SIGNATURE NAME</span><input id="input-sign-name" type="text" value="${escapeHtml(cvData.footer.signName || '')}" oninput="cvData.footer.signName = this.value; saveState();" placeholder="ENTER SIGNATURE NAME" class="w-full bg-transparent border-none text-[13.5px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" /></div>
-              <button type="button" onclick="openSignModal(event)" title="Signature Suggestions" class="p-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 active:scale-95 transition-all shrink-0 ml-2 flex items-center justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></button>
+            <div class="flex gap-2.5">
+               <div class="flex-1 min-w-0">${createCustomDropdown('footer.signName', signOpts, 'SIGNATURE NAME', 'SELECT SIGNATURE')}</div>
+               <button type="button" onclick="openAddCustomDataModal(event, 'sign')" title="ADD NEW SIGNATURE" class="w-[58px] h-[58px] shrink-0 rounded-2xl bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] hover:border-indigo-500/50 hover:bg-indigo-600/20 text-indigo-400 flex items-center justify-center active:scale-95 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.25)]"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg></button>
             </div>
           </div>
         `;
@@ -923,13 +829,19 @@
             <div class="px-4 py-1.5 rounded-full bg-[#141424]/80 border border-white/10 backdrop-blur-xl shadow-lg"><span class="text-xs font-black text-zinc-200 tracking-wider">STEP ${currentPage}/${TOTAL_STEPS}</span></div>
             <button type="button" onclick="openResetDialog()" title="RESET CV" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-red-400 bg-[#141424]/80 hover:bg-red-500/20 border border-white/10 backdrop-blur-xl active:scale-90 transition-all shadow-lg"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg></button>
           </div>
-          <div id="editor-scroll-area" class="flex-1 overflow-y-auto px-4 py-3 pb-28 w-full overflow-x-hidden relative scroll-smooth bg-[#08080e]">
+          <div id="editor-scroll-area" class="flex-1 overflow-y-auto px-4 py-3 pb-28 w-full overflow-x-hidden relative scroll-smooth bg-[#08080e] hide-scroll">
             <div class="${animClass} w-full max-w-lg mx-auto">${stepContentHTML}</div>
           </div>
           <div class="absolute bottom-4 left-0 right-0 z-30 pointer-events-none flex justify-center items-center pb-[max(0px,env(safe-area-inset-bottom))]">
             <div class="pointer-events-auto flex items-center justify-between px-6 max-w-xs w-full">
-              <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" title="PREVIOUS STEP" class="w-12 h-12 rounded-full flex items-center justify-center bg-[#141424]/90 border border-white/10 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none active:scale-90 transition-all shadow-xl backdrop-blur-xl"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg></button>
-              <button type="button" onclick="openPreview()" title="PREVIEW CV" class="w-14 h-14 rounded-full flex items-center justify-center bg-[#18182a]/95 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 active:scale-90 transition-all shadow-2xl shadow-emerald-500/20 backdrop-blur-xl"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
+              <button type="button" 
+                  ${currentPage === 1 ? 'disabled' : ''} 
+                  onmousedown="startPress(event)" onmouseup="endPress(event)" onmouseleave="cancelPress()" ontouchstart="startPress(event)" ontouchend="endPress(event)" ontouchcancel="cancelPress()"
+                  title="PREVIOUS STEP (HOLD TO JUMP)" 
+                  class="w-12 h-12 rounded-full flex items-center justify-center bg-[#141424]/90 border border-white/10 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none active:scale-90 transition-all shadow-xl backdrop-blur-xl"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg></button>
+              
+              <button type="button" onclick="openPreview()" title="PREVIEW CV" class="w-12 h-12 rounded-full flex items-center justify-center bg-[#18182a]/95 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 active:scale-90 transition-all shadow-xl shadow-emerald-500/20 backdrop-blur-xl"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
+              
               <button type="button" onclick="goNextStep()" title="${currentPage === TOTAL_STEPS ? 'REVIEW CV' : 'NEXT STEP'}" class="w-12 h-12 rounded-full flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white active:scale-90 transition-all shadow-xl shadow-indigo-600/40 backdrop-blur-xl">
                 ${currentPage === TOTAL_STEPS ? '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>' : '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6" /></svg>'}
               </button>
@@ -950,7 +862,7 @@
             <div class="px-4 py-1.5 rounded-full bg-[#141424]/80 border border-white/10 backdrop-blur-xl shadow-lg"><span class="text-xs font-black text-zinc-200 tracking-wider">A4 PREVIEW</span></div>
             <button type="button" onclick="handleDirectPrint()" title="PRINT CV" class="w-10 h-10 flex items-center justify-center rounded-full text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 backdrop-blur-xl active:scale-90 transition-all shadow-lg"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg></button>
           </div>
-          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-24 flex flex-col items-center relative" style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;">
+          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-24 flex flex-col items-center relative hide-scroll" style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;">
             <div class="relative my-auto shrink-0 bg-white" style="width: ${scaledW}px; height: ${scaledH}px; min-height: ${scaledH}px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 15px 35px -5px rgba(0, 0, 0, 0.85);">
               <div style="width: 794px; min-height: 1123px; transform: scale(${previewZoom}); transform-origin: top left; position: absolute; top: 0; left: 0;">${getDocumentHTML('cv-screen-preview-node', false)}</div>
             </div>
