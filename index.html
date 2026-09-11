@@ -25,40 +25,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/algerian">
 
-  <!-- FIREBASE MODULE SETUP (Global Attach) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCcNjmNG1zG6vBtM3z8lB5PIcPlyvv8PRE",
-      authDomain: "techasarcv.firebaseapp.com",
-      projectId: "techasarcv",
-      storageBucket: "techasarcv.firebasestorage.app",
-      messagingSenderId: "1024111980495",
-      appId: "1:1024111980495:web:f04d4815a29dc62fa5ecba"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    
-    // Expose to global window for inline HTML functions
-    window.auth = getAuth(app);
-    window.db = getFirestore(app);
-    window.GoogleAuthProvider = GoogleAuthProvider;
-    window.signInWithPopup = signInWithPopup;
-    window.onAuthStateChanged = onAuthStateChanged;
-    window.signOut = signOut;
-    window.collection = collection;
-    window.doc = doc;
-    window.setDoc = setDoc;
-    window.getDocs = getDocs;
-    window.deleteDoc = deleteDoc;
-    window.getDoc = getDoc;
-
-    if(window.onFirebaseReady) window.onFirebaseReady();
-  </script>
-
   <style>
     @font-face {
       font-family: 'Algerian';
@@ -68,196 +34,87 @@
       font-display: swap;
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    /* 1. HIDE ALL SCROLLBARS GLOBALLY */
-    * {
-      -ms-overflow-style: none !important;
-      scrollbar-width: none !important;
-    }
-    *::-webkit-scrollbar,
-    ::-webkit-scrollbar {
-      display: none !important;
-      width: 0px !important;
-      height: 0px !important;
-      background: transparent !important;
-    }
+    /* HIDE ALL SCROLLBARS GLOBALLY */
+    * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+    *::-webkit-scrollbar, ::-webkit-scrollbar { display: none !important; width: 0px !important; height: 0px !important; background: transparent !important; }
 
-    .font-algerian {
-      font-family: 'Algerian', 'Times New Roman', serif !important;
-    }
-
-    /* Select Dropdown Reset */
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background: transparent;
-    }
+    .font-algerian { font-family: 'Algerian', 'Times New Roman', serif !important; }
+    select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background: transparent; }
 
     /* ==================================================
-       2. ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS 
+       ULTRA-SMOOTH ANIMATIONS (ZERO BLINKING)
        ================================================== */
-    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translateX(45px); } 100% { opacity: 1; transform: translateX(0); } }
-    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translateX(-45px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { 0% { opacity: 0; transform: translateX(40px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInLeft { 0% { opacity: 0; transform: translateX(-40px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes slideOutLeft { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-40px); } }
+    @keyframes slideOutRight { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(40px); } }
     @keyframes elegantFadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes elegantFadeOut { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-15px); } }
     @keyframes bootUpScale { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes rippleEffect { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 
-    .anim-next { animation: smoothSlideRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: smoothSlideLeft 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .elegant-entry { animation: elegantFadeIn 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
-    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; will-change: transform, opacity; }
-    .zoom-transition { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
-    .bootup-anim { animation: bootUpScale 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
+    .anim-next { animation: slideInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .anim-prev { animation: slideInLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .exit-next { animation: slideOutLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; position: absolute !important; top:0; left:0; right:0; pointer-events: none; z-index: -1; }
+    .exit-prev { animation: slideOutRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; position: absolute !important; top:0; left:0; right:0; pointer-events: none; z-index: -1; }
+    
+    .elegant-entry { animation: elegantFadeIn 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; }
+    .bootup-anim { animation: bootUpScale 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+    /* Theme Toggle Custom Classes */
+    body { transition: background-color 0.4s ease, color 0.4s ease; background-color: #08080e; color: #f4f4f5; }
+    body.light-theme { background-color: #f0f2f5 !important; color: #0f172a !important; }
+    .light-theme .bg-\[\#11111c\], .light-theme .bg-\[\#141420\], .light-theme .bg-\[\#181826\] { background-color: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    .light-theme .text-zinc-100, .light-theme .text-zinc-200, .light-theme .text-zinc-300 { color: #0f172a !important; }
+    .light-theme .text-zinc-400, .light-theme .text-zinc-500 { color: #475569 !important; }
+    .light-theme .border-zinc-800, .light-theme .border-zinc-700\/80 { border-color: #e2e8f0 !important; }
+    .light-theme input, .light-theme textarea, .light-theme select { background-color: #f8fafc !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+    .light-theme input:focus, .light-theme textarea:focus { border-color: #6366f1 !important; }
+    .light-theme .bg-zinc-800, .light-theme .bg-zinc-900 { background-color: #e2e8f0 !important; color: #0f172a !important; border-color: transparent !important; }
+    .light-theme .bg-\[\#08080e\], .light-theme .bg-\[\#06060a\] { background-color: transparent !important; }
 
     /* Custom Scrollbar for dropdown */
     .custom-scrollbar::-webkit-scrollbar { width: 4px !important; display: block !important; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+    .light-theme .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; }
 
     /* Background Blobs */
     @keyframes blobFloat1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.05); } }
     @keyframes blobFloat2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20px, 20px) scale(0.95); } }
-    .blob-1 { animation: blobFloat1 12s ease-in-out infinite; will-change: transform; }
-    .blob-2 { animation: blobFloat2 15s ease-in-out infinite; will-change: transform; }
+    .blob-1 { animation: blobFloat1 12s ease-in-out infinite; }
+    .blob-2 { animation: blobFloat2 15s ease-in-out infinite; }
 
-    .stagger-entry { opacity: 0; animation: elegantFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; will-change: transform, opacity; }
+    .stagger-entry { opacity: 0; animation: elegantFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
     .d-0 { animation-delay: 0ms; } .d-1 { animation-delay: 60ms; } .d-2 { animation-delay: 120ms; } .d-3 { animation-delay: 180ms; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .elegant-exit, .elegant-entry, .anim-next, .anim-prev, .bootup-anim { animation: none !important; opacity: 1 !important; transform: none !important; }
-    }
 
     .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
 
-    /* 3. ROCK-SOLID PRINT ENGINE FIX */
-    body.is-printing {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        overflow: visible !important;
-    }
-    body.is-printing > *:not(#cv-print-container) {
-        display: none !important;
-    }
-    body.is-printing #cv-print-container {
-        display: block !important;
-        position: static !important;
-        width: 100% !important;
-        visibility: visible !important;
-    }
+    /* PRINT ENGINE FIX */
+    body.is-printing { background-color: #ffffff !important; color: #000000 !important; overflow: visible !important; }
+    body.is-printing > *:not(#cv-print-container) { display: none !important; }
+    body.is-printing #cv-print-container { display: block !important; position: static !important; width: 100% !important; visibility: visible !important; }
 
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
-      
       html, body { width: 210mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: visible !important; }
-      
       body > *:not(#cv-print-container) { display: none !important; }
-      
-      #cv-print-container {
-        display: block !important; position: static !important; width: 210mm !important; height: auto !important; min-height: 297mm !important; max-height: none !important; margin: 0 auto !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: visible !important; z-index: 999999 !important; visibility: visible !important;
-      }
+      #cv-print-container { display: block !important; position: static !important; width: 210mm !important; height: auto !important; min-height: 297mm !important; max-height: none !important; margin: 0 auto !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: visible !important; z-index: 999999 !important; visibility: visible !important; }
       #cv-print-container * { visibility: visible !important; }
     }
   </style>
-</head>
-<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans uppercase font-bold">
 
-  <!-- 1. SCREEN WORKSPACE -->
-  <div id="app-screen-workspace" class="h-[100dvh] w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
-    <div id="main-view-container" class="flex-1 flex flex-col overflow-hidden relative">
-      <!-- Dynamically injected UI -->
-    </div>
-  </div>
-
-  <!-- Custom Alert/Confirm UI Modal -->
-  <div id="custom-alert-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-    <div id="custom-alert-box" class="bg-[#141420] border border-zinc-800 rounded-2xl p-5 max-w-[320px] w-full shadow-2xl text-center space-y-4 transform scale-75 opacity-0 transition-all duration-300">
-       <h3 id="custom-alert-title" class="font-bold text-zinc-100 text-[15px] uppercase tracking-wide"></h3>
-       <p id="custom-alert-msg" class="text-xs font-bold text-zinc-400 uppercase leading-relaxed"></p>
-       <div id="custom-alert-actions" class="flex gap-2.5 justify-center pt-2"></div>
-    </div>
-  </div>
-
-  <!-- Reset Modal -->
-  <div id="reset-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-[#141420] border border-zinc-800 rounded-2xl p-4 max-w-xs w-full shadow-2xl text-center space-y-3 elegant-entry">
-      <div class="w-9 h-9 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-      </div>
-      <div>
-        <h3 class="font-bold text-sm text-zinc-100 uppercase">RESET CV DATA?</h3>
-        <p class="text-xs text-zinc-400 mt-1 uppercase">CLEAR ALL INPUTS AND START FRESH?</p>
-      </div>
-      <div class="grid grid-cols-2 gap-2 pt-1">
-        <button type="button" onclick="closeResetDialog()" class="py-1.5 px-3 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
-        <button type="button" onclick="confirmReset()" class="py-1.5 px-3 rounded-lg bg-red-600 text-white text-xs font-bold uppercase active:scale-95 transition-all">RESET</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- History Modal -->
-  <div id="cv-history-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-[#11111c] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden elegant-entry max-h-[85vh]">
-      <div class="flex items-center justify-between p-4 border-b border-zinc-800/80 bg-[#181826]/50">
-         <div class="flex items-center gap-2">
-           <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-           <h3 class="font-bold text-zinc-100 text-sm uppercase">CV HISTORY</h3>
-         </div>
-         <button type="button" onclick="closeHistory()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 active:scale-95 transition-all">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-         </button>
-      </div>
-      <div id="history-list-container" class="p-3 overflow-y-auto flex-1 space-y-2">
-         <!-- Populated via JS -->
-      </div>
-    </div>
-  </div>
-
-  <!-- GLOBAL DROPDOWN MODAL (Android XY Origin Popover w/ Search) -->
-  <div id="global-dropdown-modal" class="fixed inset-0 z-[150] bg-black/60 backdrop-blur-[2px] hidden opacity-0" onclick="closeGlobalDropdown(event)">
-    <div id="global-dropdown-box" class="bg-[#181826] border border-zinc-700/80 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative w-[340px] max-w-[90vw]" style="opacity: 0; transform: scale(0);" onclick="event.stopPropagation();">
-      <div class="flex items-center justify-between p-3.5 border-b border-zinc-800/80 bg-[#141420]">
-         <span id="global-dropdown-title" class="text-[13px] font-bold text-zinc-100 uppercase tracking-wider">SELECT</span>
-         <button type="button" onclick="closeGlobalDropdown(null, true)" class="p-1.5 rounded-lg text-zinc-400 hover:text-white active:scale-95 bg-zinc-800/80 transition-all">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-         </button>
-      </div>
-      <!-- SEARCH BAR SECTION -->
-      <div class="p-2.5 border-b border-zinc-800/80 bg-[#181826] shrink-0">
-        <div class="flex items-center gap-2 bg-[#11111c] border border-zinc-700/50 rounded-xl px-3 py-2.5 shadow-inner">
-          <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input type="text" id="global-dropdown-search" oninput="filterGlobalDropdown(this.value)" placeholder="SEARCH..." class="bg-transparent border-none outline-none text-[13px] text-zinc-100 font-bold uppercase w-full placeholder:text-zinc-600" autocomplete="off" />
-        </div>
-      </div>
-      <div id="global-dropdown-list" class="flex-1 overflow-y-auto p-2.5 custom-scrollbar space-y-1 relative" style="max-height: 40vh;">
-         <!-- Populated Dynamically -->
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. DEDICATED PRINT CONTAINER -->
-  <div id="cv-print-container"></div>
-
+  <!-- DEFINE APP LOGIC FIRST -->
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v24';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v26';
     
-    // Expanded Geographical Data List 
     const indiaData = {
-      states: [
-        "ANDAMAN AND NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", "BIHAR",
-        "CHANDIGARH", "CHHATTISGARH", "DADRA AND NAGAR HAVELI", "DAMAN AND DIU", "DELHI",
-        "GOA", "GUJARAT", "HARYANA", "HIMACHAL PRADESH", "JAMMU AND KASHMIR", "JHARKHAND",
-        "KARNATAKA", "KERALA", "LADAKH", "LAKSHADWEEP", "MADHYA PRADESH", "MAHARASHTRA",
-        "MANIPUR", "MEGHALAYA", "MIZORAM", "NAGALAND", "ODISHA", "PUDUCHERRY", "PUNJAB",
-        "RAJASTHAN", "SIKKIM", "TAMIL NADU", "TELANGANA", "TRIPURA", "UTTAR PRADESH",
-        "UTTARAKHAND", "WEST BENGAL"
-      ],
+      states: ["ANDAMAN AND NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", "BIHAR", "CHANDIGARH", "CHHATTISGARH", "DADRA AND NAGAR HAVELI", "DAMAN AND DIU", "DELHI", "GOA", "GUJARAT", "HARYANA", "HIMACHAL PRADESH", "JAMMU AND KASHMIR", "JHARKHAND", "KARNATAKA", "KERALA", "LADAKH", "LAKSHADWEEP", "MADHYA PRADESH", "MAHARASHTRA", "MANIPUR", "MEGHALAYA", "MIZORAM", "NAGALAND", "ODISHA", "PUDUCHERRY", "PUNJAB", "RAJASTHAN", "SIKKIM", "TAMIL NADU", "TELANGANA", "TRIPURA", "UTTAR PRADESH", "UTTARAKHAND", "WEST BENGAL"],
       districts: {
         "UTTAR PRADESH": ["AGRA", "ALIGARH", "PRAYAGRAJ", "AMBEDKAR NAGAR", "AMETHI", "AMROHA", "AURAIYA", "AYODHYA", "AZAMGARH", "BAGHPAT", "BAHRAICH", "BALLIA", "BALRAMPUR", "BANDA", "BARABANKI", "BAREILLY", "BASTI", "BHADOHI", "BIJNOR", "BUDAUN", "BULANDSHAHR", "CHANDAULI", "CHITRAKOOT", "DEORIA", "ETAH", "ETAWAH", "FARRUKHABAD", "FATEHPUR", "FIROZABAD", "GAUTAM BUDDHA NAGAR", "GHAZIABAD", "GHAZIPUR", "GONDA", "GORAKHPUR", "HAMIRPUR", "HAPUR", "HARDOI", "HATHRAS", "JALAUN", "JAUNPUR", "JHANSI", "KANNAUJ", "KANPUR DEHAT", "KANPUR NAGAR", "KASGANJ", "KAUSHAMBI", "LAKHIMPUR KHERI", "KUSHINAGAR", "LALITPUR", "LUCKNOW", "MAHARAJGANJ", "MAHOBA", "MAINPURI", "MATHURA", "MAU", "MEERUT", "MIRZAPUR", "MORADABAD", "MUZAFFARNAGAR", "PILIBHIT", "PRATAPGARH", "RAEBARELI", "RAMPUR", "SAHARANPUR", "SAMBHAL", "SANT KABIR NAGAR", "SHAHJAHANPUR", "SHAMLI", "SHRAVASTI", "SIDDHARTHNAGAR", "SITAPUR", "SONBHADRA", "SULTANPUR", "UNNAO", "VARANASI"],
         "DELHI": ["CENTRAL DELHI", "EAST DELHI", "NEW DELHI", "NORTH DELHI", "NORTH EAST DELHI", "NORTH WEST DELHI", "SHAHDARA", "SOUTH DELHI", "SOUTH EAST DELHI", "SOUTH WEST DELHI", "WEST DELHI"],
@@ -279,7 +136,7 @@
     let currentUser = null;
     let authLoading = true;
     let saveTimeout = null;
-    let justLoggedIn = false; // Controls the splash animation
+    let justLoggedIn = false; 
 
     let dropdownOriginX = 0;
     let dropdownOriginY = 0;
@@ -293,19 +150,13 @@
           if (wasLoggedOut) {
               justLoggedIn = true;
               renderApp();
-              setTimeout(() => {
-                  justLoggedIn = false;
-                  renderApp();
-              }, 2200); // Wait for Splash to finish
-          } else {
-              renderApp(); 
-          }
+              setTimeout(() => { justLoggedIn = false; renderApp(); }, 2200); 
+          } else { renderApp(); }
        });
     };
 
     const defaultCVData = {
-      documentTitle: "CURRICULUM VITAE",
-      font: "Times New Roman", fontWeight: "bold", textCase: "uppercase",
+      documentTitle: "CURRICULUM VITAE", font: "Times New Roman", fontWeight: "bold", textCase: "uppercase",
       personal: { photo: "", name: "", villagePost: "", tehsil: "", customTehsil: "", district: "", customDistrict: "", state: "", customState: "", mobile: "", email: "", headerStyle: "labeled" },
       objective: "", academic: [], other: [], experience: [],
       details: { dob: "", father: "", gender: "MALE", marital: "UNMARRIED", nationality: "INDIAN", customNationality: "", languages: "", hobbies: "" },
@@ -347,7 +198,7 @@
         document.getElementById('custom-alert-title').innerText = title;
         document.getElementById('custom-alert-msg').innerText = msg;
         const actions = document.getElementById('custom-alert-actions');
-        alertCallback = callback;
+        window.alertCallback = callback;
         if(isConfirm) {
             actions.innerHTML = `
                 <button type="button" onclick="closeUIAlert(false)" class="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
@@ -360,8 +211,7 @@
         }
         const modal = document.getElementById('custom-alert-modal');
         const box = document.getElementById('custom-alert-box');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        modal.classList.remove('hidden'); modal.classList.add('flex');
         requestAnimationFrame(() => {
             modal.classList.remove('opacity-0');
             box.classList.remove('scale-75', 'opacity-0');
@@ -376,48 +226,31 @@
         box.classList.remove('scale-100', 'opacity-100');
         box.classList.add('scale-75', 'opacity-0');
         setTimeout(() => {
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-            if(alertCallback) alertCallback(result);
+            modal.classList.remove('flex'); modal.classList.add('hidden');
+            if(window.alertCallback) window.alertCallback(result);
         }, 300);
     }
 
     async function loginWithGoogle() {
         if (!window.auth || !window.GoogleAuthProvider) return;
         const provider = new window.GoogleAuthProvider();
-        try { 
-            await window.signInWithPopup(window.auth, provider); 
-        } 
+        try { await window.signInWithPopup(window.auth, provider); } 
         catch (error) { 
-            if(error.code === 'auth/popup-blocked') {
-                showUIAlert("POPUP BLOCKED", "Please allow popups in your browser to login with Google.", false);
-            } else {
-                showUIAlert("LOGIN FAILED", "Network or browser error. Please try again.", false); 
-            }
-            console.error(error); 
+            if(error.code === 'auth/popup-blocked') showUIAlert("POPUP BLOCKED", "Please allow popups in your browser to login with Google.", false);
+            else showUIAlert("LOGIN FAILED", "Network or browser error. Please try again.", false); 
         }
     }
+    async function logoutGoogle() { if (!window.auth) return; try { await window.signOut(window.auth); } catch (e) {} }
 
-    async function logoutGoogle() {
-        if (!window.auth) return;
-        try { await window.signOut(window.auth); } catch (e) {}
-    }
-
-    // Auto fit CV algorithm for preventing second page overflow
     function autoFitCV(containerId) {
       const container = document.getElementById(containerId);
       if(!container) return;
       const innerWrapper = container.querySelector('.cv-inner-wrapper');
       if(!innerWrapper) return;
-      
-      // Reset transformations
       innerWrapper.style.transform = 'scale(1)';
       innerWrapper.style.transformOrigin = 'top center';
-      
-      // Calculate height (A4 is ~1123px. Inside borders safe area is around 1040px)
       const maxSafeHeight = 1040;
       const currentHeight = innerWrapper.scrollHeight;
-      
       if (currentHeight > maxSafeHeight) {
           const scaleAmount = maxSafeHeight / currentHeight;
           innerWrapper.style.transform = `scale(${scaleAmount})`;
@@ -442,57 +275,47 @@
         const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
         const optionsStr = encodeURIComponent(JSON.stringify(options));
         return `
-            <div onclick="openGlobalDropdown(event, '${fieldPath}', '${optionsStr}', '${placeholder}')" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-100 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform">
-                <span id="${btnId}" class="truncate pr-2">${displayLabel}</span>
+            <div onclick="openGlobalDropdown(event, '${fieldPath}', '${optionsStr}', '${placeholder}')" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[14px] font-bold uppercase ${displayLabel === placeholder ? 'text-zinc-500' : 'text-zinc-100'} outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform">
+                <span id="${btnId}" class="truncate whitespace-nowrap pr-2">${displayLabel}</span>
                 <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </div>
         `;
     }
     
-    function generateDateSelects(currentVal, fieldPath) {
+    // CUSTOM AUTO-ADVANCE DATE SCRIPT (NO WHEEL)
+    window.handleDateInput = function(el, fieldPath) {
+        const p = el.parentElement; 
+        let v = el.value.replace(/\D/g, '');
+        if(el.dataset.type === 'dd' || el.dataset.type === 'mm') v = v.substring(0,2);
+        if(el.dataset.type === 'yyyy') v = v.substring(0,4);
+        el.value = v;
+        
+        // Auto-advance
+        if(el.dataset.type === 'dd' && v.length === 2) p.querySelector('.mm-inp').focus();
+        if(el.dataset.type === 'mm' && v.length === 2) p.querySelector('.yyyy-inp').focus();
+        
+        const d = p.querySelector('.dd-inp').value; 
+        const m = p.querySelector('.mm-inp').value; 
+        const y = p.querySelector('.yyyy-inp').value; 
+        
+        if(d && m && y){ setNested(cvData, fieldPath, d+'/'+m+'/'+y); } 
+        else { setNested(cvData, fieldPath, ''); } 
+        saveState();
+    }
+
+    function generateDateInputs(currentVal, fieldPath) {
        let dd = '', mm = '', yyyy = '';
        if (currentVal && currentVal.includes('/')) {
            const parts = currentVal.split('/');
            dd = parts[0]; mm = parts[1]; yyyy = parts[2];
        }
-       
-       let ddOpts = '<option value="">DD</option>';
-       for(let i=1; i<=31; i++) {
-           let val = i < 10 ? '0'+i : i;
-           ddOpts += `<option value="${val}" ${dd===val.toString()?'selected':''}>${val}</option>`;
-       }
-       
-       let mmOpts = '<option value="">MM</option>';
-       for(let i=1; i<=12; i++) {
-           let val = i < 10 ? '0'+i : i;
-           mmOpts += `<option value="${val}" ${mm===val.toString()?'selected':''}>${val}</option>`;
-       }
-       
-       let yyyyOpts = '<option value="">YYYY</option>';
-       const currentYear = new Date().getFullYear() + 5;
-       for(let i=currentYear; i>=1950; i--) {
-           yyyyOpts += `<option value="${i}" ${yyyy===i.toString()?'selected':''}>${i}</option>`;
-       }
-
-       const onInputStr = `const p = this.parentElement.parentElement; const d = p.querySelector('.dd-sel').value; const m = p.querySelector('.mm-sel').value; const y = p.querySelector('.yyyy-sel').value; if(d && m && y){ setNested(cvData, '${fieldPath}', d+'/'+m+'/'+y); } else { setNested(cvData, '${fieldPath}', ''); } saveState();`;
-
        return `
-          <div class="flex gap-2 w-full date-picker-custom">
-             <div class="relative flex-1">
-                 <select onchange="${onInputStr}" class="dd-sel uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none cursor-pointer focus:border-indigo-500 text-center">
-                    ${ddOpts}
-                 </select>
-             </div>
-             <div class="relative flex-1">
-                 <select onchange="${onInputStr}" class="mm-sel uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none cursor-pointer focus:border-indigo-500 text-center">
-                    ${mmOpts}
-                 </select>
-             </div>
-             <div class="relative flex-[1.5]">
-                 <select onchange="${onInputStr}" class="yyyy-sel uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none cursor-pointer focus:border-indigo-500 text-center">
-                    ${yyyyOpts}
-                 </select>
-             </div>
+          <div class="flex gap-2 w-full items-center">
+             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="DD" data-type="dd" value="${dd}" oninput="handleDateInput(this, '${fieldPath}')" class="dd-inp w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none text-center focus:border-indigo-500 transition-colors placeholder:text-zinc-500" />
+             <span class="text-zinc-500 font-bold">/</span>
+             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="MM" data-type="mm" value="${mm}" oninput="handleDateInput(this, '${fieldPath}')" class="mm-inp w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none text-center focus:border-indigo-500 transition-colors placeholder:text-zinc-500" />
+             <span class="text-zinc-500 font-bold">/</span>
+             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="YYYY" data-type="yyyy" value="${yyyy}" oninput="handleDateInput(this, '${fieldPath}')" class="yyyy-inp w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-2 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none text-center focus:border-indigo-500 transition-colors placeholder:text-zinc-500" />
           </div>
        `;
     }
@@ -502,27 +325,17 @@
         const items = document.querySelectorAll('.dropdown-item');
         let hasVisible = false;
         items.forEach(el => {
-            const txt = el.innerText.toUpperCase();
-            if(txt.includes(query)) {
-                el.style.display = 'flex';
-                hasVisible = true;
-            } else {
-                el.style.display = 'none';
-            }
+            if(el.innerText.toUpperCase().includes(query)) { el.style.display = 'flex'; hasVisible = true; } 
+            else { el.style.display = 'none'; }
         });
-        
         let noRes = document.getElementById('no-results-msg');
         if(!hasVisible) {
             if(!noRes) {
-                noRes = document.createElement('div');
-                noRes.id = 'no-results-msg';
+                noRes = document.createElement('div'); noRes.id = 'no-results-msg';
                 noRes.className = 'text-zinc-500 text-xs text-center py-6 font-bold uppercase';
-                noRes.innerText = 'NO MATCHES FOUND';
-                document.getElementById('global-dropdown-list').appendChild(noRes);
+                noRes.innerText = 'NO MATCHES FOUND'; document.getElementById('global-dropdown-list').appendChild(noRes);
             }
-        } else {
-            if(noRes) noRes.remove();
-        }
+        } else { if(noRes) noRes.remove(); }
     }
 
     function openGlobalDropdown(e, fieldPath, optionsStr, placeholder) {
@@ -535,13 +348,12 @@
         const currentVal = getNested(cvData, fieldPath);
         
         document.getElementById('global-dropdown-title').innerText = placeholder;
-        
         const searchInput = document.getElementById('global-dropdown-search');
         if(searchInput) searchInput.value = '';
 
         list.innerHTML = options.map(opt => `
             <div onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label}')" class="dropdown-item px-4 py-3.5 rounded-xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-zinc-800/80 text-zinc-300 bg-zinc-900/30'}">
-                <span>${opt.label}</span>
+                <span class="truncate pr-2">${opt.label}</span>
                 ${currentVal === opt.val ? `<svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>` : ''}
             </div>
         `).join('');
@@ -549,44 +361,30 @@
         const modal = document.getElementById('global-dropdown-modal');
         const box = document.getElementById('global-dropdown-box');
         
-        // FREEZE LAYOUT HEIGHT TO PREVENT KEYBOARD JUMP BUG
         modal.style.height = window.innerHeight + 'px';
         document.body.style.overflow = 'hidden';
-        
-        box.style.transition = 'none';
-        modal.style.transition = 'none';
+        box.style.transition = 'none'; modal.style.transition = 'none';
         box.style.transform = `translate(${dropdownOriginX}px, ${dropdownOriginY}px) scale(0)`;
-        box.style.opacity = '0';
-        modal.style.opacity = '0';
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex', 'items-center', 'justify-center'); 
+        box.style.opacity = '0'; modal.style.opacity = '0';
+        modal.classList.remove('hidden'); modal.classList.add('flex', 'items-center', 'justify-center'); 
         
         requestAnimationFrame(() => {
             box.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease';
             modal.style.transition = 'opacity 0.3s ease';
-            
             box.style.transform = `translate(0px, 0px) scale(1)`;
-            box.style.opacity = '1';
-            modal.style.opacity = '1';
+            box.style.opacity = '1'; modal.style.opacity = '1';
         });
     }
 
     function closeGlobalDropdown(e, force = false) {
         if(!force && e && e.target.id !== 'global-dropdown-modal') return; 
-        
         const modal = document.getElementById('global-dropdown-modal');
         const box = document.getElementById('global-dropdown-box');
-        
         box.style.transform = `translate(${dropdownOriginX}px, ${dropdownOriginY}px) scale(0)`;
-        box.style.opacity = '0';
-        modal.style.opacity = '0';
-        
+        box.style.opacity = '0'; modal.style.opacity = '0';
         setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex', 'items-center', 'justify-center');
-            modal.style.height = '';
-            document.body.style.overflow = '';
+            modal.classList.add('hidden'); modal.classList.remove('flex', 'items-center', 'justify-center');
+            modal.style.height = ''; document.body.style.overflow = '';
         }, 400); 
     }
 
@@ -594,16 +392,9 @@
         setNested(cvData, fieldPath, val);
         let needsReRender = false;
         
-        if(fieldPath === 'personal.state') {
-            cvData.personal.district = '';
-            cvData.personal.tehsil = '';
-            needsReRender = true;
-        } else if(fieldPath === 'personal.district') {
-            cvData.personal.tehsil = '';
-            needsReRender = true;
-        } else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') {
-            needsReRender = true;
-        }
+        if(fieldPath === 'personal.state') { cvData.personal.district = ''; cvData.personal.tehsil = ''; needsReRender = true; } 
+        else if(fieldPath === 'personal.district') { cvData.personal.tehsil = ''; needsReRender = true; } 
+        else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') { needsReRender = true; }
         
         saveState(); 
         closeGlobalDropdown(null, true);
@@ -612,20 +403,18 @@
             isNavigating = false;
             const scrollArea = document.getElementById('editor-scroll-area');
             const exactScroll = scrollArea ? scrollArea.scrollTop : 0;
-            
             setTimeout(() => { 
                 renderApp(); 
                 const newScroll = document.getElementById('editor-scroll-area');
                 if(newScroll) {
-                    newScroll.style.scrollBehavior = 'auto';
-                    newScroll.scrollTop = exactScroll;
+                    newScroll.style.scrollBehavior = 'auto'; newScroll.scrollTop = exactScroll;
                     setTimeout(() => { newScroll.style.scrollBehavior = 'smooth'; }, 50);
                 }
             }, 350); 
         } else {
             const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
             const btn = document.getElementById(btnId);
-            if (btn) btn.innerText = label;
+            if (btn) { btn.innerText = label; btn.parentElement.classList.remove('text-zinc-500'); btn.parentElement.classList.add('text-zinc-100'); }
         }
     }
 
@@ -634,11 +423,12 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
         if (currentCvId) localStorage.setItem('techasar_current_cv_id', currentCvId);
 
-        if (currentUser && currentCvId && window.db) {
+        // ONLY SAVE TO HISTORY IF STEP 1 NAME IS FILLED (User required this)
+        if (currentUser && currentCvId && window.db && cvData.personal.name && cvData.personal.name.trim() !== '') {
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(async () => {
                 try {
-                    const title = cvData.personal.name.trim().toUpperCase() || "UNTITLED CV";
+                    const title = cvData.personal.name.trim().toUpperCase();
                     const historyItem = { 
                         id: currentCvId, name: title, data: cvData, 
                         date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
@@ -652,83 +442,31 @@
       } catch(e) {}
     }
 
-    function setLanguage(val) {
-      cvData.details.languages = val;
-      saveState();
-      const input = document.getElementById('lang-input');
-      if(input) input.value = cvData.details.languages;
-    }
-
+    function setLanguage(val) { cvData.details.languages = val; saveState(); const input = document.getElementById('lang-input'); if(input) input.value = cvData.details.languages; }
     function appendHobby(val) {
-      let current = cvData.details.hobbies || '';
-      let arr = current.split(',').map(s => s.trim()).filter(Boolean);
-      if(!arr.includes(val)) {
-        arr.push(val);
-        cvData.details.hobbies = arr.join(', ');
-        saveState();
-        const input = document.getElementById('hobbies-input');
-        if(input) input.value = cvData.details.hobbies;
-      }
+      let current = cvData.details.hobbies || ''; let arr = current.split(',').map(s => s.trim()).filter(Boolean);
+      if(!arr.includes(val)) { arr.push(val); cvData.details.hobbies = arr.join(', '); saveState(); const input = document.getElementById('hobbies-input'); if(input) input.value = cvData.details.hobbies; }
     }
-
-    function setObjectivePreset(val) {
-      cvData.objective = val;
-      saveState();
-      const input = document.getElementById('objective-input');
-      if (input) { input.value = cvData.objective; autoResizeTextarea(input); }
-    }
-
-    function setDeclarationPreset(val) {
-      cvData.declaration = val;
-      saveState();
-      const input = document.getElementById('declaration-input');
-      if(input) { input.value = cvData.declaration; autoResizeTextarea(input); }
-    }
-
-    function removeArrayItem(key, idx) {
-      if (!cvData[key]) return;
-      cvData[key].splice(idx, 1);
-      saveState();
-      isNavigating = false; 
-      renderApp();
-    }
-
-    function addArrayItem(key, val) {
-      if (!cvData[key]) cvData[key] = [];
-      cvData[key].push(val); 
-      saveState();
-      isNavigating = false; 
-      renderApp();
-      setTimeout(() => { const scrollArea = document.getElementById('editor-scroll-area'); if(scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight; }, 50);
-    }
-
-    function updateArrayItem(key, idx, val) {
-      if (!cvData[key]) return;
-      cvData[key][idx] = val;
-      saveState();
-    }
+    function setObjectivePreset(val) { cvData.objective = val; saveState(); const input = document.getElementById('objective-input'); if (input) { input.value = cvData.objective; autoResizeTextarea(input); } }
+    function setDeclarationPreset(val) { cvData.declaration = val; saveState(); const input = document.getElementById('declaration-input'); if(input) { input.value = cvData.declaration; autoResizeTextarea(input); } }
+    function removeArrayItem(key, idx) { if (!cvData[key]) return; cvData[key].splice(idx, 1); saveState(); isNavigating = false; renderApp(); }
+    function addArrayItem(key, val) { if (!cvData[key]) cvData[key] = []; cvData[key].push(val); saveState(); isNavigating = false; renderApp(); setTimeout(() => { const scrollArea = document.getElementById('editor-scroll-area'); if(scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight; }, 50); }
+    function updateArrayItem(key, idx, val) { if (!cvData[key]) return; cvData[key][idx] = val; saveState(); }
 
     function processPassportPhoto(file) {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error("Failed to read image"));
+        const reader = new FileReader(); reader.onerror = () => reject(new Error("Failed"));
         reader.onload = (ev) => {
-          const img = new Image();
-          img.onerror = () => reject(new Error("Invalid image"));
+          const img = new Image(); img.onerror = () => reject(new Error("Invalid"));
           img.onload = () => {
-            const targetW = 413, targetH = 531;
-            const targetAspect = targetW / targetH;
-            const srcW = img.naturalWidth || img.width;
-            const srcH = img.naturalHeight || img.height;
+            const targetW = 413, targetH = 531; const targetAspect = targetW / targetH;
+            const srcW = img.naturalWidth || img.width; const srcH = img.naturalHeight || img.height;
             let sx = 0, sy = 0, sw = srcW, sh = srcH;
             if (srcW / srcH > targetAspect) { sw = srcH * targetAspect; sx = (srcW - sw) / 2; } 
             else { sh = srcW / targetAspect; sy = Math.max(0, (srcH - sh) * 0.22); }
-            const canvas = document.createElement('canvas');
-            canvas.width = targetW; canvas.height = targetH;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return resolve(ev.target.result);
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, targetW, targetH);
+            const canvas = document.createElement('canvas'); canvas.width = targetW; canvas.height = targetH;
+            const ctx = canvas.getContext('2d'); if (!ctx) return resolve(ev.target.result);
+            ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, targetW, targetH);
             ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
             resolve(canvas.toDataURL('image/jpeg', 0.92));
           };
@@ -739,63 +477,34 @@
     }
 
     async function onPhotoSelected(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
+      const file = e.target.files && e.target.files[0]; if (!file) return;
       try {
-        const cropped = await processPassportPhoto(file);
-        cvData.personal.photo = cropped;
-        saveState();
-        
-        const photoDiv = document.getElementById('photo-container');
-        const photoPlaceholder = document.getElementById('photo-placeholder');
-        const photoBtn = document.getElementById('photo-btn-text');
-        const photoRemoveBtn = document.getElementById('photo-remove-btn');
-        
+        const cropped = await processPassportPhoto(file); cvData.personal.photo = cropped; saveState();
+        const photoDiv = document.getElementById('photo-container'); const photoPlaceholder = document.getElementById('photo-placeholder'); const photoBtn = document.getElementById('photo-btn-text'); const photoRemoveBtn = document.getElementById('photo-remove-btn');
         if (photoDiv) { photoDiv.style.backgroundImage = `url('${cropped}')`; photoDiv.style.borderStyle = 'solid'; photoDiv.style.borderColor = '#6366f1'; }
-        if (photoPlaceholder) photoPlaceholder.style.display = 'none';
-        if (photoBtn) photoBtn.innerText = 'CHANGE';
-        if (photoRemoveBtn) photoRemoveBtn.style.display = 'block';
+        if (photoPlaceholder) photoPlaceholder.style.display = 'none'; if (photoBtn) photoBtn.innerText = 'CHANGE'; if (photoRemoveBtn) photoRemoveBtn.style.display = 'block';
       } catch(err) { showUIAlert("IMAGE ERROR", "Could not load image. Please select a valid photo.", false); }
     }
-
     function removePhoto() {
-      cvData.personal.photo = '';
-      saveState();
-      const photoDiv = document.getElementById('photo-container');
-      const photoPlaceholder = document.getElementById('photo-placeholder');
-      const photoBtn = document.getElementById('photo-btn-text');
-      const photoRemoveBtn = document.getElementById('photo-remove-btn');
-      
+      cvData.personal.photo = ''; saveState();
+      const photoDiv = document.getElementById('photo-container'); const photoPlaceholder = document.getElementById('photo-placeholder'); const photoBtn = document.getElementById('photo-btn-text'); const photoRemoveBtn = document.getElementById('photo-remove-btn');
       if (photoDiv) { photoDiv.style.backgroundImage = 'none'; photoDiv.style.borderStyle = 'dashed'; photoDiv.style.borderColor = '#3f3f46'; }
-      if (photoPlaceholder) photoPlaceholder.style.display = 'flex';
-      if (photoBtn) photoBtn.innerText = 'UPLOAD';
-      if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
+      if (photoPlaceholder) photoPlaceholder.style.display = 'flex'; if (photoBtn) photoBtn.innerText = 'UPLOAD'; if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
+    function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function formatText(str, tCase) {
       if (!str) return '';
       let cleanStr = escapeHtml(str);
-      if (tCase === 'capitalize') {
-          return cleanStr.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
-      }
+      if (tCase === 'capitalize') { return cleanStr.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase()); }
       return cleanStr.toUpperCase();
     }
 
     function getDocumentHTML(id, isPrintMode) {
-      const p = cvData.personal || {};
-      const d = cvData.details || {};
-      const f = cvData.footer || {};
-      
+      const p = cvData.personal || {}; const d = cvData.details || {}; const f = cvData.footer || {};
       const fontFamilies = { 'Arial': 'Arial, Helvetica, sans-serif', 'Calibri': 'Calibri, "Segoe UI", Candara, sans-serif', 'Algerian': '"Algerian", "Times New Roman", serif', 'Times New Roman': '"Times New Roman", Times, serif' };
       const font = fontFamilies[cvData.font] || fontFamilies['Times New Roman'];
-      const fWeight = cvData.fontWeight || 'bold';
-      const tCase = cvData.textCase || 'uppercase';
-
+      const fWeight = cvData.fontWeight || 'bold'; const tCase = cvData.textCase || 'uppercase';
       const actualState = p.state === 'OTHER' ? p.customState : p.state;
       const actualDistrict = p.district === 'OTHER' ? p.customDistrict : p.district;
       const actualTehsil = p.tehsil === 'OTHER' ? p.customTehsil : p.tehsil;
@@ -809,41 +518,18 @@
       if (actualDistrict) contactList.push({ label: 'DISTRICT', val: actualDistrict });
       if (actualState) contactList.push({ label: 'STATE', val: actualState });
 
-      let contactRowsHTML = '';
-      
-      contactRowsHTML = `
-        ${p.name ? `<tr>
-          <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">NAME</td>
-          <td style="font-weight:${fWeight}; font-size:12pt; text-align:center; vertical-align:top; padding:2px 0; color:#000; width:20px;">:</td>
-          <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0 2px 6px; color:#000; word-break:break-word;">${formatText(p.name, tCase)}</td>
-        </tr>` : ''}
-        ${contactList.map((item) => `
-          <tr>
-            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
-            <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:20px;">:</td>
-            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000; word-break:break-word;">${formatText(item.val, tCase)}</td>
-          </tr>
-        `).join('')}
+      let contactRowsHTML = `
+        ${p.name ? `<tr><td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">NAME</td><td style="font-weight:${fWeight}; font-size:12pt; text-align:center; vertical-align:top; padding:2px 0; color:#000; width:20px;">:</td><td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0 2px 6px; color:#000; word-break:break-word;">${formatText(p.name, tCase)}</td></tr>` : ''}
+        ${contactList.map((item) => `<tr><td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">${item.label}</td><td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:20px;">:</td><td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000; word-break:break-word;">${formatText(item.val, tCase)}</td></tr>`).join('')}
       `;
 
       const personalDetails = [
-        { l: 'NAME', v: p.name },
-        { l: 'DATE OF BIRTH', v: d.dob },
-        { l: "FATHER'S NAME", v: d.father },
-        { l: 'GENDER', v: d.gender },
-        { l: 'MARITAL STATUS', v: d.marital },
-        { l: 'NATIONALITY', v: actualNationality },
-        { l: 'LANGUAGE KNOWN', v: d.languages },
-        { l: 'HOBBIES', v: d.hobbies }
+        { l: 'NAME', v: p.name }, { l: 'DATE OF BIRTH', v: d.dob }, { l: "FATHER'S NAME", v: d.father },
+        { l: 'GENDER', v: d.gender }, { l: 'MARITAL STATUS', v: d.marital }, { l: 'NATIONALITY', v: actualNationality },
+        { l: 'LANGUAGE KNOWN', v: d.languages }, { l: 'HOBBIES', v: d.hobbies }
       ].filter(item => item.v && item.v.trim()); 
 
-      const personalDetailsHTML = personalDetails.map(item => `
-        <tr>
-          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:160px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
-          <td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:15px;">:</td>
-          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; word-break:break-word;">${formatText(item.v, tCase)}</td>
-        </tr>
-      `).join('');
+      const personalDetailsHTML = personalDetails.map(item => `<tr><td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:160px; white-space:nowrap; text-transform:uppercase;">${item.l}</td><td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:15px;">:</td><td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; word-break:break-word;">${formatText(item.v, tCase)}</td></tr>`).join('');
 
       const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
       const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
@@ -851,9 +537,7 @@
 
       const photoBoxHTML = p.photo ? `<img src="${p.photo}" alt="Photo" style="width:115px !important; height:145px !important; min-width:115px !important; min-height:145px !important; max-width:115px !important; max-height:145px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : `<div style="width:115px; height:145px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; box-sizing:border-box;"><div style="width:90%; height:92%; border:1px dashed #71717a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fafafa;"><span style="font-size:8pt; font-weight:bold; color:#000; text-transform:uppercase;">PHOTO</span></div></div>`;
 
-      const outerWidth = isPrintMode ? '100%' : '794px';
-      const outerHeight = isPrintMode ? '100%' : '1123px'; 
-
+      const outerWidth = isPrintMode ? '100%' : '794px'; const outerHeight = isPrintMode ? '100%' : '1123px'; 
       const titleDisplay = formatText(cvData.documentTitle || 'CURRICULUM VITAE', tCase);
 
       return `
@@ -862,7 +546,7 @@
             <div style="width:100%; flex:1; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
               <div class="cv-inner-wrapper" style="width:100%; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
                   <div style="flex-shrink:0;">
-                    <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:25pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-stroke: 0.6px #000; text-shadow: 0px 0px 1px #000;">${titleDisplay}</h1>
+                    <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:25pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;">${titleDisplay}</h1>
                     <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
                       <tbody><tr>
                           <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
@@ -910,320 +594,173 @@
       if (container) { container.innerHTML = getDocumentHTML('cv-actual-print-node', true); }
     }
 
-    // Google Boot-up Animation Splash Screen
     function renderBootupSplash(container) {
       const userInitial = currentUser && currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U';
       container.innerHTML = `
         <div class="absolute inset-0 w-full h-full bg-[#08080e] flex flex-col items-center justify-center z-[100] elegant-entry">
-            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.15)] bootup-anim mb-8">
-                <span class="text-[54px] font-black text-indigo-600">${userInitial}</span>
-            </div>
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.15)] bootup-anim mb-8"><span class="text-[54px] font-black text-indigo-600">${userInitial}</span></div>
             <h2 class="text-[22px] sm:text-2xl font-black text-white uppercase tracking-widest bootup-anim" style="animation-delay: 0.1s; opacity: 0;">WELCOME</h2>
             <p class="text-indigo-400 text-sm font-bold mt-2 uppercase tracking-[0.2em] bootup-anim" style="animation-delay: 0.2s; opacity: 0;">${currentUser.displayName.split(' ')[0]}</p>
-            <div class="mt-10 flex gap-2">
-                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></div>
-                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-            </div>
         </div>
       `;
     }
 
     function renderApp() {
       const container = document.getElementById('main-view-container');
-      
-      // Preserve exact scroll position so no visual jump happens
       const scrollArea = document.getElementById('editor-scroll-area');
       const currentScroll = scrollArea ? scrollArea.scrollTop : 0;
 
-      if (justLoggedIn && currentUser && !appStarted) {
-          renderBootupSplash(container);
-          return;
-      }
+      if (justLoggedIn && currentUser && !appStarted) { renderBootupSplash(container); return; }
+      if (!appStarted) { renderWelcomeScreen(container); return; }
 
-      if (!appStarted) {
-        renderWelcomeScreen(container);
-        return;
-      }
-
-      if (activeView === 'preview') {
-        renderPreviewView(container);
-      } else {
-        renderEditorView(container);
-      }
+      if (activeView === 'preview') { renderPreviewView(container); } 
+      else { renderEditorView(container); }
       
-      if (!isNavigating && !enteringEditor) {
-        requestAnimationFrame(() => {
-          const newScroll = document.getElementById('editor-scroll-area');
-          if(newScroll) newScroll.scrollTop = currentScroll;
-        });
-      }
+      if (!isNavigating && !enteringEditor) { requestAnimationFrame(() => { const newScroll = document.getElementById('editor-scroll-area'); if(newScroll) newScroll.scrollTop = currentScroll; }); }
       isNavigating = false;
     }
 
     function goToHome() {
       const container = document.getElementById('main-view-container');
       if (container) container.classList.add('elegant-exit');
-      setTimeout(() => {
-        appStarted = false;
-        enteringEditor = false;
-        isNavigating = true;
-        renderApp();
-      }, 250);
+      setTimeout(() => { appStarted = false; enteringEditor = false; isNavigating = true; renderApp(); }, 250);
     }
-
-    function handleCreateCVClick() {
-        if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO CREATE A CV!", false);
-        createNewCV();
-    }
-
-    function handleHistoryClick() {
-        if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO VIEW HISTORY!", false);
-        openHistory();
-    }
-
+    function handleCreateCVClick() { if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO CREATE A CV!", false); createNewCV(); }
+    function handleHistoryClick() { if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO VIEW HISTORY!", false); openHistory(); }
+    
     function createNewCV() {
-      cvData = JSON.parse(JSON.stringify(defaultCVData));
-      currentCvId = Date.now().toString();
-      localStorage.setItem('techasar_current_cv_id', currentCvId);
-      saveState();
-      
-      const card = document.getElementById('welcome-container');
-      if (card) card.classList.add('elegant-exit');
-      
-      setTimeout(() => {
-        appStarted = true;
-        enteringEditor = true;
-        isNavigating = true;
-        currentPage = 1;
-        activeView = 'editor';
-        renderApp();
-      }, 300); 
+      cvData = JSON.parse(JSON.stringify(defaultCVData)); currentCvId = Date.now().toString(); localStorage.setItem('techasar_current_cv_id', currentCvId); saveState();
+      const card = document.getElementById('welcome-container'); if (card) card.classList.add('elegant-exit');
+      setTimeout(() => { appStarted = true; enteringEditor = true; isNavigating = true; currentPage = 1; activeView = 'editor'; renderApp(); }, 300); 
     }
 
     function renderWelcomeScreen(container) {
       container.classList.remove('elegant-exit');
       container.innerHTML = `
-        <div class="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center bg-[#08080e]">
+        <div class="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center">
           <div class="absolute top-0 left-0 right-0 p-4 flex justify-end z-20">
-            ${authLoading ? `
-                <div class="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 px-4 py-2 rounded-full animate-pulse">
-                    <div class="w-5 h-5 bg-zinc-700/80 rounded-full"></div>
-                    <div class="w-16 h-2.5 bg-zinc-700/80 rounded-full"></div>
-                </div>
-            ` : currentUser ? `
-                <div class="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-full">
-                    <img src="${currentUser.photoURL}" class="w-7 h-7 rounded-full" />
-                    <span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName.split(' ')[0]}</span>
-                    <button type="button" onclick="logoutGoogle()" class="text-[10px] font-bold bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase">LOGOUT</button>
-                </div>
-            ` : `
-                <button type="button" onclick="loginWithGoogle()" class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-white/10 uppercase">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    LOGIN WITH GOOGLE
-                </button>
-            `}
+            ${authLoading ? `<div class="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 px-4 py-2 rounded-full animate-pulse"><div class="w-5 h-5 bg-zinc-700/80 rounded-full"></div><div class="w-16 h-2.5 bg-zinc-700/80 rounded-full"></div></div>` 
+            : currentUser ? `<div class="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-full"><img src="${currentUser.photoURL}" class="w-7 h-7 rounded-full" /><span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName.split(' ')[0]}</span><button type="button" onclick="logoutGoogle()" class="text-[10px] font-bold bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase">LOGOUT</button></div>` 
+            : `<button type="button" onclick="loginWithGoogle()" class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-white/10 uppercase"><svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>LOGIN</button>`}
           </div>
-
           <div class="absolute top-[20%] left-[20%] w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] blob-1 pointer-events-none"></div>
           <div class="absolute bottom-[20%] right-[20%] w-80 h-80 bg-fuchsia-600/15 rounded-full blur-[100px] blob-2 pointer-events-none"></div>
           
           <div id="welcome-container" class="relative z-10 w-full max-w-lg flex flex-col items-center text-center p-6 elegant-entry">
-            <div class="w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 sm:mb-8 anim-icon-float stagger-entry d-0 shadow-inner">
-              <svg class="w-10 h-10 sm:w-12 sm:h-12 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
+            <div class="w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 shadow-inner stagger-entry d-0"><svg class="w-10 h-10 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
             <h1 class="uppercase font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-indigo-300 mb-4 stagger-entry d-1" style="font-size: clamp(32px, 6.5vw, 48px); line-height: 1.1;">CREATE YOUR<br>PROFESSIONAL CV</h1>
-            <p class="text-[16px] sm:text-[17px] font-bold text-zinc-300/80 mb-10 leading-relaxed stagger-entry d-2 max-w-[320px] uppercase">BUILD A PROFESSIONAL CV IN MINUTES WITH A MODERN, SMOOTH, AND EASY EXPERIENCE.</p>
+            <p class="text-[16px] sm:text-[17px] font-bold text-zinc-300/80 mb-10 leading-relaxed stagger-entry d-2 max-w-[320px] uppercase">BUILD A PROFESSIONAL CV IN MINUTES WITH A MODERN, SMOOTH EXPERIENCE.</p>
             <div class="w-full max-w-[340px] stagger-entry d-3 flex flex-col gap-4">
-              <button type="button" onclick="handleCreateCVClick()" class="w-full h-[60px] sm:h-[64px] rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[16px] sm:text-[18px] font-bold active:scale-95 transition-all flex items-center justify-center uppercase shadow-lg shadow-indigo-600/30">CREATE NEW CV</button>
-              <button type="button" onclick="handleHistoryClick()" class="w-full h-[54px] sm:h-[58px] rounded-2xl bg-zinc-800/80 border border-zinc-700/80 hover:bg-zinc-700 text-zinc-200 text-[15px] sm:text-[16px] font-bold active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur-sm uppercase">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>CV HISTORY
-              </button>
+              <button type="button" onclick="handleCreateCVClick()" class="w-full h-[60px] rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[16px] font-bold active:scale-95 transition-all shadow-lg shadow-indigo-600/30 uppercase">CREATE NEW CV</button>
+              <button type="button" onclick="handleHistoryClick()" class="w-full h-[54px] rounded-2xl bg-zinc-800/80 border border-zinc-700/80 hover:bg-zinc-700 text-zinc-200 text-[15px] font-bold active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur-sm uppercase"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>CV HISTORY</button>
             </div>
           </div>
         </div>
       `;
     }
 
-    function openHistory() {
-      renderHistoryList();
-      const modal = document.getElementById('cv-history-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeHistory() {
-      const modal = document.getElementById('cv-history-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
+    function openHistory() { renderHistoryList(); document.getElementById('cv-history-modal').classList.remove('hidden'); document.getElementById('cv-history-modal').classList.add('flex'); }
+    function closeHistory() { document.getElementById('cv-history-modal').classList.add('hidden'); document.getElementById('cv-history-modal').classList.remove('flex'); }
 
     async function renderHistoryList() {
       const container = document.getElementById('history-list-container');
-      container.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-12 opacity-80">
-           <div class="w-8 h-8 border-[3px] border-zinc-800 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
-           <div class="text-zinc-500 text-xs font-bold uppercase tracking-widest">FETCHING HISTORY...</div>
-        </div>
-      `;
-      
+      container.innerHTML = `<div class="flex flex-col items-center py-12"><div class="w-8 h-8 border-[3px] border-zinc-800 border-t-indigo-500 rounded-full animate-spin mb-4"></div><div class="text-zinc-500 text-xs font-bold uppercase">FETCHING HISTORY...</div></div>`;
       if (!currentUser || !window.db) return;
-
       try {
           const querySnapshot = await window.getDocs(window.collection(window.db, `users/${currentUser.uid}/cvs`));
-          let hist = [];
-          querySnapshot.forEach((doc) => { hist.push(doc.data()); });
-          hist.sort((a,b) => b.timestamp - a.timestamp);
-
-          if (hist.length === 0) {
-            container.innerHTML = '<div class="text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND IN HISTORY.</div>';
-            return;
-          }
-          
+          let hist = []; querySnapshot.forEach((doc) => { hist.push(doc.data()); }); hist.sort((a,b) => b.timestamp - a.timestamp);
+          if (hist.length === 0) { container.innerHTML = '<div class="text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND.</div>'; return; }
           container.innerHTML = hist.map(h => `
-            <div class="flex items-center justify-between p-3 bg-[#181826] border border-zinc-700/80 hover:border-zinc-600 rounded-xl mb-2 transition-all">
-              <div class="flex flex-col flex-1 min-w-0 cursor-pointer py-1" onclick="loadCVFromHistory(event, '${h.id}')">
-                <span class="text-zinc-100 font-bold text-sm truncate uppercase">${escapeHtml(h.name)}</span>
-                <span class="text-zinc-500 text-[11px] mt-0.5 font-bold uppercase">${h.date || 'SAVED RECENTLY'}</span>
+            <div class="flex items-center justify-between p-3 bg-[#181826] border border-zinc-700/80 rounded-xl mb-2">
+              <div class="flex flex-col flex-1 min-w-0 cursor-pointer" onclick="loadCVFromHistory(event, '${h.id}')"><span class="text-zinc-100 font-bold text-sm truncate uppercase">${escapeHtml(h.name)}</span><span class="text-zinc-500 text-[11px] mt-0.5 font-bold uppercase">${h.date || 'SAVED RECENTLY'}</span></div>
+              <div class="flex gap-2 shrink-0 ml-3">
+                <button type="button" onclick="loadCVFromHistory(event, '${h.id}')" class="p-2 bg-indigo-600/20 rounded-lg text-indigo-400 active:scale-95"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
+                <button type="button" onclick="printFromHistory(event, '${h.id}')" class="flex items-center gap-1.5 bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95 uppercase w-[80px] justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg><span>PRINT</span></button>
+                <button type="button" onclick="deleteFromHistory(event, '${h.id}')" class="p-2 bg-zinc-800/80 rounded-lg text-zinc-400 hover:text-red-400 active:scale-95"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
               </div>
-              <div class="flex items-center gap-2 shrink-0 ml-3">
-                <button type="button" onclick="loadCVFromHistory(event, '${h.id}')" class="p-2 bg-indigo-600/20 hover:bg-indigo-600/40 rounded-lg text-indigo-400 active:scale-95 transition-all" title="Edit">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                </button>
-                <button type="button" onclick="printFromHistory(event, '${h.id}')" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm uppercase w-[80px] justify-center">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-                  <span>PRINT</span>
-                </button>
-                <button type="button" onclick="deleteFromHistory(event, '${h.id}')" class="p-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-red-400 active:scale-95 transition-all" title="Delete">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
-              </div>
-            </div>
-          `).join('');
-      } catch(e) {
-          container.innerHTML = '<div class="text-red-400 text-sm text-center py-8 font-bold uppercase">ERROR LOADING HISTORY.</div>';
-      }
+            </div>`).join('');
+      } catch(e) { container.innerHTML = '<div class="text-red-400 text-sm text-center py-8 font-bold uppercase">ERROR LOADING HISTORY.</div>'; }
     }
 
     async function loadCVFromHistory(e, id) {
-      if(e) e.stopPropagation();
-      if(!currentUser || !window.db) return;
+      if(e) e.stopPropagation(); if(!currentUser || !window.db) return;
       try {
           const docSnap = await window.getDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
           if(docSnap.exists()){
-             cvData = JSON.parse(JSON.stringify(docSnap.data().data));
-             currentCvId = id;
-             localStorage.setItem('techasar_current_cv_id', currentCvId);
-             saveState();
-             closeHistory();
-             appStarted = true;
-             enteringEditor = true;
-             isNavigating = true;
-             currentPage = 1;
-             activeView = 'editor';
-             renderApp();
+             cvData = JSON.parse(JSON.stringify(docSnap.data().data)); currentCvId = id; localStorage.setItem('techasar_current_cv_id', currentCvId); saveState();
+             closeHistory(); appStarted = true; enteringEditor = true; isNavigating = true; currentPage = 1; activeView = 'editor'; renderApp();
           }
       } catch(e) {}
     }
-
     async function printFromHistory(e, id) {
-      if(e) e.stopPropagation();
-      if(!currentUser || !window.db) return;
-      
-      const btn = e.currentTarget;
-      const ogHTML = btn.innerHTML;
-      btn.innerHTML = `<div class="w-3.5 h-3.5 border-[2px] border-white/30 border-t-white rounded-full animate-spin"></div>`;
-      
+      if(e) e.stopPropagation(); if(!currentUser || !window.db) return;
+      const btn = e.currentTarget; const ogHTML = btn.innerHTML; btn.innerHTML = `<div class="w-3.5 h-3.5 border-[2px] border-white/30 border-t-white rounded-full animate-spin"></div>`;
       try {
           const docSnap = await window.getDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
           if(docSnap.exists()){
-             const tempOldData = cvData;
-             cvData = JSON.parse(JSON.stringify(docSnap.data().data));
-             
-             cvData.personal = cvData.personal || {};
-             cvData.details = cvData.details || {};
-             cvData.footer = cvData.footer || {};
-             
-             requestAnimationFrame(() => {
-                 triggerPrint(() => {
-                    cvData = tempOldData;
-                    if(activeView === 'preview') renderApp();
-                 });
-             });
+             const tempOldData = cvData; cvData = JSON.parse(JSON.stringify(docSnap.data().data));
+             requestAnimationFrame(() => { triggerPrint(() => { cvData = tempOldData; if(activeView === 'preview') renderApp(); }); });
           }
-      } catch(err) {
-          showUIAlert("ERROR", "Failed to load CV for printing.", false);
-      }
+      } catch(err) { showUIAlert("ERROR", "Failed to load CV for printing.", false); }
       btn.innerHTML = ogHTML;
     }
-
     function deleteFromHistory(e, id) {
         if(e) e.stopPropagation();
         showUIAlert("DELETE CV?", "ARE YOU SURE YOU WANT TO DELETE THIS CV FROM HISTORY?", true, async (res) => {
             if(res) {
-                try {
-                    await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
-                    if (currentCvId === id) {
-                      cvData = JSON.parse(JSON.stringify(defaultCVData));
-                      currentCvId = null;
-                      localStorage.removeItem('techasar_current_cv_id');
-                      saveState();
-                    }
-                    renderHistoryList();
-                } catch(e) {}
+                try { await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id)); if (currentCvId === id) { cvData = JSON.parse(JSON.stringify(defaultCVData)); currentCvId = null; localStorage.removeItem('techasar_current_cv_id'); saveState(); } renderHistoryList(); } catch(e) {}
             }
         });
     }
 
-    function autoResizeTextarea(element) {
-      element.style.height = 'auto';
-      element.style.height = (element.scrollHeight) + 'px';
+    function autoResizeTextarea(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight) + 'px'; }
+    
+    function toggleTheme(e) {
+       const btn = e.currentTarget; const rect = btn.getBoundingClientRect(); const x = rect.left + rect.width / 2; const y = rect.top + rect.height / 2;
+       const ripple = document.createElement('div'); ripple.className = 'fixed rounded-full z-[999] pointer-events-none';
+       const isLight = document.body.classList.contains('light-theme');
+       ripple.style.backgroundColor = isLight ? '#08080e' : '#f0f2f5';
+       const size = Math.max(window.innerWidth, window.innerHeight) * 2.5;
+       ripple.style.width = size + 'px'; ripple.style.height = size + 'px';
+       ripple.style.left = (x - size/2) + 'px'; ripple.style.top = (y - size/2) + 'px';
+       ripple.style.animation = 'rippleEffect 0.6s ease-in-out forwards';
+       document.body.appendChild(ripple);
+       
+       setTimeout(() => {
+          document.body.classList.toggle('light-theme'); ripple.remove();
+          const svg = btn.querySelector('svg');
+          if(document.body.classList.contains('light-theme')) { svg.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'; } 
+          else { svg.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'; }
+       }, 550);
     }
 
     function renderEditorView(container) {
-      // PREVENT SLIDE BLINKING: Maintain persistent shell layout, just update the inner container 
       let layout = document.getElementById('editor-layout-shell');
       if (!layout) {
           container.innerHTML = `
             <div id="editor-layout-shell" class="flex-1 flex flex-col overflow-hidden relative">
               <div class="h-14 px-3 bg-[#11111c] border-b border-zinc-800/80 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-sm relative">
-                <button type="button" onclick="goToHome()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-white active:scale-95 transition-all relative z-10">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <span id="nav-step-counter" class="absolute inset-0 flex items-center justify-center pointer-events-none text-[15px] font-black text-zinc-100 tracking-widest uppercase">
-                    STEP 1/9
-                </span>
-                <button type="button" onclick="openResetDialog()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-red-400 active:scale-95 transition-all relative z-10">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                </button>
+                <button type="button" onclick="goToHome()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-white active:scale-95 transition-all relative z-10"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button>
+                <span id="nav-step-counter" class="absolute inset-0 flex items-center justify-center pointer-events-none text-[15px] font-black text-zinc-100 tracking-widest uppercase">STEP 1/9</span>
+                <div class="flex items-center gap-2 relative z-10">
+                   <button type="button" onclick="toggleTheme(event)" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-indigo-400 active:scale-95 transition-all"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
+                   <button type="button" onclick="openResetDialog()" class="p-2 rounded-xl border border-zinc-800 bg-[#181826] text-zinc-400 hover:text-red-400 active:scale-95 transition-all"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg></button>
+                </div>
               </div>
               
-              <div id="editor-scroll-area" class="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth bg-[#08080e]">
-                <!-- Slide Wrapper -->
-                <div id="slide-wrapper" class="absolute inset-0 px-3.5 py-4 pb-28 w-full"></div>
+              <div id="editor-scroll-area" class="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth bg-transparent">
+                <div id="slide-wrapper" class="relative w-full h-full min-h-full"></div>
               </div>
 
-              <div class="absolute bottom-0 left-0 right-0 z-30 bg-[#0c0c16]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
-                <button type="button" id="nav-prev-btn" onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold uppercase border border-zinc-700/60 active:scale-95 shrink-0 transition-transform">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
-                  <span>PREV</span>
-                </button>
-                <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold uppercase active:scale-95 shadow-sm transition-transform">
-                  <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                  <span>PREVIEW CV</span>
-                </button>
-                <button type="button" id="nav-next-btn" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform">
-                  <span id="nav-next-txt">NEXT</span>
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg>
-                </button>
+              <div class="absolute bottom-0 left-0 right-0 z-30 bg-[#10101c]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
+                <button type="button" id="nav-prev-btn" onclick="goPrevStep()" class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-bold uppercase border border-zinc-700/60 active:scale-95 shrink-0 transition-transform"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg><span>PREV</span></button>
+                <button type="button" onclick="openPreview()" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold uppercase active:scale-95 shadow-sm transition-transform"><svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg><span>PREVIEW CV</span></button>
+                <button type="button" id="nav-next-btn" onclick="goNextStep()" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 shrink-0 transition-transform"><span id="nav-next-txt">NEXT</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></button>
               </div>
             </div>
           `;
       }
 
-      // Update Nav Buttons Text/State
       document.getElementById('nav-step-counter').innerText = `STEP ${currentPage}/${TOTAL_STEPS}`;
       document.getElementById('nav-prev-btn').disabled = (currentPage === 1);
       document.getElementById('nav-next-txt').innerText = (currentPage === TOTAL_STEPS ? 'REVIEW' : 'NEXT');
@@ -1231,45 +768,15 @@
       let animClass = '';
       if (enteringEditor) { animClass = 'elegant-entry'; enteringEditor = false; } 
       else if (isNavigating) { animClass = animDirection === 'next' ? 'anim-next' : 'anim-prev'; } 
-      else { animClass = ''; }
 
       let stepContentHTML = '';
 
       if (currentPage === 1) {
-        let stateOpts = indiaData.states.map(s => ({label: s, val: s}));
-        stateOpts.push({label: 'OTHER', val: 'OTHER'});
-
-        let selectedState = cvData.personal.state || '';
-        let distOpts = [];
-        if (selectedState && selectedState !== 'OTHER') {
-            let dists = indiaData.districts[selectedState] || [];
-            if(dists.length > 0) {
-                distOpts = dists.map(d => ({label: d, val: d}));
-                distOpts.push({label: 'OTHER', val: 'OTHER'});
-            } else {
-                distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-                if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
-            }
-        } else if (selectedState === 'OTHER') {
-            distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-            if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
-        }
-
-        let selectedDist = cvData.personal.district || '';
-        let tehsilOpts = [];
-        if (selectedDist && selectedDist !== 'OTHER') {
-            let tehsils = indiaData.tehsils[selectedDist] || [];
-            if(tehsils.length > 0) {
-                tehsilOpts = tehsils.map(t => ({label: t, val: t}));
-                tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
-            } else {
-                tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-                if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
-            }
-        } else if (selectedDist === 'OTHER') {
-            tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-            if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
-        }
+        let stateOpts = indiaData.states.map(s => ({label: s, val: s})); stateOpts.push({label: 'OTHER', val: 'OTHER'});
+        let selectedState = cvData.personal.state || ''; let distOpts = [];
+        if (selectedState && selectedState !== 'OTHER') { let dists = indiaData.districts[selectedState] || []; if(dists.length > 0) { distOpts = dists.map(d => ({label: d, val: d})); distOpts.push({label: 'OTHER', val: 'OTHER'}); } else { distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}]; if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER'; } } else if (selectedState === 'OTHER') { distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}]; if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER'; }
+        let selectedDist = cvData.personal.district || ''; let tehsilOpts = [];
+        if (selectedDist && selectedDist !== 'OTHER') { let tehsils = indiaData.tehsils[selectedDist] || []; if(tehsils.length > 0) { tehsilOpts = tehsils.map(t => ({label: t, val: t})); tehsilOpts.push({label: 'OTHER', val: 'OTHER'}); } else { tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}]; if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER'; } } else if (selectedDist === 'OTHER') { tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}]; if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER'; }
 
         stepContentHTML = `
           <div class="space-y-3.5 pb-8">
@@ -1277,17 +784,13 @@
               <div class="flex items-center gap-3.5">
                 <div id="photo-container" class="w-[72px] h-[88px] rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden shrink-0 bg-cover bg-top relative" style="background-image: ${cvData.personal.photo ? `url('${cvData.personal.photo}')` : 'none'}; border-style: ${cvData.personal.photo ? 'solid' : 'dashed'}; border-color: ${cvData.personal.photo ? '#6366f1' : undefined};">
                   <div id="photo-placeholder" class="flex flex-col items-center gap-1 text-[10px] text-zinc-400 uppercase font-bold" style="display: ${cvData.personal.photo ? 'none' : 'flex'}">
-                    <svg class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    <span>PHOTO</span>
+                    <svg class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>PHOTO</span>
                   </div>
                 </div>
                 <div class="flex-1 min-w-0 space-y-2">
                   <span class="text-xs font-bold text-zinc-200 block uppercase">PASSPORT PHOTO</span>
                   <div class="flex items-center gap-2">
-                    <button type="button" onclick="document.getElementById('file-input-photo').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold active:scale-95 uppercase">
-                      <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                      <span id="photo-btn-text">${cvData.personal.photo ? 'CHANGE' : 'UPLOAD'}</span>
-                    </button>
+                    <button type="button" onclick="document.getElementById('file-input-photo').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold active:scale-95 uppercase"><svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg><span id="photo-btn-text">${cvData.personal.photo ? 'CHANGE' : 'UPLOAD'}</span></button>
                     <button id="photo-remove-btn" type="button" onclick="removePhoto()" class="p-1.5 rounded-xl bg-red-500/15 text-red-400 text-xs active:scale-95 shrink-0" style="display: ${cvData.personal.photo ? 'block' : 'none'}"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                     <input id="file-input-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
                   </div>
@@ -1297,48 +800,35 @@
 
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FULL NAME *</label>
-                <input type="text" value="${escapeHtml(cvData.personal.name)}" oninput="cvData.personal.name = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input type="text" placeholder="FULL NAME *" value="${escapeHtml(cvData.personal.name)}" oninput="cvData.personal.name = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
               </div>
               <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">MOBILE NUMBER *</label>
-                <input type="tel" value="${escapeHtml(cvData.personal.mobile)}" oninput="cvData.personal.mobile = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input type="tel" placeholder="MOBILE NUMBER *" value="${escapeHtml(cvData.personal.mobile)}" oninput="cvData.personal.mobile = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
               </div>
               <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">EMAIL ADDRESS</label>
-                <input type="email" value="${escapeHtml(cvData.personal.email)}" oninput="cvData.personal.email = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input type="email" placeholder="EMAIL ADDRESS" value="${escapeHtml(cvData.personal.email)}" oninput="cvData.personal.email = this.value; saveState();" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
               </div>
               <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">ADDRESS (VILL & POST / MOHALLA)</label>
-                <input type="text" value="${escapeHtml(cvData.personal.villagePost)}" oninput="cvData.personal.villagePost = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input type="text" placeholder="ADDRESS (VILL & POST / MOHALLA)" value="${escapeHtml(cvData.personal.villagePost)}" oninput="cvData.personal.villagePost = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
               </div>
               <div class="grid grid-cols-2 gap-2.5 w-full">
                 <div class="min-w-0">
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">STATE</label>
                   ${createCustomDropdown('personal.state', stateOpts, 'SELECT STATE')}
                   <div id="custom-state-wrapper" style="display: ${cvData.personal.state === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                     <input type="text" placeholder="ENTER STATE" oninput="cvData.personal.customState = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customState || '')}">
+                     <input type="text" placeholder="ENTER STATE" oninput="cvData.personal.customState = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" value="${escapeHtml(cvData.personal.customState || '')}">
                   </div>
                 </div>
                 <div class="min-w-0">
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DISTRICT</label>
-                  ${!selectedState || selectedState === '' 
-                    ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span>SELECT DISTRICT</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>`
-                    : createCustomDropdown('personal.district', distOpts, 'SELECT DISTRICT')}
+                  ${!selectedState || selectedState === '' ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span class="truncate whitespace-nowrap pr-2">SELECT DISTRICT</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>` : createCustomDropdown('personal.district', distOpts, 'SELECT DISTRICT')}
                   <div id="custom-district-wrapper" style="display: ${cvData.personal.district === 'OTHER' && selectedState ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                     <input type="text" placeholder="ENTER DISTRICT" oninput="cvData.personal.customDistrict = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customDistrict || '')}">
+                     <input type="text" placeholder="ENTER DISTRICT" oninput="cvData.personal.customDistrict = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" value="${escapeHtml(cvData.personal.customDistrict || '')}">
                   </div>
                 </div>
               </div>
               <div class="w-full">
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEHSIL</label>
-                ${!selectedState || selectedState === '' 
-                  ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span>SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>`
-                  : (!selectedDist || selectedDist === ''
-                    ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT DISTRICT FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span>SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>`
-                    : createCustomDropdown('personal.tehsil', tehsilOpts, 'SELECT TEHSIL'))}
+                ${!selectedState || selectedState === '' ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span class="truncate whitespace-nowrap pr-2">SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>` : (!selectedDist || selectedDist === '' ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT DISTRICT FIRST', false)" class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[14px] font-bold uppercase text-zinc-500 outline-none flex justify-between items-center cursor-pointer shadow-sm active:scale-[0.98] transition-transform"><span class="truncate whitespace-nowrap pr-2">SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div>` : createCustomDropdown('personal.tehsil', tehsilOpts, 'SELECT TEHSIL'))}
                 <div id="custom-tehsil-wrapper" style="display: ${cvData.personal.tehsil === 'OTHER' && selectedDist ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                   <input type="text" placeholder="ENTER TEHSIL" oninput="cvData.personal.customTehsil = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.personal.customTehsil || '')}">
+                   <input type="text" placeholder="ENTER TEHSIL" oninput="cvData.personal.customTehsil = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" value="${escapeHtml(cvData.personal.customTehsil || '')}">
                 </div>
               </div>
             </div>
@@ -1348,8 +838,8 @@
         stepContentHTML = `
           <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <label class="block text-xs font-bold text-zinc-200 uppercase">CAREER OBJECTIVE STATEMENT</label>
-              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none focus:border-indigo-500 resize-none">${escapeHtml(cvData.objective)}</textarea>
+              <label class="block text-xs font-bold text-zinc-200 uppercase tracking-widest">CAREER OBJECTIVE STATEMENT</label>
+              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="capitalize w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none focus:border-indigo-500 resize-none transition-colors">${escapeHtml(cvData.objective)}</textarea>
               <div class="pt-2 border-t border-zinc-800">
                 <span class="text-[11px] font-bold text-zinc-400 block mb-1.5 uppercase">QUICK TEMPLATES:</span>
                 <div class="space-y-1.5">
@@ -1363,9 +853,9 @@
         `;
       } else if (currentPage === 3) {
         const academicItems = (cvData.academic || []).map((item, idx) => `
-          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
+          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden transition-colors">
             <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
+            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="capitalize flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
             <button type="button" onclick="removeArrayItem('academic', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
@@ -1375,7 +865,7 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">ACADEMIC QUALIFICATIONS</h3>
-                <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
+                <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0 transition-transform"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
               </div>
               <div class="space-y-2">${academicItems}</div>
               <div class="pt-2 border-t border-zinc-800 space-y-1.5">
@@ -1386,7 +876,6 @@
                   <button type="button" onclick="addArrayItem('academic', 'B.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY BAREILLY IN 2025')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ B.A DEGREE</button>
                   <button type="button" onclick="addArrayItem('academic', 'B.SC PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ B.SC</button>
                   <button type="button" onclick="addArrayItem('academic', 'B.COM PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ B.COM</button>
-                  <button type="button" onclick="addArrayItem('academic', 'M.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ M.A</button>
                 </div>
               </div>
             </div>
@@ -1394,9 +883,9 @@
         `;
       } else if (currentPage === 4) {
         const otherItems = (cvData.other || []).map((item, idx) => `
-          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
+          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden transition-colors">
             <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
+            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="capitalize flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
             <button type="button" onclick="removeArrayItem('other', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
@@ -1406,7 +895,7 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">OTHER COURSES & DIPLOMAS</h3>
-                <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
+                <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0 transition-transform"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
               </div>
               <div class="space-y-2">${otherItems}</div>
               <div class="pt-2 border-t border-zinc-800 space-y-1.5">
@@ -1415,9 +904,7 @@
                   <button type="button" onclick="addArrayItem('other', 'COURSE ON COMPUTER CONCEPTS DIPLOMA (CCC)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ CCC DIPLOMA</button>
                   <button type="button" onclick="addArrayItem('other', 'DIPLOMA IN COMPUTER APPLICATION (DCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ DCA DIPLOMA</button>
                   <button type="button" onclick="addArrayItem('other', 'ADVANCED DIPLOMA IN COMPUTER APPLICATION (ADCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ ADCA</button>
-                  <button type="button" onclick="addArrayItem('other', 'O LEVEL COMPLETED FROM NIELIT')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ O LEVEL</button>
                   <button type="button" onclick="addArrayItem('other', 'HINDI & ENGLISH TYPING SPEED 35 W.P.M.')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ TYPING</button>
-                  <button type="button" onclick="addArrayItem('other', 'ENGLISH SPEAKING COURSE COMPLETED')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ SPOKEN ENG.</button>
                 </div>
               </div>
             </div>
@@ -1425,9 +912,9 @@
         `;
       } else if (currentPage === 5) {
         const expItems = (cvData.experience || []).map((item, idx) => `
-          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
+          <div class="flex items-start gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden transition-colors">
             <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 uppercase">${idx + 1}</span>
-            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
+            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="capitalize flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 24px;">${escapeHtml(item)}</textarea>
             <button type="button" onclick="removeArrayItem('experience', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 mt-0.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
         `).join('');
@@ -1437,15 +924,13 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">WORKING EXPERIENCE</h3>
-                <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
+                <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold uppercase active:scale-95 shrink-0 transition-transform"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg><span>ADD</span></button>
               </div>
               <div class="space-y-2">${expItems}</div>
               <div class="pt-2 border-t border-zinc-800 space-y-1.5">
                 <span class="text-[11px] font-bold text-zinc-400 block uppercase">1-TAP ADD:</span>
                 <div class="flex flex-wrap gap-1.5">
                   <button type="button" onclick="addArrayItem('experience', '1 YEAR WORKING EXPERIENCE IN DATA ENTRY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ DATA ENTRY</button>
-                  <button type="button" onclick="addArrayItem('experience', '2 YEARS WORKING EXPERIENCE IN CYBER CAFE')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ CYBER CAFE</button>
-                  <button type="button" onclick="addArrayItem('experience', '6 MONTHS WORKING EXPERIENCE AS A CASHIER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ CASHIER</button>
                   <button type="button" onclick="addArrayItem('experience', 'FRESHER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ FRESHER</button>
                 </div>
               </div>
@@ -1458,33 +943,24 @@
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
               <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">PERSONAL DETAILS TABLE</h3>
               <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE OF BIRTH</label>
-                ${generateDateSelects(cvData.details.dob, 'details.dob')}
+                <label class="block text-[11px] font-bold text-zinc-400 mb-1.5 uppercase">DATE OF BIRTH</label>
+                ${generateDateInputs(cvData.details.dob, 'details.dob')}
               </div>
               <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">FATHER'S NAME</label>
-                <input type="text" value="${escapeHtml(cvData.details.father)}" oninput="cvData.details.father = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input type="text" placeholder="FATHER'S NAME" value="${escapeHtml(cvData.details.father)}" oninput="cvData.details.father = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
               </div>
               <div class="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">GENDER</label>
-                  ${createCustomDropdown('details.gender', [{label: 'MALE', val: 'MALE'}, {label: 'FEMALE', val: 'FEMALE'}, {label: 'OTHER', val: 'OTHER'}], 'SELECT GENDER')}
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">MARITAL STATUS</label>
-                  ${createCustomDropdown('details.marital', [{label: 'UNMARRIED', val: 'UNMARRIED'}, {label: 'MARRIED', val: 'MARRIED'}], 'SELECT STATUS')}
-                </div>
+                ${createCustomDropdown('details.gender', [{label: 'MALE', val: 'MALE'}, {label: 'FEMALE', val: 'FEMALE'}, {label: 'OTHER', val: 'OTHER'}], 'SELECT GENDER')}
+                ${createCustomDropdown('details.marital', [{label: 'UNMARRIED', val: 'UNMARRIED'}, {label: 'MARRIED', val: 'MARRIED'}], 'SELECT STATUS')}
               </div>
               <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">NATIONALITY</label>
                 ${createCustomDropdown('details.nationality', [{label: 'INDIAN', val: 'INDIAN'}, {label: 'OTHER', val: 'OTHER'}], 'SELECT NATIONALITY')}
                 <div id="custom-nationality-wrapper" style="display: ${cvData.details.nationality === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
-                   <input type="text" placeholder="ENTER NATIONALITY" oninput="cvData.details.customNationality = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" value="${escapeHtml(cvData.details.customNationality || '')}">
+                   <input type="text" placeholder="ENTER NATIONALITY" oninput="cvData.details.customNationality = this.value; saveState();" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" value="${escapeHtml(cvData.details.customNationality || '')}">
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">LANGUAGE KNOWN</label>
-                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="HINDI & ENGLISH" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="LANGUAGE KNOWN (e.g. HINDI & ENGLISH)" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
                 <div class="flex flex-wrap gap-1.5 mt-2">
                   <button type="button" onclick="setLanguage('HINDI')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ HINDI</button>
                   <button type="button" onclick="setLanguage('ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ ENGLISH</button>
@@ -1492,18 +968,10 @@
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">HOBBIES</label>
-                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="EDITING, LISTENING MUSIC" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
+                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="HOBBIES (e.g. EDITING, MUSIC)" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 placeholder:text-zinc-500 transition-colors" />
                 <div class="flex flex-wrap gap-1.5 mt-2">
-                  <button type="button" onclick="appendHobby('EXCEL')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ EXCEL</button>
-                  <button type="button" onclick="appendHobby('WORD')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ WORD</button>
-                  <button type="button" onclick="appendHobby('AI LEARNING TECH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ AI LEARNING</button>
-                  <button type="button" onclick="appendHobby('MUSIC')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ MUSIC</button>
-                  <button type="button" onclick="appendHobby('LISTENING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ LISTENING</button>
-                  <button type="button" onclick="appendHobby('GAMING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ GAMING</button>
-                  <button type="button" onclick="appendHobby('EDITING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ EDITING</button>
                   <button type="button" onclick="appendHobby('READING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ READING</button>
-                  <button type="button" onclick="appendHobby('TRAVELING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ TRAVELING</button>
+                  <button type="button" onclick="appendHobby('MUSIC')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300 active:scale-95">+ MUSIC</button>
                 </div>
               </div>
             </div>
@@ -1513,8 +981,8 @@
         stepContentHTML = `
           <div class="space-y-3.5 pb-8">
             <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-2.5">
-              <label class="block text-xs font-bold text-zinc-200 uppercase tracking-wider">DECLARATION STATEMENT</label>
-              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="uppercase w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 leading-relaxed resize-none">${escapeHtml(cvData.declaration)}</textarea>
+              <label class="block text-xs font-bold text-zinc-200 uppercase tracking-widest">DECLARATION STATEMENT</label>
+              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="capitalize w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500 leading-relaxed resize-none transition-colors">${escapeHtml(cvData.declaration)}</textarea>
               <div class="pt-2 border-t border-zinc-800">
                 <span class="text-[11px] font-bold text-zinc-400 block mb-1.5 uppercase">QUICK TEMPLATE:</span>
                 <button type="button" onclick="setDeclarationPreset('I HEREBY DECLARE THAT ALL THE INFORMATION MENTIONED ABOVE IS TRUE TO THE BEST OF MY KNOWLEDGE. IF YOU GIVE ME A CHANCE, I ASSURE MY HARD WORK, DEDICATION AND SINCERITY')" class="w-full text-left text-[11.5px] font-bold bg-[#181826] hover:bg-[#1f1f32] p-2.5 rounded-xl border border-zinc-700/70 text-zinc-300 uppercase active:scale-[0.99] transition-all">"I HEREBY DECLARE THAT ALL THE INFORMATION..."</button>
@@ -1525,23 +993,17 @@
       } else if (currentPage === 8) {
         stepContentHTML = `
           <div class="space-y-3.5 pb-8">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-4">
-              <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 border-b border-zinc-800 pb-2 mb-3">SIGN-OFF DETAILS</h3>
-                <div class="space-y-3">
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DATE</label>
-                    ${generateDateSelects(cvData.footer.date, 'footer.date')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">PLACE</label>
-                    <input type="text" value="${escapeHtml(cvData.footer.place)}" oninput="cvData.footer.place = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">SIGNATURE NAME</label>
-                    <input type="text" value="${escapeHtml(cvData.footer.signName)}" oninput="cvData.footer.signName = this.value; saveState();" class="uppercase w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 font-bold outline-none focus:border-indigo-500" />
-                  </div>
-                </div>
+            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group transition-all">
+              <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="flex items-center justify-between relative z-10">
+                 <div class="flex flex-col">
+                    <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mb-1.5">SIGN-OFF SUMMARY</span>
+                    <span class="text-[16px] text-zinc-100 font-bold capitalize">${cvData.footer.signName || 'NO SIGNATURE ADDED'}</span>
+                    ${cvData.footer.place ? `<span class="text-[13px] text-zinc-500 font-bold capitalize mt-0.5">${cvData.footer.place} ${cvData.footer.date ? `| ${cvData.footer.date}` : ''}</span>` : '<span class="text-[12px] text-zinc-600 font-bold uppercase mt-0.5">CLICK + TO ADD DETAILS</span>'}
+                 </div>
+                 <button type="button" onclick="openSignatureModal()" class="w-12 h-12 bg-indigo-600 hover:bg-indigo-500 rounded-2xl flex items-center justify-center text-white active:scale-95 shadow-lg shadow-indigo-600/30 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                 </button>
               </div>
             </div>
           </div>
@@ -1553,22 +1015,10 @@
               <div>
                 <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 border-b border-zinc-800 pb-2 mb-3">DOCUMENT SETTINGS</h3>
                 <div class="space-y-3">
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DOCUMENT TITLE</label>
-                    ${createCustomDropdown('documentTitle', [{label: 'CURRICULUM VITAE', val: 'CURRICULUM VITAE'}, {label: 'RESUME', val: 'RESUME'}], 'SELECT TITLE')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">DOCUMENT FONT</label>
-                    ${createCustomDropdown('font', [{label: 'TIMES NEW ROMAN', val: 'Times New Roman'}, {label: 'ARIAL', val: 'Arial'}, {label: 'CALIBRI', val: 'Calibri'}, {label: 'ALGERIAN', val: 'Algerian'}], 'SELECT FONT')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEXT WEIGHT</label>
-                    ${createCustomDropdown('fontWeight', [{label: 'BOLD TEXT', val: 'bold'}, {label: 'NORMAL TEXT', val: 'normal'}], 'SELECT TEXT WEIGHT')}
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-zinc-300 mb-1 uppercase">TEXT CASE</label>
-                    ${createCustomDropdown('textCase', [{label: 'UPPERCASE (ALL CAPITAL)', val: 'uppercase'}, {label: 'PROPER CASE (FIRST LETTER CAPITAL)', val: 'capitalize'}], 'SELECT TEXT CASE')}
-                  </div>
+                  ${createCustomDropdown('documentTitle', [{label: 'CURRICULUM VITAE', val: 'CURRICULUM VITAE'}, {label: 'RESUME', val: 'RESUME'}], 'DOCUMENT TITLE')}
+                  ${createCustomDropdown('font', [{label: 'TIMES NEW ROMAN', val: 'Times New Roman'}, {label: 'ARIAL', val: 'Arial'}, {label: 'CALIBRI', val: 'Calibri'}, {label: 'ALGERIAN', val: 'Algerian'}], 'DOCUMENT FONT')}
+                  ${createCustomDropdown('fontWeight', [{label: 'BOLD TEXT', val: 'bold'}, {label: 'NORMAL TEXT', val: 'normal'}], 'TEXT WEIGHT')}
+                  ${createCustomDropdown('textCase', [{label: 'UPPERCASE (ALL CAPITAL)', val: 'uppercase'}, {label: 'PROPER CASE (FIRST LETTER CAPITAL)', val: 'capitalize'}], 'TEXT CASE')}
                 </div>
               </div>
             </div>
@@ -1576,99 +1026,71 @@
         `;
       }
 
-      // Instead of replacing outer layout, just replace the slider container
+      // Smooth Sliding Logic (Zero Blinking Cross-Fade)
       const slideWrapper = document.getElementById('slide-wrapper');
-      slideWrapper.innerHTML = `<div class="${animClass} w-full">${stepContentHTML}</div>`;
+      const newSlide = document.createElement('div');
+      newSlide.className = `w-full absolute inset-0 px-3.5 py-4 pb-28 ${animClass}`;
+      newSlide.innerHTML = stepContentHTML;
+
+      const oldSlide = slideWrapper.querySelector('.slide-content');
+      if (oldSlide && isNavigating) {
+          oldSlide.classList.remove('anim-next', 'anim-prev', 'elegant-entry');
+          oldSlide.classList.add(animDirection === 'next' ? 'exit-next' : 'exit-prev');
+          setTimeout(() => { if(oldSlide.parentNode) oldSlide.remove(); }, 400); // Wait for anim
+      } else {
+          slideWrapper.innerHTML = '';
+      }
       
-      requestAnimationFrame(() => { 
-          slideWrapper.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el)); 
-      });
+      newSlide.classList.add('slide-content');
+      slideWrapper.appendChild(newSlide);
+      
+      requestAnimationFrame(() => { newSlide.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el)); });
     }
 
     function renderPreviewView(container) {
+      // Zoom feature completely removed, strictly auto-fit applied
       const scaledW = Math.round(794 * previewZoom);
       const scaledH = Math.round(1123 * previewZoom);
 
       container.innerHTML = `
         <div class="flex-1 flex flex-col overflow-hidden bg-[#06060a] elegant-entry">
-          <div class="bg-[#0e0e18] border-b border-zinc-800 px-3 py-2 flex items-center justify-between gap-2 z-20 shrink-0">
-            <button type="button" onclick="closePreview()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95">
+          <div class="bg-[#0e0e18] border-b border-zinc-800 px-3 py-2 flex items-center justify-between gap-2 z-20 shrink-0 shadow-sm">
+            <button type="button" onclick="closePreview()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95 transition-all">
               <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
               <span>EDIT</span>
             </button>
-            <div class="flex items-center gap-1 bg-[#141422] p-1 rounded-lg border border-zinc-800">
-              <button type="button" onclick="zoomPreview(-0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
-              <span class="text-[11px] font-bold text-zinc-300 min-w-9 text-center tabular-nums">${Math.round(previewZoom * 100)}%</span>
-              <button type="button" onclick="zoomPreview(0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
-              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-indigo-400 bg-indigo-500/10 active:scale-90">FIT</button>
-            </div>
-            <button type="button" onclick="handleDirectPrint()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-bold uppercase border border-zinc-700 active:scale-95 shadow-sm">
-              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-              <span>PRINT</span>
-            </button>
-          </div>
-          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-20 flex flex-col items-center relative" style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;">
-            <div class="relative my-auto shrink-0 bg-white zoom-transition" style="width: ${scaledW}px; height: ${scaledH}px; min-height: ${scaledH}px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 15px 35px -5px rgba(0, 0, 0, 0.85);">
-              <div style="width: 794px; min-height: 1123px; transform: scale(${previewZoom}); transform-origin: top left; position: absolute; top: 0; left: 0;" class="zoom-transition">
-                ${getDocumentHTML('cv-screen-preview-node', false)}
-              </div>
-            </div>
-          </div>
-          <div class="fixed bottom-3 left-4 right-4 z-30 flex items-center justify-between gap-3 bg-[#10101c]/95 backdrop-blur-lg px-3 py-2 rounded-2xl border border-zinc-800 shadow-2xl">
-            <button type="button" onclick="closePreview()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95">
-              <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-              <span>EDIT DETAILS</span>
-            </button>
-            <button type="button" onclick="handleDirectPrint()" class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase active:scale-95 shadow-lg shadow-emerald-600/30 transition-all">
+            <button type="button" onclick="handleDirectPrint()" class="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase active:scale-95 shadow-lg shadow-emerald-600/30 transition-all">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
               <span>PRINT CV</span>
             </button>
           </div>
+          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-20 flex flex-col items-center justify-center relative" style="background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1.2px, transparent 1.2px); background-size: 20px 20px;">
+            <div class="relative my-auto shrink-0 bg-white" style="width: ${scaledW}px; height: ${scaledH}px; min-height: ${scaledH}px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 15px 35px -5px rgba(0, 0, 0, 0.85);">
+              <div style="width: 794px; min-height: 1123px; transform: scale(${previewZoom}); transform-origin: top left; position: absolute; top: 0; left: 0;">
+                ${getDocumentHTML('cv-screen-preview-node', false)}
+              </div>
+            </div>
+          </div>
         </div>
       `;
-      // Apply Auto-Fit algorithm for preview node to simulate single-page
       setTimeout(() => { autoFitCV('cv-screen-preview-node'); }, 50);
     }
 
     function goNextStep() {
       if (currentPage < TOTAL_STEPS) {
-        animDirection = 'next';
-        currentPage++;
-        isNavigating = true;
-        renderApp();
-        requestAnimationFrame(() => {
-           const scrollArea = document.getElementById('editor-scroll-area');
-           if(scrollArea) scrollArea.scrollTop = 0;
-        });
-      } else {
-        openPreview();
-      }
+        animDirection = 'next'; currentPage++; isNavigating = true; renderApp();
+        requestAnimationFrame(() => { const scrollArea = document.getElementById('editor-scroll-area'); if(scrollArea) scrollArea.scrollTop = 0; });
+      } else { openPreview(); }
     }
-
     function goPrevStep() {
       if (currentPage > 1) {
-        animDirection = 'prev';
-        currentPage--;
-        isNavigating = true;
-        renderApp();
-        requestAnimationFrame(() => {
-           const scrollArea = document.getElementById('editor-scroll-area');
-           if(scrollArea) scrollArea.scrollTop = 0;
-        });
+        animDirection = 'prev'; currentPage--; isNavigating = true; renderApp();
+        requestAnimationFrame(() => { const scrollArea = document.getElementById('editor-scroll-area'); if(scrollArea) scrollArea.scrollTop = 0; });
       }
     }
 
-    function openPreview() {
-      activeView = 'preview';
-      fitPreviewWidth();
-      renderApp();
-    }
-
-    function closePreview() {
-      activeView = 'editor';
-      isNavigating = true;
-      renderApp();
-    }
+    function openPreview() { activeView = 'preview'; fitPreviewWidth(); renderApp(); }
+    function closePreview() { activeView = 'editor'; isNavigating = true; renderApp(); }
 
     function fitPreviewWidth() {
       const container = document.getElementById('preview-viewport-container');
@@ -1677,42 +1099,96 @@
       if (activeView === 'preview') renderApp();
     }
 
-    function zoomPreview(delta) {
-      previewZoom = Number(Math.max(0.35, Math.min(1.4, previewZoom + delta)).toFixed(2));
-      renderApp();
-    }
+    function handleDirectPrint() { triggerPrint(); }
+    function openResetDialog() { const m = document.getElementById('reset-modal'); if (m) { m.classList.remove('hidden'); m.classList.add('flex'); } }
+    function closeResetDialog() { const m = document.getElementById('reset-modal'); if (m) { m.classList.add('hidden'); m.classList.remove('flex'); } }
+    function confirmReset() { cvData = JSON.parse(JSON.stringify(defaultCVData)); appStarted = false; currentPage = 1; activeView = 'editor'; currentCvId = null; localStorage.removeItem('techasar_current_cv_id'); saveState(); closeResetDialog(); const container = document.getElementById('main-view-container'); if(container) container.innerHTML = ''; renderApp(); }
 
-    function handleDirectPrint() {
-      triggerPrint();
+    // ============================================
+    // ELEGANT SIGNATURE MODAL
+    // ============================================
+    window.openSignatureModal = function() {
+        document.getElementById('modal-date-wrapper').innerHTML = generateDateInputs(cvData.footer.date, 'footer.date');
+        document.getElementById('sig-place').value = cvData.footer.place;
+        document.getElementById('sig-name').value = cvData.footer.signName;
+        const m = document.getElementById('signature-modal');
+        const b = document.getElementById('signature-box');
+        m.classList.remove('hidden'); m.classList.add('flex');
+        requestAnimationFrame(() => { m.classList.remove('opacity-0'); b.classList.remove('scale-75', 'opacity-0'); b.classList.add('scale-100', 'opacity-100'); });
     }
-
-    function openResetDialog() {
-      const m = document.getElementById('reset-modal');
-      if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+    window.closeSignatureModal = function() {
+        const m = document.getElementById('signature-modal');
+        const b = document.getElementById('signature-box');
+        m.classList.add('opacity-0'); b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-75', 'opacity-0');
+        setTimeout(() => { m.classList.remove('flex'); m.classList.add('hidden'); renderApp(); }, 300);
     }
-
-    function closeResetDialog() {
-      const m = document.getElementById('reset-modal');
-      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
-    }
-
-    function confirmReset() {
-      cvData = JSON.parse(JSON.stringify(defaultCVData));
-      appStarted = false; 
-      currentPage = 1;
-      activeView = 'editor';
-      currentCvId = null;
-      localStorage.removeItem('techasar_current_cv_id');
-      saveState();
-      closeResetDialog();
-      // Reset DOM Shell to remove persistent header block
-      const container = document.getElementById('main-view-container');
-      if(container) container.innerHTML = '';
-      renderApp();
+    window.saveSignatureModal = function() {
+        cvData.footer.place = document.getElementById('sig-place').value;
+        cvData.footer.signName = document.getElementById('sig-name').value;
+        saveState(); closeSignatureModal();
     }
 
     window.addEventListener('resize', () => { if (activeView === 'preview') fitPreviewWidth(); });
     document.addEventListener('DOMContentLoaded', () => { renderApp(); });
   </script>
+
+  <!-- FIREBASE MODULE SETUP -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcNjmNG1zG6vBtM3z8lB5PIcPlyvv8PRE",
+      authDomain: "techasarcv.firebaseapp.com",
+      projectId: "techasarcv",
+      storageBucket: "techasarcv.firebasestorage.app",
+      messagingSenderId: "1024111980495",
+      appId: "1:1024111980495:web:f04d4815a29dc62fa5ecba"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    
+    window.auth = getAuth(app);
+    window.db = getFirestore(app);
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.signOut = signOut;
+    window.collection = collection;
+    window.doc = doc;
+    window.setDoc = setDoc;
+    window.getDocs = getDocs;
+    window.deleteDoc = deleteDoc;
+    window.getDoc = getDoc;
+
+    if(window.onFirebaseReady) window.onFirebaseReady();
+  </script>
+
+  <!-- Signature Popup Modal Container -->
+  <div id="signature-modal" class="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div id="signature-box" class="bg-[#141420] border border-zinc-800 rounded-2xl p-5 w-full max-w-sm shadow-2xl flex flex-col transform scale-75 opacity-0 transition-all duration-300">
+       <div class="flex items-center justify-between mb-5 border-b border-zinc-800 pb-3">
+         <h3 class="font-bold text-zinc-100 text-sm uppercase flex items-center gap-2"><svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg> SIGN-OFF DETAILS</h3>
+         <button type="button" onclick="closeSignatureModal()" class="text-zinc-500 hover:text-white active:scale-90 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+       </div>
+       <div class="space-y-4">
+         <div>
+            <label class="block text-[11px] font-bold text-zinc-400 mb-1.5 uppercase tracking-widest">DATE OF DOCUMENT</label>
+            <div id="modal-date-wrapper"></div>
+         </div>
+         <div>
+            <label class="block text-[11px] font-bold text-zinc-400 mb-1.5 uppercase tracking-widest">PLACE</label>
+            <input type="text" id="sig-place" placeholder="ENTER PLACE" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[14px] text-zinc-100 font-bold outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-500" />
+         </div>
+         <div>
+            <label class="block text-[11px] font-bold text-zinc-400 mb-1.5 uppercase tracking-widest">SIGNATURE NAME</label>
+            <input type="text" id="sig-name" placeholder="ENTER FULL NAME" class="capitalize w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-3 text-[14px] text-zinc-100 font-bold outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-500" />
+         </div>
+         <button type="button" onclick="saveSignatureModal()" class="w-full mt-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase active:scale-95 shadow-lg shadow-indigo-600/30 transition-all tracking-wider">SAVE DETAILS</button>
+       </div>
+    </div>
+  </div>
+
 </body>
 </html>
