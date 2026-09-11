@@ -25,38 +25,43 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/algerian">
 
-  <!-- FIREBASE MODULE SETUP (Global Attach) -->
+  <!-- SAFE FIREBASE MODULE SETUP (With Fallback for Offline / CDN Block) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    try {
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCcNjmNG1zG6vBtM3z8lB5PIcPlyvv8PRE",
-      authDomain: "techasarcv.firebaseapp.com",
-      projectId: "techasarcv",
-      storageBucket: "techasarcv.firebasestorage.app",
-      messagingSenderId: "1024111980495",
-      appId: "1:1024111980495:web:f04d4815a29dc62fa5ecba"
-    };
+      const firebaseConfig = {
+        apiKey: "AIzaSyCcNjmNG1zG6vBtM3z8lB5PIcPlyvv8PRE",
+        authDomain: "techasarcv.firebaseapp.com",
+        projectId: "techasarcv",
+        storageBucket: "techasarcv.firebasestorage.app",
+        messagingSenderId: "1024111980495",
+        appId: "1:1024111980495:web:f04d4815a29dc62fa5ecba"
+      };
 
-    const app = initializeApp(firebaseConfig);
-    
-    // Expose to global window for inline HTML functions
-    window.auth = getAuth(app);
-    window.db = getFirestore(app);
-    window.GoogleAuthProvider = GoogleAuthProvider;
-    window.signInWithPopup = signInWithPopup;
-    window.onAuthStateChanged = onAuthStateChanged;
-    window.signOut = signOut;
-    window.collection = collection;
-    window.doc = doc;
-    window.setDoc = setDoc;
-    window.getDocs = getDocs;
-    window.deleteDoc = deleteDoc;
-    window.getDoc = getDoc;
-
-    if(window.onFirebaseReady) window.onFirebaseReady();
+      const app = initializeApp(firebaseConfig);
+      
+      window.auth = getAuth(app);
+      window.db = getFirestore(app);
+      window.GoogleAuthProvider = GoogleAuthProvider;
+      window.signInWithPopup = signInWithPopup;
+      window.onAuthStateChanged = onAuthStateChanged;
+      window.signOut = signOut;
+      window.collection = collection;
+      window.doc = doc;
+      window.setDoc = setDoc;
+      window.getDocs = getDocs;
+      window.deleteDoc = deleteDoc;
+      window.getDoc = getDoc;
+    } catch (err) {
+      console.warn("Firebase not available or network offline:", err);
+    } finally {
+      if (window.onFirebaseReady) {
+        window.onFirebaseReady();
+      }
+    }
   </script>
 
   <style>
@@ -73,7 +78,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 1. HIDE ALL SCROLLBARS GLOBALLY */
+    /* HIDE ALL SCROLLBARS GLOBALLY */
     * {
       -ms-overflow-style: none !important;
       scrollbar-width: none !important;
@@ -96,20 +101,20 @@
     .date-wrapper { position: relative; }
     .date-wrapper::after {
       content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-size: contain;
     }
 
     /* ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS */
-    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes elegantFadeOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -15px, 0); } }
+    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(20px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-20px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 12px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes elegantFadeOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -12px, 0); } }
 
-    .anim-next { animation: smoothSlideRight 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: smoothSlideLeft 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .elegant-entry { animation: elegantFadeIn 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; will-change: transform, opacity; }
+    .anim-next { animation: smoothSlideRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .anim-prev { animation: smoothSlideLeft 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .elegant-entry { animation: elegantFadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; }
     .zoom-transition { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
     /* Custom Scrollbar for dropdown */
@@ -120,12 +125,12 @@
     /* Background Blobs */
     @keyframes blobFloat1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.05); } }
     @keyframes blobFloat2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20px, 20px) scale(0.95); } }
-    .blob-1 { animation: blobFloat1 12s ease-in-out infinite; will-change: transform; }
-    .blob-2 { animation: blobFloat2 15s ease-in-out infinite; will-change: transform; }
+    .blob-1 { animation: blobFloat1 12s ease-in-out infinite; }
+    .blob-2 { animation: blobFloat2 15s ease-in-out infinite; }
 
-    @keyframes fadeUpEntry { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
-    .stagger-entry { opacity: 0; animation: fadeUpEntry 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-    .d-0 { animation-delay: 0ms; } .d-1 { animation-delay: 60ms; } .d-2 { animation-delay: 120ms; } .d-3 { animation-delay: 180ms; }
+    @keyframes fadeUpEntry { 0% { opacity: 0; transform: translate3d(0, 12px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    .stagger-entry { opacity: 0; animation: fadeUpEntry 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .d-0 { animation-delay: 0ms; } .d-1 { animation-delay: 50ms; } .d-2 { animation-delay: 100ms; } .d-3 { animation-delay: 150ms; }
 
     @media (prefers-reduced-motion: reduce) {
       .elegant-exit, .elegant-entry, .anim-next, .anim-prev { animation: none !important; opacity: 1 !important; transform: none !important; }
@@ -165,10 +170,10 @@
     }
   </style>
 </head>
-<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans uppercase font-bold">
+<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans uppercase font-bold min-h-screen">
 
   <!-- 1. SCREEN WORKSPACE -->
-  <div id="app-screen-workspace" class="h-[100dvh] w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
+  <div id="app-screen-workspace" class="h-screen h-[100dvh] min-h-screen w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
     <div id="main-view-container" class="flex-1 flex flex-col overflow-hidden relative">
       <!-- Dynamically injected UI -->
     </div>
@@ -245,6 +250,7 @@
 
   <script>
     const STORAGE_KEY = 'techasar_cv_final_standalone_v23';
+    let alertCallback = null;
     
     // Expanded Geographical Data List 
     const indiaData = {
@@ -283,12 +289,26 @@
     let dropdownOriginY = 0;
 
     window.onFirebaseReady = () => {
-       window.onAuthStateChanged(window.auth, (user) => {
-          currentUser = user;
-          authLoading = false;
-          renderApp(); 
-       });
+       authLoading = false;
+       if (window.auth && window.onAuthStateChanged) {
+         window.onAuthStateChanged(window.auth, (user) => {
+            currentUser = user;
+            authLoading = false;
+            renderApp(); 
+         });
+       } else {
+         authLoading = false;
+         renderApp();
+       }
     };
+
+    // Fail-safe for auth loading (never keep loading state permanently)
+    setTimeout(() => {
+       if (authLoading) {
+         authLoading = false;
+         renderApp();
+       }
+    }, 1200);
 
     const defaultCVData = {
       documentTitle: "CURRICULUM VITAE",
@@ -331,49 +351,65 @@
     }
 
     function showUIAlert(title, msg, isConfirm = false, callback = null) {
-        document.getElementById('custom-alert-title').innerText = title;
-        document.getElementById('custom-alert-msg').innerText = msg;
+        const tEl = document.getElementById('custom-alert-title');
+        const mEl = document.getElementById('custom-alert-msg');
+        if (tEl) tEl.innerText = title;
+        if (mEl) mEl.innerText = msg;
         const actions = document.getElementById('custom-alert-actions');
         alertCallback = callback;
-        if(isConfirm) {
-            actions.innerHTML = `
-                <button type="button" onclick="closeUIAlert(false)" class="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
-                <button type="button" onclick="closeUIAlert(true)" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">CONFIRM</button>
-            `;
-        } else {
-            actions.innerHTML = `
-                <button type="button" onclick="closeUIAlert(true)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">OKAY</button>
-            `;
+        if (actions) {
+          if (isConfirm) {
+              actions.innerHTML = `
+                  <button type="button" onclick="closeUIAlert(false)" class="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+                  <button type="button" onclick="closeUIAlert(true)" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">CONFIRM</button>
+              `;
+          } else {
+              actions.innerHTML = `
+                  <button type="button" onclick="closeUIAlert(true)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">OKAY</button>
+              `;
+          }
         }
         const modal = document.getElementById('custom-alert-modal');
         const box = document.getElementById('custom-alert-box');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        requestAnimationFrame(() => {
-            modal.classList.remove('opacity-0');
-            box.classList.remove('scale-75', 'opacity-0');
-            box.classList.add('scale-100', 'opacity-100');
-        });
+        if (modal && box) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          requestAnimationFrame(() => {
+              modal.classList.remove('opacity-0');
+              box.classList.remove('scale-75', 'opacity-0');
+              box.classList.add('scale-100', 'opacity-100');
+          });
+        }
     }
 
     function closeUIAlert(result) {
         const modal = document.getElementById('custom-alert-modal');
         const box = document.getElementById('custom-alert-box');
-        modal.classList.add('opacity-0');
-        box.classList.remove('scale-100', 'opacity-100');
-        box.classList.add('scale-75', 'opacity-0');
-        setTimeout(() => {
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-            if(alertCallback) alertCallback(result);
-        }, 300);
+        if (modal && box) {
+          modal.classList.add('opacity-0');
+          box.classList.remove('scale-100', 'opacity-100');
+          box.classList.add('scale-75', 'opacity-0');
+          setTimeout(() => {
+              modal.classList.remove('flex');
+              modal.classList.add('hidden');
+              if (alertCallback) alertCallback(result);
+          }, 250);
+        } else {
+          if (alertCallback) alertCallback(result);
+        }
     }
 
     async function loginWithGoogle() {
-        if (!window.auth || !window.GoogleAuthProvider) return;
+        if (!window.auth || !window.GoogleAuthProvider) {
+            showUIAlert("INFO", "OFFLINE MODE: YOU CAN STILL CREATE & SAVE CVS LOCALLY!", false);
+            return;
+        }
         const provider = new window.GoogleAuthProvider();
-        try { await window.signInWithPopup(window.auth, provider); } 
-        catch (error) { showUIAlert("LOGIN FAILED", "Please try again later.", false); console.error(error); }
+        try { 
+          await window.signInWithPopup(window.auth, provider); 
+        } catch (error) { 
+          showUIAlert("LOGIN INFO", "GOOGLE LOGIN NOT COMPLETED. LOCAL AUTOSAVE IS ACTIVE.", false); 
+        }
     }
 
     async function logoutGoogle() {
@@ -385,11 +421,11 @@
         renderPrintNode();
         setTimeout(() => { 
             window.print(); 
-            if(onComplete) onComplete();
+            if (onComplete) onComplete();
         }, 150);
     }
 
-    // Clean Input Box with Label inside on top (Clean, Modern UI)
+    // Clean Input Box with Label inside on top (No bulky outer card)
     function createTextInput(label, val, onInputCode, type = "text", placeholder = "") {
         return `
           <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
@@ -422,7 +458,7 @@
         let hasVisible = false;
         items.forEach(el => {
             const txt = el.innerText.toUpperCase();
-            if(txt.includes(query)) {
+            if (txt.includes(query)) {
                 el.style.display = 'flex';
                 hasVisible = true;
             } else {
@@ -431,8 +467,8 @@
         });
         
         let noRes = document.getElementById('no-results-msg');
-        if(!hasVisible) {
-            if(!noRes) {
+        if (!hasVisible) {
+            if (!noRes) {
                 noRes = document.createElement('div');
                 noRes.id = 'no-results-msg';
                 noRes.className = 'text-zinc-500 text-xs text-center py-6 font-bold uppercase';
@@ -440,7 +476,7 @@
                 document.getElementById('global-dropdown-list').appendChild(noRes);
             }
         } else {
-            if(noRes) noRes.remove();
+            if (noRes) noRes.remove();
         }
     }
 
@@ -456,7 +492,7 @@
         document.getElementById('global-dropdown-title').innerText = placeholder;
         
         const searchInput = document.getElementById('global-dropdown-search');
-        if(searchInput) searchInput.value = '';
+        if (searchInput) searchInput.value = '';
 
         list.innerHTML = options.map(opt => `
             <div onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label}')" class="dropdown-item px-4 py-3 rounded-xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-zinc-800/80 text-zinc-300 bg-zinc-900/30'}">
@@ -491,7 +527,7 @@
     }
 
     function closeGlobalDropdown(e, force = false) {
-        if(!force && e && e.target.id !== 'global-dropdown-modal') return; 
+        if (!force && e && e.target.id !== 'global-dropdown-modal') return; 
         
         const modal = document.getElementById('global-dropdown-modal');
         const box = document.getElementById('global-dropdown-box');
@@ -505,18 +541,18 @@
             modal.classList.remove('flex', 'items-center', 'justify-center');
             modal.style.height = '';
             document.body.style.overflow = '';
-        }, 350); 
+        }, 320); 
     }
 
     function selectGlobalDropdown(fieldPath, val, label) {
         setNested(cvData, fieldPath, val);
         let needsReRender = false;
         
-        if(fieldPath === 'personal.state') {
+        if (fieldPath === 'personal.state') {
             cvData.personal.district = '';
             cvData.personal.tehsil = '';
             needsReRender = true;
-        } else if(fieldPath === 'personal.district') {
+        } else if (fieldPath === 'personal.district') {
             cvData.personal.tehsil = '';
             needsReRender = true;
         } else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') {
@@ -534,12 +570,12 @@
             setTimeout(() => { 
                 renderApp(); 
                 const newScroll = document.getElementById('editor-scroll-area');
-                if(newScroll) {
+                if (newScroll) {
                     newScroll.style.scrollBehavior = 'auto';
                     newScroll.scrollTop = exactScroll;
                     setTimeout(() => { newScroll.style.scrollBehavior = 'smooth'; }, 50);
                 }
-            }, 350); 
+            }, 320); 
         } else {
             const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
             const btn = document.getElementById(btnId);
@@ -574,18 +610,18 @@
       cvData.details.languages = val;
       saveState();
       const input = document.getElementById('lang-input');
-      if(input) input.value = cvData.details.languages;
+      if (input) input.value = cvData.details.languages;
     }
 
     function appendHobby(val) {
       let current = cvData.details.hobbies || '';
       let arr = current.split(',').map(s => s.trim()).filter(Boolean);
-      if(!arr.includes(val)) {
+      if (!arr.includes(val)) {
         arr.push(val);
         cvData.details.hobbies = arr.join(', ');
         saveState();
         const input = document.getElementById('hobbies-input');
-        if(input) input.value = cvData.details.hobbies;
+        if (input) input.value = cvData.details.hobbies;
       }
     }
 
@@ -600,7 +636,7 @@
       cvData.declaration = val;
       saveState();
       const input = document.getElementById('declaration-input');
-      if(input) { input.value = cvData.declaration; autoResizeTextarea(input); }
+      if (input) { input.value = cvData.declaration; autoResizeTextarea(input); }
     }
 
     function removeArrayItem(key, idx) {
@@ -617,7 +653,7 @@
       saveState();
       isNavigating = false; 
       renderApp();
-      setTimeout(() => { const scrollArea = document.getElementById('editor-scroll-area'); if(scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight; }, 50);
+      setTimeout(() => { const scrollArea = document.getElementById('editor-scroll-area'); if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight; }, 50);
     }
 
     function updateArrayItem(key, idx, val) {
@@ -828,6 +864,11 @@
 
     function renderApp() {
       const container = document.getElementById('main-view-container');
+      if (!container) return;
+
+      // Always clear any lingering exit animations that could cause a black screen
+      container.classList.remove('elegant-exit');
+
       const scrollArea = document.getElementById('editor-scroll-area');
       const currentScroll = scrollArea ? scrollArea.scrollTop : 0;
 
@@ -845,7 +886,7 @@
       if (!isNavigating && !enteringEditor) {
         requestAnimationFrame(() => {
           const newScroll = document.getElementById('editor-scroll-area');
-          if(newScroll) newScroll.scrollTop = currentScroll;
+          if (newScroll) newScroll.scrollTop = currentScroll;
         });
       }
       isNavigating = false;
@@ -862,13 +903,16 @@
       }, 250);
     }
 
+    // Direct access to create CV without locking user out if Firebase is offline
     function handleCreateCVClick() {
-        if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO CREATE A CV!", false);
         createNewCV();
     }
 
     function handleHistoryClick() {
-        if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO VIEW HISTORY!", false);
+        if (!currentUser) {
+            showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO SYNC AND VIEW CLOUD HISTORY!", false);
+            return;
+        }
         openHistory();
     }
 
@@ -888,7 +932,7 @@
         currentPage = 1;
         activeView = 'editor';
         renderApp();
-      }, 300); 
+      }, 260); 
     }
 
     function renderWelcomeScreen(container) {
@@ -903,8 +947,8 @@
                 </div>
             ` : currentUser ? `
                 <div class="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-full">
-                    <img src="${currentUser.photoURL}" class="w-7 h-7 rounded-full" />
-                    <span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName.split(' ')[0]}</span>
+                    <img src="${currentUser.photoURL || ''}" onerror="this.style.display='none'" class="w-7 h-7 rounded-full bg-zinc-800" />
+                    <span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'USER'}</span>
                     <button type="button" onclick="logoutGoogle()" class="text-[10px] font-bold bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase">LOGOUT</button>
                 </div>
             ` : `
@@ -959,7 +1003,10 @@
         </div>
       `;
       
-      if (!currentUser || !window.db) return;
+      if (!currentUser || !window.db) {
+        container.innerHTML = '<div class="text-zinc-400 text-xs text-center py-8 font-bold uppercase">PLEASE LOGIN WITH GOOGLE TO ACCESS CLOUD HISTORY.</div>';
+        return;
+      }
 
       try {
           const querySnapshot = await window.getDocs(window.collection(window.db, `users/${currentUser.uid}/cvs`));
@@ -998,11 +1045,11 @@
     }
 
     async function loadCVFromHistory(e, id) {
-      if(e) e.stopPropagation();
-      if(!currentUser || !window.db) return;
+      if (e) e.stopPropagation();
+      if (!currentUser || !window.db) return;
       try {
           const docSnap = await window.getDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
-          if(docSnap.exists()){
+          if (docSnap.exists()){
              cvData = JSON.parse(JSON.stringify(docSnap.data().data));
              currentCvId = id;
              localStorage.setItem('techasar_current_cv_id', currentCvId);
@@ -1019,8 +1066,8 @@
     }
 
     async function printFromHistory(e, id) {
-      if(e) e.stopPropagation();
-      if(!currentUser || !window.db) return;
+      if (e) e.stopPropagation();
+      if (!currentUser || !window.db) return;
       
       const btn = e.currentTarget;
       const ogHTML = btn.innerHTML;
@@ -1028,7 +1075,7 @@
       
       try {
           const docSnap = await window.getDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
-          if(docSnap.exists()){
+          if (docSnap.exists()){
              const tempOldData = cvData;
              cvData = JSON.parse(JSON.stringify(docSnap.data().data));
              
@@ -1039,7 +1086,7 @@
              requestAnimationFrame(() => {
                  triggerPrint(() => {
                     cvData = tempOldData;
-                    if(activeView === 'preview') renderApp();
+                    if (activeView === 'preview') renderApp();
                  });
              });
           }
@@ -1050,9 +1097,9 @@
     }
 
     function deleteFromHistory(e, id) {
-        if(e) e.stopPropagation();
+        if (e) e.stopPropagation();
         showUIAlert("DELETE CV?", "ARE YOU SURE YOU WANT TO DELETE THIS CV FROM HISTORY?", true, async (res) => {
-            if(res) {
+            if (res) {
                 try {
                     await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
                     if (currentCvId === id) {
@@ -1068,11 +1115,14 @@
     }
 
     function autoResizeTextarea(element) {
+      if (!element) return;
       element.style.height = 'auto';
       element.style.height = (element.scrollHeight) + 'px';
     }
 
     function renderEditorView(container) {
+      container.classList.remove('elegant-exit');
+
       let animClass = '';
       if (enteringEditor) { animClass = 'elegant-entry'; enteringEditor = false; } 
       else if (isNavigating) { animClass = animDirection === 'next' ? 'anim-next' : 'anim-prev'; } 
@@ -1088,32 +1138,32 @@
         let distOpts = [];
         if (selectedState && selectedState !== 'OTHER') {
             let dists = indiaData.districts[selectedState] || [];
-            if(dists.length > 0) {
+            if (dists.length > 0) {
                 distOpts = dists.map(d => ({label: d, val: d}));
                 distOpts.push({label: 'OTHER', val: 'OTHER'});
             } else {
                 distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-                if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
+                if (cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
             }
         } else if (selectedState === 'OTHER') {
             distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-            if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
+            if (cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
         }
 
         let selectedDist = cvData.personal.district || '';
         let tehsilOpts = [];
         if (selectedDist && selectedDist !== 'OTHER') {
             let tehsils = indiaData.tehsils[selectedDist] || [];
-            if(tehsils.length > 0) {
+            if (tehsils.length > 0) {
                 tehsilOpts = tehsils.map(t => ({label: t, val: t}));
                 tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
             } else {
                 tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-                if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
+                if (cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
             }
         } else if (selectedDist === 'OTHER') {
             tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
-            if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
+            if (cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
         }
 
         stepContentHTML = `
@@ -1139,7 +1189,7 @@
               </div>
             </div>
 
-            <!-- Unified Clean Inputs (Label on top inside the box, No outer bulky wrapper) -->
+            <!-- Unified Clean Inputs (Label inside on top, no bulky outer card) -->
             ${createTextInput('FULL NAME *', cvData.personal.name, 'cvData.personal.name = this.value; saveState();')}
             ${createTextInput('MOBILE NUMBER *', cvData.personal.mobile, 'cvData.personal.mobile = this.value; saveState();', 'tel')}
             ${createTextInput('EMAIL ADDRESS', cvData.personal.email, 'cvData.personal.email = this.value; saveState();', 'email')}
@@ -1289,8 +1339,8 @@
         let dobInputVal = '';
         if (cvData.details.dob && cvData.details.dob.includes('/')) {
             const parts = cvData.details.dob.split('/');
-            if(parts.length === 3) dobInputVal = `${parts[2]}-${parts}-${parts[0]}`;
-        } else { dobInputVal = cvData.details.dob; }
+            if (parts.length === 3) dobInputVal = `${parts[2]}-${parts}-${parts[0]}`;
+        } else { dobInputVal = cvData.details.dob || ''; }
 
         stepContentHTML = `
           <div class="space-y-3">
@@ -1363,8 +1413,8 @@
         let dateInputVal = '';
         if (cvData.footer.date && cvData.footer.date.includes('/')) {
             const parts = cvData.footer.date.split('/');
-            if(parts.length === 3) dateInputVal = `${parts[2]}-${parts}-${parts[0]}`;
-        } else { dateInputVal = cvData.footer.date; }
+            if (parts.length === 3) dateInputVal = `${parts[2]}-${parts}-${parts[0]}`;
+        } else { dateInputVal = cvData.footer.date || ''; }
 
         stepContentHTML = `
           <div class="space-y-3">
@@ -1433,6 +1483,8 @@
     }
 
     function renderPreviewView(container) {
+      container.classList.remove('elegant-exit');
+
       const scaledW = Math.round(794 * previewZoom);
       const scaledH = Math.round(1123 * previewZoom);
 
@@ -1511,8 +1563,6 @@
 
     function fitPreviewWidth() {
       const container = document.getElementById('preview-viewport-container');
-      const w = container ? container {
-      const container = document.getElementById('preview-viewport-container');
       const w = container ? container.clientWidth - 16 : window.innerWidth - 16;
       previewZoom = Number(Math.max(0.35, Math.min(1.1, w / 794)).toFixed(2));
       if (activeView === 'preview') renderApp();
@@ -1550,4 +1600,21 @@
     }
 
     window.addEventListener('resize', () => { if (activeView === 'preview') fitPreviewWidth(); });
-    document.addEventListener('DOMContentLoaded', () => {
+
+    // Safe, instant initialization (Prevents blank/black screen on loaded DOM)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => { renderApp(); });
+    } else {
+      renderApp();
+    }
+
+    // Safety fallback timer to guarantee initial view is painted
+    setTimeout(() => {
+      const container = document.getElementById('main-view-container');
+      if (container && (!container.innerHTML || container.innerHTML.trim() === '')) {
+        renderApp();
+      }
+    }, 80);
+  </script>
+</body>
+</html>
