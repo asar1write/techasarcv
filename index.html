@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, interactive-widget=resizes-content, viewport-fit=cover" />
+  <!-- Strict viewport lock to prevent keyboard scroll and white flashes -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" />
   <title>TECH ASAR CV BUILDER</title>
 
   <!-- Tailwind CSS CDN -->
@@ -39,6 +40,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Total scroll lock */
     :root {
       --app-height: 100vh;
     }
@@ -173,6 +175,14 @@
   <script>
     const HISTORY_KEY = 'techasar_cv_history_final';
     
+    // Prevent scrolling when keyboard opens via JS
+    document.addEventListener('focusin', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      }
+    });
+
     let initialViewWidth = window.innerWidth;
     function setRealViewportHeight() { document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px'); }
     window.addEventListener('resize', () => {
@@ -203,18 +213,11 @@
       }, 1500);
     }
 
-    const indianStates = [
-      "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", 
-      "Dadra & Nagar Haveli", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", 
-      "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", 
-      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
-      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-    ];
+    const indianStates = ["Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Dadra & Nagar Haveli", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
 
     const nationalities = ["Indian", "American", "Australian", "British", "Canadian", "Chinese", "French", "German", "Italian", "Japanese", "Russian", "South African", "Other"];
     const languageList = ["Hindi", "English", "Hindi & English", "Spanish", "French", "German", "Urdu", "Marathi", "Bengali"];
 
-    // Fully restored UP Data[cite: 1]
     const upTehsils = {
       "Agra": ["Agra", "Bah", "Etmadpur", "Fatehabad", "Kheragarh", "Kiraoli"],
       "Aligarh": ["Atrauli", "Gabhasana", "Iglas", "Khair", "Koil"],
@@ -302,7 +305,7 @@
       if(fontName === 'Arial') return "Arial, sans-serif";
       if(fontName === 'Calibri') return "Calibri, 'Open Sans', sans-serif";
       if(fontName === 'Nirmala UI') return "'Nirmala UI', 'Segoe UI', sans-serif";
-      return "'Times New Roman', Times, serif"; // Default
+      return "'Times New Roman', Times, serif";
     }
 
     const defaultCVData = {
@@ -339,9 +342,8 @@
 
     function applySuggestion(type, key, text) {
       const decodedText = decodeURIComponent(text);
-      if (type === 'array') {
-        addSmoothArrayItem(key, decodedText);
-      } else if (type === 'details_append') {
+      if (type === 'array') { addSmoothArrayItem(key, decodedText); } 
+      else if (type === 'details_append') {
         const cur = appState.cvData.details[key];
         appState.cvData.details[key] = cur ? cur + ', ' + decodedText : decodedText;
         saveAndRender();
@@ -367,14 +369,15 @@
     function updateDet(k, v) { appState.cvData.details[k] = v; saveSilently(); }
     function updateArr(key, idx, val) { appState.cvData[key][idx] = val; saveSilently(); }
 
-    function openEditorFromHome(e) {
+    function captureOrigin(e) {
       if(e) {
         const rect = e.currentTarget.getBoundingClientRect();
-        const clickX = rect.left + rect.width / 2;
-        const clickY = rect.top + rect.height / 2;
-        lastEditorOrigin = { tx: `${clickX - window.innerWidth/2}px`, ty: `${clickY - window.innerHeight/2}px` };
+        lastEditorOrigin = { tx: `${(rect.left + rect.width/2) - window.innerWidth/2}px`, ty: `${(rect.top + rect.height/2) - window.innerHeight/2}px` };
       }
-      
+    }
+
+    function openEditorFromHome(e) {
+      captureOrigin(e);
       appState.view = 'editor';
       if(!appState.cvData) {
         appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
@@ -392,34 +395,48 @@
         editorEl.style.setProperty('--ty', lastEditorOrigin.ty);
         editorEl.classList.remove('anim-pop-in-origin', 'anim-next', 'anim-prev', 'anim-none');
         editorEl.classList.add('anim-pop-out-origin');
-        setTimeout(() => {
-          appState.view = 'home';
-          appState.animDirection = 'fade';
-          renderApp();
-        }, 280);
+        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 280);
       } else {
-        appState.view = 'home';
-        appState.animDirection = 'fade';
-        renderApp();
+        appState.view = 'home'; appState.animDirection = 'fade'; renderApp();
       }
     }
 
-    function setView(view, anim = 'fade') {
+    function openHistoryFromHome(e) {
+      captureOrigin(e);
+      appState.view = 'history';
+      appState.animDirection = 'pop-in';
+      renderApp();
+    }
+    
+    function closeHistoryToHome() {
+      const el = document.getElementById('history-root-container');
+      if (el) {
+        el.style.setProperty('--tx', lastEditorOrigin.tx);
+        el.style.setProperty('--ty', lastEditorOrigin.ty);
+        el.classList.remove('anim-pop-in-origin', 'anim-none');
+        el.classList.add('anim-pop-out-origin');
+        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 280);
+      } else {
+        appState.view = 'home'; appState.animDirection = 'fade'; renderApp();
+      }
+    }
+
+    function setView(view, anim = appState.animDirection) {
       appState.view = view;
       appState.animDirection = anim; 
       renderApp();
     }
 
-    function editCV(id) {
+    function editCV(id, e) {
+      captureOrigin(e);
       const history = getHistory();
       const cv = history.find(x => x.id === id);
       if(cv) { 
         appState.cvData = JSON.parse(JSON.stringify(cv)); 
-        // Migrate old CVs to have formatting style mapping if not present
         if(!appState.cvData.style) appState.cvData.style = { title: "CURRICULUM VITAE", font: appState.cvData.font || "Times New Roman", casing: "uppercase", weight: "bold" };
         appState.currentPage = 1; 
-        appState.animDirection = 'next'; 
-        setView('editor'); 
+        appState.animDirection = 'pop-in'; 
+        setView('editor', 'pop-in'); 
       }
     }
 
@@ -430,9 +447,21 @@
       saveAndRender();
     }
 
+    function triggerDeleteHistory(id) {
+      const el = document.getElementById(`history-item-${id}`);
+      if (el) {
+        el.style.animation = 'slideOutUpSmooth 0.3s cubic-bezier(0.4, 0, 1, 1) forwards';
+        setTimeout(() => { deleteFromHistory(id); }, 290);
+      } else {
+        deleteFromHistory(id);
+      }
+    }
+
     function deleteFromHistory(id) {
       let history = getHistory(); history = history.filter(x => x.id !== id);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); renderApp();
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); 
+      appState.animDirection = 'none';
+      renderApp();
     }
 
     function renderApp() {
@@ -450,45 +479,24 @@
       }
     }
 
-    // Enhanced Logo Animation
     function getHomeHTML() {
       const homeAnim = appState.animDirection === 'prev' ? 'anim-prev' : 'anim-fade';
-      
       const logoSVG = `
         <svg class="relative z-10 w-full h-full drop-shadow-2xl anim-float" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="bgGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#001aff"/>
-              <stop offset="1" stop-color="#000080"/>
-            </linearGradient>
-            <linearGradient id="docGrad" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#ffffff"/>
-              <stop offset="1" stop-color="#e6f2ff"/>
-            </linearGradient>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
+            <linearGradient id="bgGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#001aff"/><stop offset="1" stop-color="#000080"/></linearGradient>
+            <linearGradient id="docGrad" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#e6f2ff"/></linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
           </defs>
           <rect width="100" height="100" rx="22" fill="url(#bgGrad)"/>
-          
           <path d="M 12 50 A 38 38 0 0 1 70 12" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" filter="url(#glow)"/>
           <path d="M 88 50 A 38 38 0 0 1 30 88" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" filter="url(#glow)"/>
-          
           <path d="M 28 20 Q 28 15 33 15 L 60 15 Q 63 15 65 17 L 78 30 Q 80 32 80 35 L 80 80 Q 80 85 75 85 L 33 85 Q 28 85 28 80 Z" fill="url(#docGrad)"/>
           <path d="M 60 15 L 60 30 Q 60 33 63 33 L 78 33 Z" fill="#b3d9ff"/>
-          
-          <circle cx="45" cy="40" r="11" fill="#0033ff"/>
-          <circle cx="45" cy="36" r="4.5" fill="white"/>
-          <path d="M 36 47 Q 45 35 54 47 Z" fill="white"/>
-          
-          <rect x="62" y="38" width="10" height="3" rx="1.5" fill="#0033ff"/>
-          <rect x="62" y="45" width="10" height="3" rx="1.5" fill="#0033ff"/>
-          <rect x="34" y="55" width="40" height="4" rx="2" fill="#0033ff"/>
-          <rect x="34" y="63" width="40" height="4" rx="2" fill="#0033ff"/>
-          
-          <circle cx="36" cy="74" r="2.5" fill="#0033ff"/>
-          <rect x="42" y="72" width="32" height="4" rx="2" fill="#0033ff"/>
+          <circle cx="45" cy="40" r="11" fill="#0033ff"/><circle cx="45" cy="36" r="4.5" fill="white"/><path d="M 36 47 Q 45 35 54 47 Z" fill="white"/>
+          <rect x="62" y="38" width="10" height="3" rx="1.5" fill="#0033ff"/><rect x="62" y="45" width="10" height="3" rx="1.5" fill="#0033ff"/>
+          <rect x="34" y="55" width="40" height="4" rx="2" fill="#0033ff"/><rect x="34" y="63" width="40" height="4" rx="2" fill="#0033ff"/>
+          <circle cx="36" cy="74" r="2.5" fill="#0033ff"/><rect x="42" y="72" width="32" height="4" rx="2" fill="#0033ff"/>
         </svg>
       `;
 
@@ -507,11 +515,11 @@
               <p class="text-sm text-zinc-400 uppercase font-bold">PROFESSIONAL CV BUILDER</p>
             </div>
             <div class="space-y-4">
-              <button onclick="appState.cvData=null; openEditorFromHome(event)" class="w-full py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
+              <button onclick="openEditorFromHome(event)" class="w-full py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 CREATE NEW CV
               </button>
-              <button onclick="setView('history', 'next')" class="w-full py-4 rounded-full border border-zinc-700 text-white font-bold text-lg hover:bg-zinc-800 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase bg-transparent">
+              <button onclick="openHistoryFromHome(event)" class="w-full py-4 rounded-full border border-zinc-700 text-white font-bold text-lg hover:bg-zinc-800 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase bg-transparent">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 CV HISTORY
               </button>
@@ -529,19 +537,19 @@
           const date = new Date(cv.lastModified).toLocaleDateString('en-GB');
           const name = cv.personal.name || "UNTITLED CV";
           return `
-            <div class="bg-transparent border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mb-3 shadow-sm">
+            <div id="history-item-${cv.id}" class="bg-transparent border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mb-3 shadow-sm relative">
               <div class="flex-1 min-w-0 pr-3">
                 <h3 class="font-bold text-zinc-100 truncate uppercase">${name}</h3>
                 <p class="text-xs text-zinc-500 mt-0.5 font-bold">${date}</p>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <button onclick="editCV('${cv.id}')" class="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-indigo-400 active:scale-90 transition-all border border-zinc-700">
+                <button onclick="editCV('${cv.id}', event)" class="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-indigo-400 active:scale-90 transition-all border border-zinc-700">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
                 <button onclick="appState.cvData = ${JSON.stringify(cv).replace(/"/g, '&quot;')}; renderPrintNode(); setTimeout(()=>window.print(),100);" class="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-emerald-400 active:scale-90 transition-all border border-emerald-500/50">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
                 </button>
-                <button onclick="deleteFromHistory('${cv.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-red-400 active:scale-90 transition-all ml-1">
+                <button onclick="triggerDeleteHistory('${cv.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-red-400 active:scale-90 transition-all ml-1">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </button>
               </div>
@@ -550,10 +558,11 @@
         }).join('');
       }
 
+      const animClass = appState.animDirection === 'pop-in' ? 'anim-pop-in-origin' : (appState.animDirection === 'none' ? '' : 'anim-fade');
       return `
-        <div class="flex-1 flex flex-col bg-[#08080e] ${appState.animDirection === 'next' ? 'anim-next' : 'anim-fade'} h-full overflow-hidden">
+        <div id="history-root-container" class="flex-1 flex flex-col bg-[#08080e] ${animClass} h-full overflow-hidden" style="--tx:${lastEditorOrigin.tx}; --ty:${lastEditorOrigin.ty};">
           <header class="flex items-center justify-between px-4 pt-4 pb-2 z-30 shrink-0 bg-transparent">
-            <button onclick="setView('home', 'prev')" class="px-4 py-2 flex items-center gap-2 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 font-bold text-xs uppercase">
+            <button onclick="closeHistoryToHome()" class="px-4 py-2 flex items-center gap-2 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 font-bold text-xs uppercase transition-all">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               BACK
             </button>
@@ -619,13 +628,11 @@
       else if(page === 7) stepContent = getStep7HTML();
       else if(page === 8) stepContent = getStep8HTML();
 
-      // Ensure origin values match for symmetrical open/close
       const originTx = appState.animDirection === 'pop-in' ? lastEditorOrigin.tx : '0px';
       const originTy = appState.animDirection === 'pop-in' ? lastEditorOrigin.ty : '100px';
 
       return `
         <div id="editor-root-container" class="flex-1 flex flex-col bg-[#08080e] h-full overflow-hidden ${appState.animDirection === 'pop-in' ? 'anim-pop-in-origin' : ''}" style="--tx:${originTx}; --ty:${originTy};">
-          
           <header class="flex items-center justify-between px-4 pt-5 pb-3 z-30 shrink-0 bg-transparent">
             <button onclick="closeEditorToHome()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
@@ -651,11 +658,11 @@
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               PREV
             </button>
-            <button onclick="appState.animDirection='pop-in'; setView('preview')" class="flex-1 flex justify-center items-center gap-2 py-3.5 rounded-full bg-transparent border border-zinc-600 text-zinc-100 text-xs font-bold active:scale-95 uppercase transition-all">
+            <button onclick="goPreview(event)" class="flex-1 flex justify-center items-center gap-2 py-3.5 rounded-full bg-transparent border border-zinc-600 text-zinc-100 text-xs font-bold active:scale-95 uppercase transition-all">
               <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               PREVIEW
             </button>
-            <button onclick="goNext()" class="flex items-center gap-1.5 px-5 py-3.5 rounded-full bg-indigo-600 border border-indigo-500 text-white text-xs font-bold active:scale-95 uppercase transition-all">
+            <button onclick="goNext(event)" class="flex items-center gap-1.5 px-5 py-3.5 rounded-full bg-indigo-600 border border-indigo-500 text-white text-xs font-bold active:scale-95 uppercase transition-all">
               ${page === 8 ? 'DONE' : 'NEXT'}
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
@@ -666,25 +673,24 @@
 
     function getStep1HTML() {
       const p = appState.cvData.personal;
+      // Using animation class to trigger subtle photo preview pop when updated
       return `
         <div class="flex flex-col gap-3 w-full">
           <div class="flex items-center gap-4 w-full border border-zinc-700 rounded-2xl p-3 bg-transparent">
-            <div class="w-[68px] h-[84px] rounded-xl border border-zinc-600 bg-zinc-900 flex items-center justify-center shrink-0 overflow-hidden bg-cover bg-top" style="background-image: ${p.photo ? `url('${p.photo}')` : 'none'}">
+            <div id="photo-preview-box" class="w-[68px] h-[84px] rounded-xl border border-zinc-600 bg-zinc-900 flex items-center justify-center shrink-0 overflow-hidden bg-cover bg-top ${p.photo && appState.animDirection === 'none' ? 'anim-pop-in-origin' : ''}" style="background-image: ${p.photo ? `url('${p.photo}')` : 'none'}">
                ${!p.photo ? `<svg class="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>` : ''}
             </div>
             <div class="flex-1">
               <span class="text-[13px] text-zinc-200 font-bold block mb-1.5 uppercase">PASSPORT PHOTO</span>
-              <button onclick="document.getElementById('file-photo').click()" class="px-3.5 py-2 rounded-lg bg-indigo-600 text-white text-[11px] font-bold active:scale-95 uppercase transition-all">${p.photo ? 'CHANGE PHOTO' : 'UPLOAD IMAGE'}</button>
+              <button onclick="document.getElementById('file-photo').click()" class="px-3.5 py-2 rounded-lg bg-indigo-600 text-white text-[11px] font-bold active:scale-95 uppercase transition-all shadow-md">${p.photo ? 'CHANGE PHOTO' : 'UPLOAD IMAGE'}</button>
               <input id="file-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
             </div>
             ${p.photo ? `<button onclick="appState.cvData.personal.photo=''; saveAndRender();" class="p-2 text-red-400 active:scale-90"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>` : ''}
           </div>
-
           <input type="text" value="${escapeHtml(p.name)}" oninput="updatePers('name', this.value)" placeholder="FULL NAME *" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
           <input type="tel" value="${escapeHtml(p.mobile)}" oninput="updatePers('mobile', this.value)" placeholder="MOBILE NUMBER *" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
           <input type="email" value="${escapeHtml(p.email)}" oninput="updatePers('email', this.value)" placeholder="EMAIL ADDRESS" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
           <input type="text" value="${escapeHtml(p.villagePost)}" oninput="updatePers('villagePost', this.value)" placeholder="ADDRESS (MOHALLA / VILLAGE & POST)" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-
           <div onclick="openLocationPicker(event, 'state')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase ${p.state ? 'text-zinc-100' : 'text-zinc-500'}">
             <span id="display-state" class="truncate">${p.state || 'SELECT STATE'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </div>
@@ -784,15 +790,15 @@
       const dob = getDobParts();
       
       const hobbiesPills = buildPills('details_append', 'hobbies', [
-        { label: 'Reading', value: 'Reading' },
-        { label: 'Cricket', value: 'Cricket' },
-        { label: 'Music', value: 'Music' },
-        { label: 'Traveling', value: 'Traveling' },
-        { label: 'Dancing', value: 'Dancing' },
+        { label: 'Excel', value: 'Excel' },
+        { label: 'Word', value: 'Word' },
+        { label: 'PowerPoint', value: 'PowerPoint' },
+        { label: 'AI Learning', value: 'AI Learning' },
         { label: 'Editing', value: 'Editing' },
-        { label: 'Cooking', value: 'Cooking' },
+        { label: 'Traveling', value: 'Traveling' },
         { label: 'Photography', value: 'Photography' },
-        { label: 'Gaming', value: 'Gaming' }
+        { label: 'Gaming', value: 'Gaming' },
+        { label: 'Music', value: 'Music' }
       ]);
 
       return `
@@ -857,7 +863,7 @@
             <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">SIGN-OFF DETAILS</h3>
             <div class="flex gap-3">
               <input type="text" value="${escapeHtml(cv.footer.date)}" oninput="appState.cvData.footer.date=this.value; saveSilently();" placeholder="DATE" class="flex-1 bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-              <button onclick="appState.cvData.footer.date = new Date().toLocaleDateString('en-GB'); saveAndRender();" class="px-6 py-3 rounded-full bg-transparent border border-indigo-500 text-indigo-400 text-xs font-bold uppercase active:scale-95 transition-all">TODAY</button>
+              <button onclick="appState.cvData.footer.date = new Date().toLocaleDateString('en-GB'); saveAndRender();" class="px-4 py-3 h-[46px] rounded-xl bg-transparent border border-indigo-500 text-indigo-400 text-xs font-bold uppercase active:scale-95 transition-all whitespace-nowrap">TODAY</button>
             </div>
             <input type="text" value="${escapeHtml(cv.footer.place)}" oninput="appState.cvData.footer.place=this.value; saveSilently();" placeholder="PLACE" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
             <input type="text" value="${escapeHtml(cv.footer.signName)}" oninput="appState.cvData.footer.signName=this.value; saveSilently();" placeholder="SIGNATURE NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
@@ -908,10 +914,7 @@
     function startPrevPress(e) {
       isPrevLongPress = false;
       prevEventTrigger = e;
-      prevPressTimer = setTimeout(() => {
-        isPrevLongPress = true;
-        openStepSelector(prevEventTrigger);
-      }, 500);
+      prevPressTimer = setTimeout(() => { isPrevLongPress = true; openStepSelector(prevEventTrigger); }, 500);
     }
     
     function cancelPrevPress() { clearTimeout(prevPressTimer); }
@@ -939,9 +942,7 @@
       
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      
       void modal.offsetWidth; 
-      
       backdrop.classList.add('opacity-100');
       box.classList.remove('anim-pop-out-origin');
       box.classList.add('anim-pop-in-origin');
@@ -962,10 +963,7 @@
     }
 
     function goToStep(step) {
-      if (step === appState.currentPage) {
-        closeStepSelector();
-        return;
-      }
+      if (step === appState.currentPage) { closeStepSelector(); return; }
       appState.animDirection = step > appState.currentPage ? 'next' : 'prev';
       appState.currentPage = step;
       closeStepSelector();
@@ -1019,9 +1017,7 @@
       
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      
       void modal.offsetWidth; 
-      
       backdrop.classList.add('opacity-100');
       box.classList.remove('anim-pop-out-origin');
       box.classList.add('anim-pop-in-origin');
@@ -1108,7 +1104,6 @@
       
       box.style.setProperty('--tx', lastPickerOrigin.tx);
       box.style.setProperty('--ty', lastPickerOrigin.ty);
-      
       box.classList.remove('anim-pop-in-origin');
       box.classList.add('anim-pop-out-origin');
       backdrop.classList.remove('opacity-100');
@@ -1121,10 +1116,20 @@
       }, 280);
     }
 
-    function goNext() {
-      if(appState.currentPage < 8) { appState.animDirection = 'next'; appState.currentPage++; renderApp(); }
-      else { appState.animDirection = 'pop-in'; setView('preview'); }
+    function goNext(e) {
+      if(appState.currentPage < 8) { 
+        appState.animDirection = 'next'; appState.currentPage++; renderApp(); 
+      }
+      else { 
+        goPreview(e);
+      }
     }
+
+    function goPreview(e) {
+      captureOrigin(e);
+      setView('preview', 'pop-in');
+    }
+
     function goPrev() {
       if(appState.currentPage > 1) { appState.animDirection = 'prev'; appState.currentPage--; renderApp(); }
     }
@@ -1133,51 +1138,61 @@
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (ev) => { appState.cvData.personal.photo = ev.target.result; appState.animDirection='none'; saveAndRender(); };
+      reader.onload = (ev) => { 
+        appState.cvData.personal.photo = ev.target.result; 
+        appState.animDirection = 'none'; 
+        saveSilently(); 
+        renderApp();
+      };
       reader.readAsDataURL(file);
     }
 
     function closePreviewAnim() {
       const previewRoot = document.getElementById('preview-root-container');
       if (previewRoot) {
+        previewRoot.style.setProperty('--tx', lastEditorOrigin.tx);
+        previewRoot.style.setProperty('--ty', lastEditorOrigin.ty);
         previewRoot.classList.remove('anim-pop-in-origin');
         previewRoot.classList.add('anim-pop-out-origin');
-        setTimeout(() => {
-          appState.animDirection = 'none';
-          setView('editor', 'none');
-        }, 250);
+        setTimeout(() => setView('editor', 'none'), 250);
       } else {
-        appState.animDirection = 'none';
         setView('editor', 'none');
       }
     }
 
+    // Modern Preview layout: Pill header at top, action bar at bottom
     function getPreviewHTML() {
       const scaledW = Math.round(794 * appState.previewZoom);
       const scaledH = Math.round(1123 * appState.previewZoom);
       
       return `
-        <div id="preview-root-container" class="flex-1 flex flex-col bg-[#08080e] relative h-full overflow-hidden ${appState.animDirection==='pop-in'?'anim-pop-in-origin':''}" style="--tx:0px; --ty:100px;">
-          <header class="flex items-center justify-between px-4 pt-4 pb-2 z-30 shrink-0 bg-transparent">
-            <button onclick="closePreviewAnim()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-white text-[11px] font-extrabold border border-zinc-700 active:scale-90 uppercase tracking-wide transition-all">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg> EDIT
-            </button>
-            <div class="flex items-center gap-2 bg-transparent p-1.5 rounded-full border border-zinc-700">
-              <button onclick="appState.previewZoom=Math.max(0.3, appState.previewZoom-0.1); appState.animDirection='none'; renderApp();" class="w-7 h-7 flex items-center justify-center text-zinc-300 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg></button>
-              <span class="text-[11px] font-extrabold text-zinc-100 min-w-[32px] text-center tracking-wider">${Math.round(appState.previewZoom*100)}%</span>
-              <button onclick="appState.previewZoom=Math.min(1.5, appState.previewZoom+0.1); appState.animDirection='none'; renderApp();" class="w-7 h-7 flex items-center justify-center text-zinc-300 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></button>
-            </div>
-            <button onclick="handleDirectPrint()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-emerald-400 text-[11px] font-extrabold active:scale-90 uppercase tracking-wide border border-emerald-500 transition-all">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PRINT
-            </button>
-          </header>
-          <div id="preview-viewport" class="flex-1 overflow-auto p-4 pb-10 flex flex-col items-center">
+        <div id="preview-root-container" class="flex-1 flex flex-col bg-[#08080e] relative h-full overflow-hidden ${appState.animDirection==='pop-in'?'anim-pop-in-origin':''}" style="--tx:${lastEditorOrigin.tx}; --ty:${lastEditorOrigin.ty};">
+          
+          <div class="absolute top-4 left-1/2 transform -translate-x-1/2 px-5 py-1.5 bg-zinc-800/90 backdrop-blur-md text-white text-[10px] font-black rounded-full z-40 border border-zinc-700 shadow-xl tracking-widest uppercase">
+            PREVIEW
+          </div>
+
+          <div id="preview-viewport" class="flex-1 overflow-auto p-4 pt-16 pb-6 flex flex-col items-center">
              <div class="relative bg-white shadow-2xl transition-all" style="width:${scaledW}px; height:${scaledH}px; min-height:${scaledH}px;">
                 <div style="width:794px; min-height:1123px; transform: scale(${appState.previewZoom}); transform-origin: top left; position: absolute; top:0; left:0;">
                   ${getCVDocumentHTML('cv-screen-preview', false)}
                 </div>
              </div>
           </div>
+
+          <header class="flex items-center justify-between px-4 py-3 z-30 shrink-0 bg-[#08080e]/90 backdrop-blur-md border-t border-zinc-800">
+            <button onclick="closePreviewAnim()" class="px-5 py-2.5 flex items-center gap-1.5 bg-transparent rounded-full text-white text-[11px] font-extrabold border border-zinc-700 active:scale-90 uppercase tracking-wide transition-all shadow-md">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg> EDIT
+            </button>
+            <div class="flex items-center gap-2 bg-[#11111c] p-1.5 rounded-full border border-zinc-700 shadow-md">
+              <button onclick="appState.previewZoom=Math.max(0.3, appState.previewZoom-0.1); appState.animDirection='none'; renderApp();" class="w-8 h-8 flex items-center justify-center text-zinc-300 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg></button>
+              <span class="text-[11px] font-extrabold text-zinc-100 min-w-[32px] text-center tracking-wider">${Math.round(appState.previewZoom*100)}%</span>
+              <button onclick="appState.previewZoom=Math.min(1.5, appState.previewZoom+0.1); appState.animDirection='none'; renderApp();" class="w-8 h-8 flex items-center justify-center text-zinc-300 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></button>
+            </div>
+            <button onclick="handleDirectPrint()" class="px-5 py-2.5 flex items-center gap-1.5 bg-emerald-500/10 rounded-full text-emerald-400 text-[11px] font-extrabold active:scale-90 uppercase tracking-wide border border-emerald-500/50 transition-all shadow-md">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PRINT
+            </button>
+          </header>
         </div>
       `;
     }
@@ -1192,6 +1207,7 @@
       setTimeout(() => window.print(), 100);
     }
 
+    // Dynamic Style processing strictly handled here
     function getCVDocumentHTML(id, isPrintMode) {
       const cv = appState.cvData;
       if(!cv) return '';
@@ -1201,14 +1217,14 @@
       
       const cvStyle = cv.style || { title: "CURRICULUM VITAE", font: "Times New Roman", casing: "uppercase", weight: "bold" };
       const font = getFontFamilyCss(cvStyle.font);
-      const textTransform = cvStyle.casing;
-      const textWeight = cvStyle.weight;
+      const textTransform = cvStyle.casing; // "uppercase" or "capitalize"
+      const textWeight = cvStyle.weight; // "bold" or "normal"
 
       let printDob = d.dob || '';
       if(printDob === '//') printDob = '';
 
       const contactList = [
-        { label: 'Name', val: p.name, bold: true, upper: true },
+        { label: 'Name', val: p.name, bold: true },
         { label: 'Address', val: p.villagePost },
         { label: 'Tehsil', val: p.tehsil },
         { label: 'District', val: p.district },
@@ -1221,12 +1237,12 @@
         <tr>
           <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:80px; text-transform:none;">${item.label}</td>
           <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
-          <td style="font-weight:${idx === 0 ? textWeight : (textWeight === 'bold' ? 'bold' : 'normal')}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${item.upper ? textTransform : 'none'}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
+          <td style="font-weight:${idx === 0 ? textWeight : (textWeight === 'bold' ? 'bold' : 'normal')}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${textTransform}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
         </tr>
       `).join('');
 
       const personalDetailsHTML = [
-        { l: 'Name', v: p.name, upper: true, bold: true },
+        { l: 'Name', v: p.name, bold: true },
         { l: 'Date of Birth', v: printDob },
         { l: "Father's Name", v: d.father },
         { l: 'Gender', v: d.gender },
@@ -1238,11 +1254,11 @@
         <tr>
           <td style="padding:2px 0; vertical-align:top; color:#000; width:140px; font-weight:normal; text-transform:none;">${item.l}</td>
           <td style="padding:2px 0; text-align:center; font-weight:bold; vertical-align:top; color:#000; width:18px;">:</td>
-          <td style="padding:2px 0; font-weight:${item.bold ? textWeight : (textWeight === 'bold' ? 'bold' : 'normal')}; text-transform:${item.upper ? textTransform : 'none'}; vertical-align:top; color:#000;">${item.v || ''}</td>
+          <td style="padding:2px 0; font-weight:${item.bold ? textWeight : (textWeight === 'bold' ? 'bold' : 'normal')}; text-transform:${textTransform}; vertical-align:top; color:#000;">${item.v || ''}</td>
         </tr>
       `).join('');
 
-      const genList = (arr) => (arr||[]).filter(x => x.trim()).map(x => `<li style="padding-left:4px; line-height:1.35; color:#000; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:none;">${x}</li>`).join('');
+      const genList = (arr) => (arr||[]).filter(x => x.trim()).map(x => `<li style="padding-left:4px; line-height:1.35; color:#000; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:${textTransform};">${x}</li>`).join('');
       
       const academicHTML = genList(cv.academic);
       const otherHTML = genList(cv.other);
@@ -1252,12 +1268,8 @@
         `<img src="${p.photo}" style="width:96px !important; height:124px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : 
         `<div style="width:96px; height:124px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #71717a;"><span style="font-size:7.5pt; font-weight:bold; color:#000; text-transform:none;">PHOTO</span></div>`;
 
-      // Use the chosen font for the title if it's Algerian, else use Algerian just for title or fallback to doc font. 
-      // The prompt specified "Text Font men Algerian..." so we apply it to the whole document if selected.
-      // But usually, Resume Title keeps Algerian. We'll use the user's chosen title but apply the chosen text weight/case to the whole document.
-      
       return `
-        <div id="${id}" style="width:${isPrintMode ? '100%' : '794px'}; min-height:${isPrintMode ? '288mm' : '1123px'}; background-color:#ffffff; color:#000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; box-sizing:border-box; font-weight:normal; text-transform:${textTransform};">
+        <div id="${id}" style="width:${isPrintMode ? '100%' : '794px'}; min-height:${isPrintMode ? '288mm' : '1123px'}; background-color:#ffffff; color:#000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; box-sizing:border-box; font-weight:normal; text-transform:none;">
           <div style="width:100%; min-height:${isPrintMode ? '282mm' : '1085px'}; border:1.5px solid #000; padding:2.5px; box-sizing:border-box;">
             <div style="width:100%; min-height:calc(${isPrintMode ? '282mm' : '1085px'} - 7px); border:2.5px solid #000; padding:6mm 8mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
               
@@ -1277,7 +1289,7 @@
               </div>
 
               <div style="display:flex; flex-direction:column; flex:1; justify-content:space-evenly; margin:4px 0; gap:8px; font-size:11pt; color:#000;">
-                ${cv.objective ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Carrier Objective:-</h2><ul style="list-style-type:disc; margin-left:24px;"><li style="padding-left:4px; text-align:justify; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:none;">${cv.objective}</li></ul></div>` : ''}
+                ${cv.objective ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Carrier Objective:-</h2><ul style="list-style-type:disc; margin-left:24px;"><li style="padding-left:4px; text-align:justify; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:${textTransform};">${cv.objective}</li></ul></div>` : ''}
                 ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Academic Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${academicHTML}</ul></div>` : ''}
                 ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Other Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${otherHTML}</ul></div>` : ''}
                 ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Working Experience:-</h2><ul style="list-style-type:disc; margin-left:24px;">${expHTML}</ul></div>` : ''}
@@ -1287,7 +1299,7 @@
                   <table style="width:100%; font-size:11pt; margin-left:14px; color:#000;">${personalDetailsHTML}</table>
                 </div>
 
-                ${cv.declaration ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Declaration:-</h2><p style="text-align:justify; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:none;">${cv.declaration}</p></div>` : ''}
+                ${cv.declaration ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Declaration:-</h2><p style="text-align:justify; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:${textTransform};">${cv.declaration}</p></div>` : ''}
               </div>
 
               <div style="padding-top:10px;">
