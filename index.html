@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <!-- Strict viewport lock to prevent keyboard scroll and white flashes -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" />
   <title>TECH ASAR CV BUILDER</title>
 
@@ -96,7 +97,14 @@
       0% { opacity: 1; transform: scale(1); max-height: 200px; margin-bottom: 0.75rem; padding: 0.625rem; } 
       100% { opacity: 0; transform: scale(0.9); max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; overflow: hidden; } 
     }
-    .anim-collapse-item { animation: collapseItem 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .anim-collapse-item { animation: collapseItem 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+    /* Suggestion Pill Fill Flash Animation */
+    @keyframes flashSuccess { 
+      0% { background-color: rgba(99,102,241,0.25); border-color: #6366f1; } 
+      100% { background-color: transparent; border-color: #3f3f46; } 
+    }
+    .anim-flash { animation: flashSuccess 0.5s ease-out forwards; }
 
     /* Glass Water Drop Toast Animations */
     @keyframes toastDrop { 0% { transform: translateY(-60px) scale(0.8); opacity: 0; } 60% { transform: translateY(10px) scale(1.05); opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
@@ -352,7 +360,11 @@
     let lastEditorOrigin = { tx: 0, ty: 0 };
     let deleteTargetId = null;
 
-    function autoResize(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }
+    function autoResize(el) { 
+      el.style.height = 'auto'; 
+      el.style.height = (el.scrollHeight) + 'px'; 
+    }
+    
     function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { return []; } }
     
     function saveSilently() {
@@ -367,16 +379,29 @@
 
     function saveAndRender() { appState.animDirection = 'none'; saveSilently(); renderApp(); }
 
+    function highlightFlash(el) {
+        el.classList.remove('anim-flash');
+        void el.offsetWidth; // trigger reflow
+        el.classList.add('anim-flash');
+    }
+
     function applySuggestion(type, key, text) {
       const decodedText = decodeURIComponent(text);
-      if (type === 'array') { addSmoothArrayItem(key, decodedText); } 
+      if (type === 'array') { 
+         addSmoothArrayItem(key, decodedText); 
+      } 
       else if (type === 'details_append') {
         const cur = appState.cvData.details[key];
-        appState.cvData.details[key] = cur ? cur + ', ' + decodedText : decodedText;
-        saveAndRender();
+        const newVal = cur ? cur + ', ' + decodedText : decodedText;
+        appState.cvData.details[key] = newVal;
+        const el = document.getElementById('input-' + key);
+        if(el) { el.value = newVal; autoResize(el); highlightFlash(el); }
+        saveSilently();
       } else if (type === 'text') {
         appState.cvData[key] = decodedText;
-        saveAndRender();
+        const el = document.getElementById('input-' + key);
+        if(el) { el.value = decodedText; autoResize(el); highlightFlash(el); }
+        saveSilently();
       }
     }
 
@@ -529,11 +554,15 @@
       else if(appState.view === 'preview') root.innerHTML = getPreviewHTML();
       if(appState.view === 'editor' || appState.view === 'preview') renderPrintNode();
 
-      const textareas = root.querySelectorAll('textarea.auto-expand');
-      for(let i = 0; i < textareas.length; i++) {
-        textareas[i].style.height = 'auto';
-        textareas[i].style.height = textareas[i].scrollHeight + 'px';
-      }
+      // Defer textarea height assignment to allow smooth DOM mounting animations first
+      requestAnimationFrame(() => {
+         const textareas = root.querySelectorAll('textarea.auto-expand');
+         for(let i = 0; i < textareas.length; i++) {
+           if (textareas[i].scrollHeight > 0) {
+             textareas[i].style.height = textareas[i].scrollHeight + 'px';
+           }
+         }
+      });
     }
 
     function getHomeHTML() {
@@ -765,7 +794,7 @@
       return `
         <div class="flex flex-col gap-3 w-full">
           <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">${title}</h3>
-          <textarea rows="1" oninput="autoResize(this); appState.cvData['${key}']=this.value; saveSilently();" placeholder="ENTER ${title}..." class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed resize-none overflow-hidden auto-expand" style="min-height: 52px;">${escapeHtml(appState.cvData[key])}</textarea>
+          <textarea id="input-${key}" rows="1" oninput="autoResize(this); appState.cvData['${key}']=this.value; saveSilently();" placeholder="ENTER ${title}..." class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed resize-none overflow-hidden auto-expand transition-colors duration-300" style="min-height: 52px;">${escapeHtml(appState.cvData[key])}</textarea>
           ${pillsHTML}
         </div>
       `;
@@ -775,7 +804,7 @@
       const arr = appState.cvData[key] || [];
       const items = arr.map((val, i) => {
         const isNew = (appState.lastAddedKey === key && i === arr.length - 1);
-        const animClass = isNew ? 'anim-new-item' : '';
+        const animClass = isNew ? 'anim-new-item anim-flash' : '';
         return `
         <div id="array-item-${key}-${i}" class="flex items-start gap-2 bg-transparent p-2.5 rounded-xl border border-zinc-700 ${animClass} transform transition-all origin-top">
           <span class="w-6 h-6 rounded border border-zinc-600 text-zinc-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">${i+1}</span>
@@ -817,7 +846,7 @@
           appState.cvData[key].splice(idx, 1);
           appState.animDirection = 'none';
           saveAndRender();
-        }, 340);
+        }, 190);
       } else {
         appState.cvData[key].splice(idx, 1);
         saveAndRender();
@@ -893,7 +922,7 @@
           </div>
           
           <div class="flex flex-col gap-0 w-full mt-1">
-            <textarea rows="1" oninput="autoResize(this); updateDet('hobbies', this.value)" placeholder="HOBBIES" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(d.hobbies)}</textarea>
+            <textarea id="input-hobbies" rows="1" oninput="autoResize(this); updateDet('hobbies', this.value)" placeholder="HOBBIES" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand transition-colors duration-300">${escapeHtml(d.hobbies)}</textarea>
             ${hobbiesPills}
           </div>
         </div>
@@ -925,7 +954,7 @@
         <div class="flex flex-col gap-6 w-full pb-4">
           <div class="flex flex-col gap-3">
             <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">DECLARATION STATEMENT</h3>
-            <textarea rows="1" oninput="autoResize(this); appState.cvData.declaration=this.value; saveSilently();" class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed resize-none overflow-hidden auto-expand" style="min-height: 52px;">${escapeHtml(cv.declaration)}</textarea>
+            <textarea id="input-declaration" rows="1" oninput="autoResize(this); appState.cvData.declaration=this.value; saveSilently();" class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed resize-none overflow-hidden auto-expand transition-colors duration-300" style="min-height: 52px;">${escapeHtml(cv.declaration)}</textarea>
             ${declPills}
           </div>
           <div class="flex flex-col gap-3 mt-2">
@@ -1347,7 +1376,7 @@
         { l: 'Gender', v: d.gender },
         { l: 'Marital Status', v: d.marital },
         { l: 'Nationality', v: d.nationality },
-        { l: 'Language', v: d.languages },
+        { l: 'Language Known', v: d.languages },
         { l: 'Hobbies', v: d.hobbies }
       ].map(item => `
         <tr>
