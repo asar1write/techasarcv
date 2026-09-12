@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>TECH ASAR CV</title>
+  <title>TECH ASAR CV BUILDER</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,7 +22,7 @@
   <!-- Algerian & Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/algerian">
 
   <style>
@@ -39,7 +39,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 1. HIDE ALL SCROLLBARS GLOBALLY */
     * {
       -ms-overflow-style: none !important;
       scrollbar-width: none !important;
@@ -56,351 +55,699 @@
       font-family: 'Algerian', 'Times New Roman', serif !important;
     }
 
-    /* 2. ULTRA-SMOOTH HARDWARE-ACCELERATED TRANSITIONS */
+    /* GLOBAL APP UI STYLES (Req: Capital and Bold) */
+    #app-root, #picker-modal {
+      text-transform: uppercase;
+    }
+    #app-root input, #app-root textarea, #app-root select, #app-root button,
+    #picker-modal input, #picker-modal button {
+      font-weight: 700 !important;
+      text-transform: uppercase;
+    }
+    #app-root input::placeholder, #app-root textarea::placeholder, #picker-modal input::placeholder {
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.7;
+    }
+
+    /* ULTRA-SMOOTH ANDROID-LIKE ANIMATIONS */
     @keyframes slideInRightSmooth {
-      0% {
-        opacity: 0;
-        transform: translate3d(24px, 0, 0) scale(0.985);
-      }
-      100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-      }
+      0% { opacity: 0; transform: translate3d(24px, 0, 0); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-
     @keyframes slideInLeftSmooth {
-      0% {
-        opacity: 0;
-        transform: translate3d(-24px, 0, 0) scale(0.985);
-      }
-      100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-      }
+      0% { opacity: 0; transform: translate3d(-24px, 0, 0); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    
+    @keyframes popInOrigin {
+      0% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3); }
+      100% { opacity: 1; transform: translate(0, 0) scale(1); }
+    }
+    @keyframes popOutOrigin {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
     }
 
-    @keyframes popInSmooth {
-      0% {
-        opacity: 0;
-        transform: translate3d(0, 16px, 0) scale(0.98);
-      }
-      100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-      }
+    .anim-next { animation: slideInRightSmooth 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .anim-prev { animation: slideInLeftSmooth 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .anim-pop-in-origin { animation: popInOrigin 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards; }
+    .anim-pop-out-origin { animation: popOutOrigin 0.25s cubic-bezier(0.3, 0, 0.8, 0.2) forwards; }
+    .anim-fade { animation: fadeIn 0.2s ease-out forwards; }
+
+    .step-1-noscroll {
+      height: calc(100dvh - 130px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
 
-    .anim-next {
-      animation: slideInRightSmooth 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      will-change: transform, opacity;
-    }
-
-    .anim-prev {
-      animation: slideInLeftSmooth 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      will-change: transform, opacity;
-    }
-
-    .anim-pop {
-      animation: popInSmooth 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      will-change: transform, opacity;
-    }
-
-    /* Standard A4 Screen Canvas */
-    .cv-page-canvas {
-      width: 794px;
-      min-height: 1123px;
-      box-sizing: border-box;
-      background-color: #ffffff;
-    }
-
-    #cv-print-container {
-      display: none;
-    }
-
-    /* 3. ROCK-SOLID PRINT ENGINE: 100% PRECISE A4 PORTRAIT */
+    /* Print Setup */
+    #cv-print-container { display: none; }
     @media print {
-      @page {
-        size: A4 portrait;
-        margin: 0mm !important;
-      }
-      *, *::before, *::after {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        box-sizing: border-box !important;
-      }
+      @page { size: A4 portrait; margin: 0mm !important; }
       html, body {
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        color: #000000 !important;
-        overflow: visible !important;
+        width: 210mm !important; height: 297mm !important; margin: 0 !important;
+        padding: 0 !important; background: #ffffff !important; color: #000000 !important;
       }
-      #app-screen-workspace,
-      header,
-      nav,
-      button,
-      .no-print {
-        display: none !important;
-      }
+      #app-root, .no-print, #picker-modal { display: none !important; }
       #cv-print-container {
-        display: block !important;
-        position: static !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        min-height: 297mm !important;
-        max-height: 297mm !important;
-        margin: 0 auto !important;
-        padding: 4mm !important;
-        background: #ffffff !important;
-        color: #000000 !important;
-        box-sizing: border-box !important;
-        overflow: hidden !important;
-        page-break-after: avoid !important;
-        page-break-inside: avoid !important;
-        page-break-before: avoid !important;
-        z-index: 999999 !important;
-        visibility: visible !important;
+        display: block !important; position: static !important;
+        width: 210mm !important; height: 297mm !important;
+        padding: 4mm !important; background: #ffffff !important;
       }
+      /* Prevent uppercase enforcement in print */
       #cv-print-container * {
-        visibility: visible !important;
+        text-transform: none;
       }
     }
   </style>
 </head>
-<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans">
+<body class="bg-[#08080e] text-zinc-100 antialiased overflow-hidden font-sans select-none font-bold">
 
-  <!-- 1. SCREEN WORKSPACE -->
-  <div id="app-screen-workspace" class="h-[100dvh] w-full bg-[#08080e] flex flex-col overflow-hidden select-none">
-    
-    <!-- Slim 48px Header: Only "TECH ASAR CV" (No subtitle) -->
-    <header class="h-12 px-3.5 bg-[#0c0c14]/95 backdrop-blur-md border-b border-zinc-800/80 flex items-center justify-between shrink-0 z-30 sticky top-0">
-      <div class="flex items-center gap-2 min-w-0">
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-sm shrink-0">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </div>
-        <span class="font-bold text-sm tracking-tight text-zinc-100 truncate">
-          TECH ASAR CV
-        </span>
-      </div>
+  <!-- MAIN APP CONTAINER -->
+  <div id="app-root" class="h-[100dvh] w-full flex flex-col relative overflow-hidden">
+    <!-- Content Injected via JS -->
+  </div>
 
-      <div class="flex items-center gap-2 shrink-0">
-        <!-- Direct Print Button (Only Print - PDF download removed) -->
-        <button
-          type="button"
-          onclick="handleDirectPrint()"
-          class="flex items-center gap-1.5 px-3 py-1 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-semibold active:scale-95 transition-all shadow-sm"
-        >
-          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 6 2 18 2 18 9" />
-            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-            <rect x="6" y="14" width="12" height="8" />
-          </svg>
-          <span>Print</span>
-        </button>
-
-        <!-- Reset Button -->
-        <button
-          type="button"
-          onclick="openResetDialog()"
-          class="p-1.5 rounded-lg border border-zinc-800 bg-[#141420] text-zinc-400 hover:text-zinc-200 active:scale-95 transition-all"
-          title="Reset to default CV"
-        >
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10" />
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-          </svg>
-        </button>
-      </div>
-    </header>
-
-    <!-- Slim 2px Progress Line -->
-    <div class="w-full h-[2px] bg-zinc-800 shrink-0">
-      <div id="progress-bar-line" class="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition-all duration-300" style="width: 14%;"></div>
-    </div>
-
-    <!-- MAIN VIEW CONTAINER -->
-    <div id="main-view-container" class="flex-1 flex flex-col overflow-hidden relative">
-      <!-- Dynamically injected -->
-    </div>
-
-    <!-- Reset Confirmation Dialog -->
-    <div id="reset-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-      <div class="bg-[#141420] border border-zinc-800 rounded-2xl p-4 max-w-xs w-full shadow-2xl text-center space-y-3 anim-pop">
-        <div class="w-9 h-9 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <polyline points="1 4 1 10 7 10" />
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="font-bold text-sm text-zinc-100">Reset CV Data?</h3>
-          <p class="text-xs text-zinc-400 mt-1">Restore sample CV values?</p>
-        </div>
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button type="button" onclick="closeResetDialog()" class="py-1.5 px-3 rounded-lg bg-zinc-800 text-zinc-300 text-xs active:scale-95">
-            Cancel
-          </button>
-          <button type="button" onclick="confirmReset()" class="py-1.5 px-3 rounded-lg bg-red-600 text-white text-xs font-semibold active:scale-95">
-            Reset
+  <!-- POPUP PICKER MODAL -->
+  <div id="picker-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-5">
+    <!-- Backdrop -->
+    <div id="picker-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="closePicker()"></div>
+    <!-- Modal Box -->
+    <div id="picker-box" class="relative w-full max-w-sm bg-[#11111c] border border-zinc-800 rounded-3xl shadow-2xl flex flex-col max-h-[75vh] opacity-0 transition-all duration-300">
+      <div class="px-5 py-4 border-b border-zinc-800 flex flex-col gap-3 shrink-0">
+        <div class="flex justify-between items-center">
+          <h3 id="picker-title" class="font-bold text-zinc-100 text-sm tracking-wide uppercase">Select Location</h3>
+          <button onclick="closePicker()" class="p-1.5 rounded-full bg-zinc-800/50 text-zinc-400 active:scale-90">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
+        <div class="relative">
+          <input type="text" id="picker-search" oninput="filterPickerList(this.value)" placeholder="SEARCH OR TYPE CUSTOM..." class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold" />
+        </div>
+      </div>
+      <div id="picker-list" class="flex-1 overflow-y-auto p-2 space-y-1">
+        <!-- Items Injected Here -->
       </div>
     </div>
   </div>
 
-  <!-- 2. DEDICATED PRINT CONTAINER -->
   <div id="cv-print-container"></div>
 
-  <!-- PURE JAVASCRIPT (ZERO BABEL COMPILER DEPENDENCY - 100% WORKING OFFLINE & ONLINE) -->
   <script>
-    const STORAGE_KEY = 'techasar_cv_final_standalone_v7';
+    const HISTORY_KEY = 'techasar_cv_history_v3';
+    
+    // Comprehensive India States & UTs
+    const indianStates = [
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", 
+      "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
+      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", 
+      "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+      "Dadra & Nagar Haveli and Daman & Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+    ];
 
-    const defaultCVData = {
-      font: "Times New Roman",
-      personal: {
-        photo: "",
-        name: "MO ASAR",
-        villagePost: "Moh. Razaganj Ward No 08",
-        tehsil: "Post & Tehsil Puranpur",
-        district: "Distt. Pilibhit",
-        state: "Uttar Pradesh (U.P.)",
-        mobile: "9528143932",
-        email: "asarwrite@gmail.com",
-        headerStyle: "labeled",
-      },
-      objective: "To contribute to the overall growth of your organization by applying my skills, knowledge, honesty & hard-working.",
-      academic: [
-        "High School Passed from U.P Board in 2020",
-        "Intermediate Passed from U.P Board. in 2022",
-        "B.A Passed From M.J.P. Rohilkhand University Bareilly in 2025"
-      ],
-      other: [
-        "Course On Computer Concepts Diploma",
-        "English Speaking Course Completed From British Academy Puranpur"
-      ],
-      experience: [
-        "7 years working experience cyber cafe from New Love Computer puranpur",
-        "6 months working experience in a Farm Mandi Samiti Puranpur As a Cashier"
-      ],
-      details: {
-        dob: "10/07/2005",
-        father: "Mr. Munne Khan",
-        gender: "Male",
-        marital: "Unmarried",
-        nationality: "Indian",
-        languages: "Hindi & English",
-        hobbies: "Editing, Listening Music"
-      },
-      declaration: "I hereby declare that all the information mentioned above is true to the best of my knowledge. If you give me a Chance, I assure my hard work, dedication and sincerity",
-      footer: {
-        date: "",
-        place: "Puranpur",
-        signName: "MO ASAR"
+    // All 75 UP Districts
+    const upDistricts = [
+      "Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", 
+      "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", 
+      "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", 
+      "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", 
+      "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", 
+      "Kasganj", "Kaushambi", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", 
+      "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Prayagraj", 
+      "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", 
+      "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"
+    ];
+
+    // Targeted sample Tehsils/Blocks for UP. (Search bar covers everything else)
+    const specificLocations = {
+      "Uttar Pradesh": {
+        "Pilibhit": { 
+          "Puranpur": ["Puranpur Block", "Gajraula", "Madhotanda", "Sherpur"], 
+          "Bisalpur": ["Bilsanda", "Barkhera"],
+          "Pilibhit": ["Amariya", "Lalaurikhera", "Marauri"],
+          "Kalinagar": ["Kalinagar Block"]
+        },
+        "Bareilly": { 
+          "Baheri": ["Baheri Block", "Richha"], 
+          "Nawabganj": ["Bhadpura"],
+          "Bareilly": ["Bhojipura", "Bithiri Chainpur", "Kyara", "Fatehganj"]
+        }
       }
     };
 
-    let cvData = (function() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-      } catch(e) {}
-      return JSON.parse(JSON.stringify(defaultCVData));
-    })();
+    function getDistricts(state) {
+      if (state === "Uttar Pradesh") return upDistricts;
+      return []; // Forces user to type custom for other states
+    }
+    function getTehsils(state, dist) {
+      if (specificLocations[state] && specificLocations[state][dist]) return Object.keys(specificLocations[state][dist]);
+      return [];
+    }
+    function getBlocks(state, dist, tehsil) {
+      if (specificLocations[state] && specificLocations[state][dist] && specificLocations[state][dist][tehsil]) {
+        return specificLocations[state][dist][tehsil];
+      }
+      return [];
+    }
 
-    let currentPage = 1;
-    let activeView = 'editor';
-    let animDirection = 'next';
-    let previewZoom = 0.46;
+    const defaultCVData = {
+      id: null,
+      lastModified: null,
+      font: "Times New Roman",
+      personal: {
+        photo: "", name: "", villagePost: "", state: "", district: "", tehsil: "", block: "", mobile: "", email: "", headerStyle: "labeled",
+      },
+      objective: "To contribute to the overall growth of your organization by applying my skills, knowledge, honesty & hard-working.",
+      academic: ["High School Passed from U.P Board in 2020", "Intermediate Passed from U.P Board. in 2022"],
+      other: ["Course On Computer Concepts Diploma (CCC)"],
+      experience: ["Fresher"],
+      details: { dob: "", father: "", gender: "Male", marital: "Unmarried", nationality: "Indian", languages: "Hindi & English", hobbies: "Reading, Editing" },
+      declaration: "I hereby declare that all the information mentioned above is true to the best of my knowledge.",
+      footer: { date: "", place: "", signName: "" }
+    };
 
-    const STEP_NAMES = [
-      "Personal Details",
-      "Career Objective",
-      "Academic Qualification",
-      "Other Qualification",
-      "Working Experience",
-      "Personal Details Table",
-      "Declaration & Sign-Off"
-    ];
+    let appState = {
+      view: 'home', cvData: null, currentPage: 1, animDirection: 'next', previewZoom: 0.46, pickerType: '', pickerOptions: []
+    };
 
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
-      } catch(e) {}
+    function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { return []; } }
+    
+    function saveSilently() {
+      if(!appState.cvData) return;
+      appState.cvData.lastModified = Date.now();
+      const history = getHistory();
+      const idx = history.findIndex(x => x.id === appState.cvData.id);
+      if (idx >= 0) history[idx] = appState.cvData; else history.push(appState.cvData);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
       renderPrintNode();
     }
 
-    function processPassportPhoto(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error("Failed to read image"));
-        reader.onload = (ev) => {
-          const img = new Image();
-          img.onerror = () => reject(new Error("Invalid image"));
-          img.onload = () => {
-            const targetW = 413, targetH = 531;
-            const targetAspect = targetW / targetH;
-            const srcW = img.naturalWidth || img.width;
-            const srcH = img.naturalHeight || img.height;
-            let sx = 0, sy = 0, sw = srcW, sh = srcH;
-            if (srcW / srcH > targetAspect) {
-              sw = srcH * targetAspect;
-              sx = (srcW - sw) / 2;
-            } else {
-              sh = srcW / targetAspect;
-              sy = Math.max(0, (srcH - sh) * 0.22);
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = targetW; canvas.height = targetH;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return resolve(ev.target.result);
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, targetW, targetH);
-            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
-            resolve(canvas.toDataURL('image/jpeg', 0.92));
-          };
-          img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
+    function saveAndRender() { saveSilently(); renderApp(); }
+    function updatePers(k, v) { appState.cvData.personal[k] = v; saveSilently(); }
+    function updateDet(k, v) { appState.cvData.details[k] = v; saveSilently(); }
+    function updateArr(key, idx, val) { appState.cvData[key][idx] = val; saveSilently(); }
+
+    function setView(view, anim = 'fade') {
+      appState.view = view;
+      if(view === 'editor' && !appState.cvData) {
+        appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
+        appState.cvData.id = 'cv_' + Date.now();
+        appState.currentPage = 1;
+      }
+      renderApp();
     }
 
-    // Unbreakable Fixed Two-Column Table Layout for Print and Screen
-    function getDocumentHTML(id, isPrintMode) {
-      const p = cvData.personal;
-      const d = cvData.details;
-      const f = cvData.footer;
+    function editCV(id) {
+      const history = getHistory();
+      const cv = history.find(x => x.id === id);
+      if(cv) { appState.cvData = JSON.parse(JSON.stringify(cv)); appState.currentPage = 1; setView('editor'); }
+    }
 
-      const fontFamilies = {
-        'Arial': 'Arial, Helvetica, sans-serif',
-        'Calibri': 'Calibri, "Segoe UI", Candara, sans-serif',
-        'Algerian': '"Algerian", "Times New Roman", serif',
-        'Times New Roman': '"Times New Roman", Times, serif'
-      };
-      const font = fontFamilies[cvData.font] || fontFamilies['Times New Roman'];
+    function resetCurrentCV() {
+      const currentId = appState.cvData.id;
+      appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
+      appState.cvData.id = currentId;
+      saveAndRender();
+    }
 
+    function deleteFromHistory(id) {
+      let history = getHistory(); history = history.filter(x => x.id !== id);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); renderApp();
+    }
+
+    function renderApp() {
+      const root = document.getElementById('app-root');
+      if(appState.view === 'home') root.innerHTML = getHomeHTML();
+      else if(appState.view === 'history') root.innerHTML = getHistoryHTML();
+      else if(appState.view === 'editor') root.innerHTML = getEditorHTML();
+      else if(appState.view === 'preview') root.innerHTML = getPreviewHTML();
+      if(appState.view === 'editor' || appState.view === 'preview') renderPrintNode();
+    }
+
+    function getHomeHTML() {
+      return `
+        <div class="flex-1 flex flex-col items-center justify-center p-6 bg-[#08080e] anim-fade relative font-bold">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-transparent pointer-events-none"></div>
+          <div class="w-24 h-24 bg-indigo-500 rounded-full blur-[80px] absolute top-1/3 opacity-30 pointer-events-none"></div>
+          <div class="relative z-10 w-full max-w-sm space-y-10">
+            <div class="text-center space-y-2">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 mx-auto mb-6">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h1 class="text-3xl font-black text-white tracking-tight uppercase">TECH ASAR CV</h1>
+              <p class="text-sm text-zinc-400 uppercase font-bold">PROFESSIONAL CV BUILDER</p>
+            </div>
+            <div class="space-y-4">
+              <button onclick="appState.cvData=null; setView('editor')" class="w-full py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                CREATE NEW CV
+              </button>
+              <button onclick="setView('history')" class="w-full py-4 rounded-full bg-[#181826] border border-zinc-700 text-white font-bold text-lg shadow-lg hover:bg-zinc-800 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                CV HISTORY
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getHistoryHTML() {
+      const history = getHistory();
+      let listHTML = `<div class="text-center text-zinc-500 mt-10 text-sm font-bold uppercase">NO CVS FOUND. CREATE ONE!</div>`;
+      if(history.length > 0) {
+        listHTML = history.sort((a,b) => b.lastModified - a.lastModified).map(cv => {
+          const date = new Date(cv.lastModified).toLocaleDateString('en-GB');
+          const name = cv.personal.name || "UNTITLED CV";
+          return `
+            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mb-3 shadow-sm">
+              <div class="flex-1 min-w-0 pr-3">
+                <h3 class="font-bold text-zinc-100 truncate uppercase">${name}</h3>
+                <p class="text-xs text-zinc-500 mt-0.5 font-bold">${date}</p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="editCV('${cv.id}')" class="w-10 h-10 rounded-full bg-zinc-800/80 flex items-center justify-center text-indigo-400 active:scale-90 transition-all border border-zinc-700">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button onclick="appState.cvData = ${JSON.stringify(cv).replace(/"/g, '&quot;')}; renderPrintNode(); setTimeout(()=>window.print(),100);" class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 active:scale-90 transition-all border border-emerald-500/20">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
+                </button>
+                <button onclick="deleteFromHistory('${cv.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-red-400 active:scale-90 transition-all ml-1">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      return `
+        <div class="flex-1 flex flex-col bg-[#08080e] anim-next">
+          <header class="h-16 px-4 flex items-center justify-between z-30 shrink-0">
+            <button onclick="setView('home')" class="px-4 py-2 flex items-center gap-2 bg-[#181826]/80 backdrop-blur-md rounded-full text-zinc-300 border border-zinc-700/60 active:scale-90 shadow-lg font-bold text-xs">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              BACK
+            </button>
+            <div class="px-5 py-2 bg-[#181826]/80 backdrop-blur-md rounded-full text-xs font-bold text-white border border-zinc-700/60 shadow-lg uppercase">
+              CV HISTORY
+            </div>
+            <div class="w-20"></div>
+          </header>
+          <div class="flex-1 overflow-y-auto px-4 pb-10 pt-2">
+            ${listHTML}
+          </div>
+        </div>
+      `;
+    }
+
+    function getEditorHTML() {
+      const page = appState.currentPage;
+      const animClass = appState.animDirection === 'next' ? 'anim-next' : 'anim-prev';
+      
+      let stepContent = '';
+      if(page === 1) stepContent = getStep1HTML();
+      else if(page === 2) stepContent = getStepTextarea('objective', 'CAREER OBJECTIVE');
+      else if(page === 3) stepContent = getStepArray('academic', 'ACADEMIC QUALIFICATION');
+      else if(page === 4) stepContent = getStepArray('other', 'OTHER QUALIFICATION');
+      else if(page === 5) stepContent = getStepArray('experience', 'WORKING EXPERIENCE');
+      else if(page === 6) stepContent = getStep6HTML();
+      else if(page === 7) stepContent = getStep7HTML();
+      else if(page === 8) stepContent = getStep8HTML();
+
+      return `
+        <div class="flex-1 flex flex-col bg-[#08080e] relative">
+          
+          <!-- PILL SHAPE HEADER -->
+          <header class="absolute top-4 left-4 right-4 flex items-center justify-between z-30 pointer-events-none">
+            <button onclick="appState.cvData=null; setView('home')" class="pointer-events-auto px-4 py-2 flex items-center gap-1.5 bg-[#181826]/80 backdrop-blur-md rounded-full text-zinc-300 border border-zinc-700/60 active:scale-90 shadow-xl text-xs font-bold uppercase">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              BACK
+            </button>
+            <div class="pointer-events-auto px-5 py-2 bg-[#181826]/80 backdrop-blur-md rounded-full text-xs font-bold text-white tracking-wide border border-zinc-700/60 shadow-xl uppercase">
+              STEP ${page}/8
+            </div>
+            <button onclick="resetCurrentCV()" class="pointer-events-auto px-4 py-2 flex items-center gap-1.5 bg-[#181826]/80 backdrop-blur-md rounded-full text-red-400 border border-zinc-700/60 active:scale-90 shadow-xl text-xs font-bold uppercase">
+              RESET
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+            </button>
+          </header>
+
+          <div class="flex-1 overflow-y-auto px-4 pt-20 pb-24">
+            <div class="${animClass} ${page === 1 ? 'step-1-noscroll' : ''}">
+              ${stepContent}
+            </div>
+          </div>
+
+          <div class="absolute bottom-6 left-4 right-4 flex items-center justify-between gap-3 z-30 pointer-events-none">
+            <button onclick="goPrev()" class="pointer-events-auto flex items-center gap-1.5 px-4 py-3 rounded-full bg-[#181826]/90 backdrop-blur border border-zinc-700 shadow-xl text-zinc-200 text-xs font-bold active:scale-95 uppercase ${page === 1 ? 'opacity-0 pointer-events-none' : ''}">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              PREV
+            </button>
+            <button onclick="appState.animDirection='pop-in'; setView('preview')" class="pointer-events-auto flex-1 flex justify-center items-center gap-1.5 py-3 rounded-full bg-zinc-800/90 backdrop-blur border border-zinc-700 shadow-xl text-zinc-100 text-xs font-bold active:scale-95 uppercase">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              PREVIEW
+            </button>
+            <button onclick="goNext()" class="pointer-events-auto flex items-center gap-1.5 px-4 py-3 rounded-full bg-indigo-600 shadow-xl shadow-indigo-600/30 text-white text-xs font-bold active:scale-95 uppercase">
+              ${page === 8 ? 'DONE' : 'NEXT'}
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getStep1HTML() {
+      const p = appState.cvData.personal;
+      return `
+        <div class="flex flex-col gap-3 w-full">
+          <div class="flex items-center gap-4 w-full border border-zinc-700/80 rounded-2xl p-3 bg-[#11111c]">
+            <div class="w-[72px] h-[88px] rounded-xl border border-zinc-600 bg-zinc-900 flex items-center justify-center shrink-0 overflow-hidden bg-cover bg-top shadow-inner" style="background-image: ${p.photo ? `url('${p.photo}')` : 'none'}">
+               ${!p.photo ? `<svg class="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>` : ''}
+            </div>
+            <div class="flex-1">
+              <span class="text-sm text-zinc-200 font-bold block mb-1 uppercase">PASSPORT PHOTO</span>
+              <button onclick="document.getElementById('file-photo').click()" class="px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-400 text-xs font-bold border border-indigo-500/30 active:scale-95 uppercase">${p.photo ? 'CHANGE PHOTO' : 'UPLOAD IMAGE'}</button>
+              <input id="file-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
+            </div>
+            ${p.photo ? `<button onclick="appState.cvData.personal.photo=''; saveAndRender();" class="p-2 text-red-400 active:scale-90"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>` : ''}
+          </div>
+
+          <input type="text" value="${escapeHtml(p.name)}" oninput="updatePers('name', this.value)" placeholder="FULL NAME *" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
+          <input type="tel" value="${escapeHtml(p.mobile)}" oninput="updatePers('mobile', this.value)" placeholder="MOBILE NUMBER *" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
+          <input type="email" value="${escapeHtml(p.email)}" oninput="updatePers('email', this.value)" placeholder="EMAIL ADDRESS" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
+          <input type="text" value="${escapeHtml(p.villagePost)}" oninput="updatePers('villagePost', this.value)" placeholder="ADDRESS (MOHALLA / VILLAGE & POST)" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
+
+          <div onclick="openLocationPicker(event, 'state')" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none flex items-center justify-between cursor-pointer font-bold uppercase ${p.state ? 'text-zinc-100' : 'text-zinc-500'}">
+            <span class="truncate">${p.state || 'SELECT STATE'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div onclick="openLocationPicker(event, 'district')" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none flex items-center justify-between cursor-pointer font-bold uppercase ${p.district ? 'text-zinc-100' : 'text-zinc-500'}">
+            <span class="truncate">${p.district || 'SELECT DISTRICT'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div onclick="openLocationPicker(event, 'tehsil')" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none flex items-center justify-between cursor-pointer font-bold uppercase ${p.tehsil ? 'text-zinc-100' : 'text-zinc-500'}">
+            <span class="truncate">${p.tehsil || 'SELECT TEHSIL'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div onclick="openLocationPicker(event, 'block')" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none flex items-center justify-between cursor-pointer font-bold uppercase ${p.block ? 'text-zinc-100' : 'text-zinc-500'}">
+            <span class="truncate">${p.block || 'SELECT BLOCK'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </div>
+      `;
+    }
+
+    function getStepTextarea(key, title) {
+      return `
+        <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">${title}</h3>
+          <textarea rows="5" oninput="appState.cvData['${key}']=this.value; saveSilently();" placeholder="ENTER ${title}..." class="w-full bg-[#181826] border border-zinc-700 rounded-xl p-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase">${escapeHtml(appState.cvData[key])}</textarea>
+        </div>
+      `;
+    }
+
+    function getStepArray(key, title) {
+      const arr = appState.cvData[key] || [];
+      const items = arr.map((val, i) => `
+        <div class="flex items-center gap-2 bg-[#181826] p-1.5 rounded-xl border border-zinc-700/80">
+          <span class="w-6 h-6 rounded bg-zinc-800 text-zinc-400 text-xs font-bold flex items-center justify-center shrink-0">${i+1}</span>
+          <input type="text" value="${escapeHtml(val)}" oninput="updateArr('${key}', ${i}, this.value)" class="flex-1 bg-transparent border-none text-sm text-zinc-100 outline-none px-1 font-bold uppercase" />
+          <button onclick="appState.cvData['${key}'].splice(${i},1); saveAndRender();" class="p-2 text-zinc-500 hover:text-red-400"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        </div>
+      `).join('');
+
+      return `
+        <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">${title}</h3>
+            <button onclick="appState.cvData['${key}'].push(''); saveAndRender();" class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold active:scale-95 uppercase">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> ADD
+            </button>
+          </div>
+          <div class="space-y-2">${items}</div>
+        </div>
+      `;
+    }
+
+    function getStep6HTML() {
+      const d = appState.cvData.details;
+      return `
+        <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 mb-2">PERSONAL DETAILS TABLE</h3>
+          <input type="text" value="${escapeHtml(d.dob)}" oninput="updateDet('dob', this.value)" placeholder="DATE OF BIRTH (DD/MM/YYYY)" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+          <input type="text" value="${escapeHtml(d.father)}" oninput="updateDet('father', this.value)" placeholder="FATHER's NAME" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+          <div class="grid grid-cols-2 gap-3">
+            <select onchange="updateDet('gender', this.value); saveAndRender();" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-3 py-3 text-sm text-zinc-100 outline-none font-bold uppercase">
+              <option value="Male" ${d.gender==='Male'?'selected':''}>MALE</option>
+              <option value="Female" ${d.gender==='Female'?'selected':''}>FEMALE</option>
+            </select>
+            <select onchange="updateDet('marital', this.value); saveAndRender();" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-3 py-3 text-sm text-zinc-100 outline-none font-bold uppercase">
+              <option value="Unmarried" ${d.marital==='Unmarried'?'selected':''}>UNMARRIED</option>
+              <option value="Married" ${d.marital==='Married'?'selected':''}>MARRIED</option>
+            </select>
+          </div>
+          <input type="text" value="${escapeHtml(d.nationality)}" oninput="updateDet('nationality', this.value)" placeholder="NATIONALITY" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+          <input type="text" value="${escapeHtml(d.languages)}" oninput="updateDet('languages', this.value)" placeholder="LANGUAGES KNOWN" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+          <input type="text" value="${escapeHtml(d.hobbies)}" oninput="updateDet('hobbies', this.value)" placeholder="HOBBIES" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+        </div>
+      `;
+    }
+
+    function getStep7HTML() {
+      const cv = appState.cvData;
+      return `
+        <div class="space-y-4">
+          <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">DECLARATION STATEMENT</h3>
+            <textarea rows="3" oninput="appState.cvData.declaration=this.value; saveSilently();" class="w-full bg-[#181826] border border-zinc-700 rounded-xl p-3 text-sm text-zinc-100 outline-none font-bold uppercase">${escapeHtml(cv.declaration)}</textarea>
+          </div>
+          <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-4 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">SIGN-OFF DETAILS</h3>
+            <div class="flex gap-2">
+              <input type="text" value="${escapeHtml(cv.footer.date)}" oninput="appState.cvData.footer.date=this.value; saveSilently();" placeholder="DATE" class="flex-1 bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+              <button onclick="appState.cvData.footer.date = new Date().toLocaleDateString('en-GB'); saveAndRender();" class="px-4 rounded-xl bg-indigo-600/20 text-indigo-400 text-xs font-bold border border-indigo-500/30 uppercase">TODAY</button>
+            </div>
+            <input type="text" value="${escapeHtml(cv.footer.place)}" oninput="appState.cvData.footer.place=this.value; saveSilently();" placeholder="PLACE" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+            <input type="text" value="${escapeHtml(cv.footer.signName)}" oninput="appState.cvData.footer.signName=this.value; saveSilently();" placeholder="SIGNATURE NAME" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none placeholder-zinc-500 font-bold uppercase" />
+          </div>
+        </div>
+      `;
+    }
+
+    function getStep8HTML() {
+      const p = appState.cvData.personal;
+      return `
+        <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-5 space-y-4 text-center">
+          <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto text-indigo-400 mb-2">
+             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+          </div>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-300">CV HEADER FORMAT</h3>
+          <p class="text-xs text-zinc-500 mb-4 font-bold uppercase">CHOOSE HOW YOUR CONTACT DETAILS APPEAR.</p>
+          
+          <select onchange="appState.cvData.personal.headerStyle=this.value; saveAndRender();" class="w-full bg-[#181826] border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase">
+            <option value="labeled" ${p.headerStyle === 'labeled' ? 'selected' : ''}>COLON ALIGNED TABLE</option>
+            <option value="standard" ${p.headerStyle === 'standard' ? 'selected' : ''}>STANDARD TEXT STYLE</option>
+          </select>
+        </div>
+      `;
+    }
+
+    function openLocationPicker(e, type) {
+      const p = appState.cvData.personal;
+      let options = [];
+
+      if(type === 'state') options = indianStates;
+      else if (type === 'district') {
+        if(!p.state) return alert("SELECT STATE FIRST!");
+        options = getDistricts(p.state);
+      } else if (type === 'tehsil') {
+        if(!p.district) return alert("SELECT DISTRICT FIRST!");
+        options = getTehsils(p.state, p.district);
+      } else if (type === 'block') {
+        if(!p.tehsil) return alert("SELECT TEHSIL FIRST!");
+        options = getBlocks(p.state, p.district, p.tehsil);
+      }
+
+      appState.pickerType = type;
+      appState.pickerOptions = options;
+      
+      document.getElementById('picker-title').innerText = `SELECT ${type}`;
+      document.getElementById('picker-search').value = '';
+      
+      renderPickerList(options);
+      
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = rect.left + rect.width / 2;
+      const clickY = rect.top + rect.height / 2;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      
+      const modal = document.getElementById('picker-modal');
+      const backdrop = document.getElementById('picker-backdrop');
+      const box = document.getElementById('picker-box');
+      
+      box.style.setProperty('--tx', `${clickX - centerX}px`);
+      box.style.setProperty('--ty', `${clickY - centerY}px`);
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      
+      void modal.offsetWidth; 
+      
+      backdrop.classList.add('opacity-100');
+      box.classList.remove('anim-pop-out-origin');
+      box.classList.add('anim-pop-in-origin');
+    }
+
+    function renderPickerList(options, searchStr = '') {
+      const listDiv = document.getElementById('picker-list');
+      
+      let html = options.map(opt => `
+        <button onclick="selectLocationOption('${opt.replace(/'/g, "\\'")}')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-[#181826] active:bg-zinc-800 text-sm text-zinc-200 active:scale-[0.98] transition-all font-bold uppercase">
+          ${opt}
+        </button>
+      `).join('');
+
+      if (searchStr.trim() !== '') {
+        const exactMatch = options.some(o => o.toLowerCase() === searchStr.toLowerCase());
+        if (!exactMatch) {
+          html = `
+            <button onclick="selectLocationOption('${searchStr.replace(/'/g, "\\'")}')" class="w-full text-left px-4 py-3 rounded-xl bg-indigo-900/30 border border-indigo-500/50 text-sm text-indigo-200 active:scale-[0.98] transition-all mb-2 flex items-center gap-2 font-bold uppercase">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              USE "${searchStr}"
+            </button>
+          ` + html;
+        }
+      }
+
+      if(!html) html = `<div class="text-zinc-500 text-xs text-center py-4 font-bold uppercase">NOT FOUND. TYPE ABOVE TO ADD CUSTOM.</div>`;
+      listDiv.innerHTML = html;
+    }
+
+    function filterPickerList(val) {
+      const q = val.toLowerCase();
+      const filtered = appState.pickerOptions.filter(o => o.toLowerCase().includes(q));
+      renderPickerList(filtered, val);
+    }
+
+    function selectLocationOption(val) {
+      const p = appState.cvData.personal;
+      const type = appState.pickerType;
+      p[type] = val;
+      if(type === 'state') { p.district=''; p.tehsil=''; p.block=''; }
+      if(type === 'district') { p.tehsil=''; p.block=''; }
+      if(type === 'tehsil') { p.block=''; }
+      saveSilently();
+      closePicker(true);
+    }
+
+    function closePicker(refresh = false) {
+      const backdrop = document.getElementById('picker-backdrop');
+      const box = document.getElementById('picker-box');
+      box.classList.remove('anim-pop-in-origin');
+      box.classList.add('anim-pop-out-origin');
+      backdrop.classList.remove('opacity-100');
+      setTimeout(() => {
+        const modal = document.getElementById('picker-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        box.classList.remove('anim-pop-out-origin');
+        if(refresh) renderApp();
+      }, 250);
+    }
+
+    function goNext() {
+      if(appState.currentPage < 8) { appState.animDirection = 'next'; appState.currentPage++; renderApp(); }
+      else { appState.animDirection = 'pop-in'; setView('preview'); }
+    }
+    function goPrev() {
+      if(appState.currentPage > 1) { appState.animDirection = 'prev'; appState.currentPage--; renderApp(); }
+    }
+
+    function onPhotoSelected(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => { appState.cvData.personal.photo = ev.target.result; saveAndRender(); };
+      reader.readAsDataURL(file);
+    }
+
+    function getPreviewHTML() {
+      const scaledW = Math.round(794 * appState.previewZoom);
+      const scaledH = Math.round(1123 * appState.previewZoom);
+      
+      return `
+        <div class="flex-1 flex flex-col bg-[#06060a] relative ${appState.animDirection==='pop-in'?'anim-pop-in-origin':''}" style="--tx:0px; --ty:100px;">
+          <header class="absolute top-3 left-3 right-3 flex items-center justify-between z-30 pointer-events-none">
+            <button onclick="setView('editor', 'none')" class="pointer-events-auto flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-zinc-800/90 backdrop-blur text-white text-xs font-bold border border-zinc-700 shadow-xl active:scale-95 uppercase">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg> EDIT
+            </button>
+            <div class="pointer-events-auto flex items-center gap-2 bg-[#181826]/90 backdrop-blur p-1 rounded-full border border-zinc-700 shadow-xl">
+              <button onclick="appState.previewZoom=Math.max(0.3, appState.previewZoom-0.1); renderApp();" class="w-7 h-7 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg></button>
+              <span class="text-[11px] font-bold text-zinc-300 min-w-[28px] text-center">${Math.round(appState.previewZoom*100)}%</span>
+              <button onclick="appState.previewZoom=Math.min(1.5, appState.previewZoom+0.1); renderApp();" class="w-7 h-7 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button>
+            </div>
+            <button onclick="handleDirectPrint()" class="pointer-events-auto flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-emerald-600/90 backdrop-blur text-white text-xs font-bold shadow-xl active:scale-95 uppercase">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PRINT
+            </button>
+          </header>
+          <div id="preview-viewport" class="flex-1 overflow-auto p-4 pt-20 pb-10 flex flex-col items-center">
+             <div class="relative bg-white shadow-2xl transition-all" style="width:${scaledW}px; height:${scaledH}px; min-height:${scaledH}px;">
+                <div style="width:794px; min-height:1123px; transform: scale(${appState.previewZoom}); transform-origin: top left; position: absolute; top:0; left:0;">
+                  ${getCVDocumentHTML('cv-screen-preview', false)}
+                </div>
+             </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrintNode() {
+      if(!appState.cvData) return;
+      const c = document.getElementById('cv-print-container');
+      if(c) c.innerHTML = getCVDocumentHTML('cv-actual-print', true);
+    }
+    function handleDirectPrint() {
+      renderPrintNode();
+      setTimeout(() => window.print(), 100);
+    }
+
+    // PDF GENERATOR - UPDATED WITH "BLOCK" PROMINENTLY LISTED AFTER "TEHSIL"
+    function getCVDocumentHTML(id, isPrintMode) {
+      const cv = appState.cvData;
+      if(!cv) return '';
+      const p = cv.personal;
+      const d = cv.details;
+      const f = cv.footer;
+      const font = cv.font === 'Times New Roman' ? '"Times New Roman", Times, serif' : cv.font;
+
+      // Notice 'Block' is now explicitly its own row placed properly after Tehsil
       const contactList = [
         { label: 'Name', val: p.name, bold: true, upper: true },
         { label: 'Address', val: p.villagePost },
         { label: 'Tehsil', val: p.tehsil },
+        { label: 'Block', val: p.block }, 
         { label: 'District', val: p.district },
         { label: 'State', val: p.state },
         { label: 'Mobile No.', val: p.mobile },
         { label: 'Email Id', val: p.email }
-      ].filter(item => item.val && item.val.trim());
+      ].filter(x => x.val && x.val.trim());
 
       const contactRowsHTML = contactList.map((item, idx) => `
         <tr>
-          <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:80px;">${item.label}</td>
+          <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:80px; text-transform:none;">${item.label}</td>
           <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
-          <td style="font-weight:${idx === 0 ? 'bold' : 'normal'}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; padding:1.5px 0; color:#000; word-break:break-word;">${item.val}</td>
+          <td style="font-weight:${idx === 0 ? 'bold' : 'normal'}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
         </tr>
       `).join('');
 
-      const personalDetails = [
+      const personalDetailsHTML = [
         { l: 'Name', v: p.name, upper: true, bold: true },
         { l: 'Date of Birth', v: d.dob },
         { l: "Father's Name", v: d.father },
@@ -409,161 +756,64 @@
         { l: 'Nationality', v: d.nationality },
         { l: 'Language Known', v: d.languages },
         { l: 'Hobbies', v: d.hobbies }
-      ];
-
-      const personalDetailsHTML = personalDetails.map(item => `
+      ].map(item => `
         <tr>
-          <td style="padding:2px 0; vertical-align:top; color:#000; width:140px;">${item.l}</td>
+          <td style="padding:2px 0; vertical-align:top; color:#000; width:140px; font-weight:normal; text-transform:none;">${item.l}</td>
           <td style="padding:2px 0; text-align:center; font-weight:bold; vertical-align:top; color:#000; width:18px;">:</td>
-          <td style="padding:2px 0; font-weight:${item.bold ? 'bold' : 'normal'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; color:#000; word-break:break-word;">${item.v || ''}</td>
+          <td style="padding:2px 0; font-weight:${item.bold ? 'bold' : 'normal'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; color:#000;">${item.v || ''}</td>
         </tr>
       `).join('');
 
-      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `
-        <li style="padding-left:4px; line-height:1.35; word-break:break-word; color:#000;">${x}</li>
-      `).join('');
+      const genList = (arr) => (arr||[]).filter(x => x.trim()).map(x => `<li style="padding-left:4px; line-height:1.35; color:#000; font-weight:normal; text-transform:none;">${x}</li>`).join('');
+      
+      const academicHTML = genList(cv.academic);
+      const otherHTML = genList(cv.other);
+      const expHTML = genList(cv.experience);
 
-      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `
-        <li style="padding-left:4px; line-height:1.35; word-break:break-word; color:#000;">${x}</li>
-      `).join('');
-
-      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `
-        <li style="padding-left:4px; line-height:1.35; word-break:break-word; color:#000;">${x}</li>
-      `).join('');
-
-      const photoBoxHTML = p.photo ? `
-        <img src="${p.photo}" alt="Photo" style="width:96px !important; height:124px !important; min-width:96px !important; min-height:124px !important; max-width:96px !important; max-height:124px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />
-      ` : `
-        <div style="width:96px; height:124px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; box-sizing:border-box;">
-          <div style="width:90%; height:92%; border:1px dashed #71717a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fafafa;">
-            <span style="font-size:7.5pt; font-weight:bold; color:#000; text-transform:uppercase;">PHOTO</span>
-            <span style="font-size:6.5pt; color:#71717a;">35 × 45 mm</span>
-          </div>
-        </div>
-      `;
-
-      const outerWidth = isPrintMode ? '100%' : '794px';
-      const outerMinH = isPrintMode ? '288mm' : '1123px';
-      const innerMinH = isPrintMode ? '282mm' : '1085px';
+      const photoBoxHTML = p.photo ? 
+        `<img src="${p.photo}" style="width:96px !important; height:124px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : 
+        `<div style="width:96px; height:124px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #71717a;"><span style="font-size:7.5pt; font-weight:bold; color:#000;">PHOTO</span></div>`;
 
       return `
-        <div id="${id}" style="width:${outerWidth}; min-height:${outerMinH}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font};">
-          <!-- Outer Border -->
-          <div style="width:100%; min-height:${innerMinH}; border:1.5px solid #000000; padding:2.5px; box-sizing:border-box; background-color:#ffffff;">
-            <!-- Inner Border -->
-            <div style="width:100%; min-height:calc(${innerMinH} - 7px); border:2.5px solid #000000; padding:6mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between;">
+        <div id="${id}" style="width:${isPrintMode ? '100%' : '794px'}; min-height:${isPrintMode ? '288mm' : '1123px'}; background-color:#ffffff; color:#000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; box-sizing:border-box; font-weight:normal;">
+          <div style="width:100%; min-height:${isPrintMode ? '282mm' : '1085px'}; border:1.5px solid #000; padding:2.5px; box-sizing:border-box;">
+            <div style="width:100%; min-height:calc(${isPrintMode ? '282mm' : '1085px'} - 7px); border:2.5px solid #000; padding:6mm 8mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
               
-              <!-- Top Header Section -->
-              <div style="flex-shrink:0;">
-                <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:22pt; font-weight:bold; text-decoration:underline; text-underline-offset:4px; text-transform:uppercase; margin-bottom:8px; color:#000; letter-spacing:0.05em;">
-                  CURRICULUM VITAE
-                </h1>
-
-                <!-- Fixed Two-Column Table: Cannot wrap or stack on mobile -->
-                <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
-                  <tbody>
-                    <tr>
-                      <td style="vertical-align:top; width:calc(100% - 116px); padding-right:12px; border:none;">
-                        <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;">
-                          <colgroup>
-                            <col style="width:80px;" />
-                            <col style="width:15px;" />
-                            <col style="width:auto;" />
-                          </colgroup>
-                          <tbody>
-                            ${contactRowsHTML}
-                          </tbody>
-                        </table>
-                      </td>
-                      <td style="width:110px; min-width:110px; max-width:110px; vertical-align:top; text-align:right; border:none;">
-                        <div style="width:96px; height:124px; min-width:96px; min-height:124px; max-width:96px; max-height:124px; border:1.5px solid #000000; display:block; overflow:hidden; background-color:#ffffff; box-sizing:border-box; text-align:center; margin-left:auto;">
-                          ${photoBoxHTML}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
+              <div>
+                <h1 class="font-algerian" style="text-align:center; font-size:22pt; font-weight:bold; text-decoration:underline; margin-bottom:8px; color:#000; text-transform:uppercase;">CURRICULUM VITAE</h1>
+                <table style="width:100%; table-layout:fixed; border-collapse:collapse;">
+                  <tr>
+                    <td style="vertical-align:top; width:calc(100% - 116px);">
+                      <table style="width:100%; font-size:11pt; color:#000;">${contactRowsHTML}</table>
+                    </td>
+                    <td style="width:110px; vertical-align:top; text-align:right;">
+                      <div style="width:96px; height:124px; border:1.5px solid #000; overflow:hidden; margin-left:auto;">${photoBoxHTML}</div>
+                    </td>
+                  </tr>
                 </table>
-
                 <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
               </div>
 
-              <!-- Body Sections -->
               <div style="display:flex; flex-direction:column; flex:1; justify-content:space-evenly; margin:4px 0; gap:8px; font-size:11pt; color:#000;">
-                ${cvData.objective && cvData.objective.trim() ? `
-                  <div>
-                    <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000;">Carrier Objective:-</h2>
-                    <ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">
-                      <li style="padding-left:4px;">
-                        <p style="font-size:11pt; line-height:1.35; text-align:justify; word-break:break-word; color:#000;">${cvData.objective}</p>
-                      </li>
-                    </ul>
-                  </div>
-                ` : ''}
-
-                ${academicHTML ? `
-                  <div>
-                    <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000;">Academic Qualification:-</h2>
-                    <ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">
-                      ${academicHTML}
-                    </ul>
-                  </div>
-                ` : ''}
-
-                ${otherHTML ? `
-                  <div>
-                    <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000;">Other Qualification:-</h2>
-                    <ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">
-                      ${otherHTML}
-                    </ul>
-                  </div>
-                ` : ''}
-
-                ${expHTML ? `
-                  <div>
-                    <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000;">Working Experience:-</h2>
-                    <ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">
-                      ${expHTML}
-                    </ul>
-                  </div>
-                ` : ''}
-
-                <!-- Personal Detail Table -->
+                ${cv.objective ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Carrier Objective:-</h2><ul style="list-style-type:disc; margin-left:24px;"><li style="padding-left:4px; text-align:justify; font-weight:normal; text-transform:none;">${cv.objective}</li></ul></div>` : ''}
+                ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Academic Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${academicHTML}</ul></div>` : ''}
+                ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Other Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${otherHTML}</ul></div>` : ''}
+                ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Working Experience:-</h2><ul style="list-style-type:disc; margin-left:24px;">${expHTML}</ul></div>` : ''}
+                
                 <div>
-                  <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000;">Personal Detail:-</h2>
-                  <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;">
-                    <colgroup>
-                      <col style="width:140px;" />
-                      <col style="width:18px;" />
-                      <col style="width:auto;" />
-                    </colgroup>
-                    <tbody>
-                      ${personalDetailsHTML}
-                    </tbody>
-                  </table>
+                  <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Personal Detail:-</h2>
+                  <table style="width:100%; font-size:11pt; margin-left:14px; color:#000;">${personalDetailsHTML}</table>
                 </div>
 
-                ${cvData.declaration && cvData.declaration.trim() ? `
-                  <div>
-                    <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000;">Declaration:-</h2>
-                    <p style="font-size:11pt; text-align:justify; line-height:1.35; word-break:break-word; color:#000;">${cvData.declaration}</p>
-                  </div>
-                ` : ''}
+                ${cv.declaration ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Declaration:-</h2><p style="text-align:justify; font-weight:normal; text-transform:none;">${cv.declaration}</p></div>` : ''}
               </div>
 
-              <!-- Footer -->
-              <div style="flex-shrink:0; padding-top:10px;">
-                <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:bold; color:#000;">
-                  <tbody>
-                    <tr>
-                      <td style="vertical-align:bottom; text-align:left; border:none;">
-                        <div>Date: ${f.date || ''}</div>
-                        <div>Place: ${f.place || 'Puranpur'}</div>
-                      </td>
-                      <td style="vertical-align:bottom; text-align:right; padding-right:8px; border:none;">
-                        <div>( ${f.signName || p.name || 'MO ASAR'} )</div>
-                      </td>
-                    </tr>
-                  </tbody>
+              <div style="padding-top:10px;">
+                <table style="width:100%; font-size:11.5pt; font-weight:bold; color:#000;">
+                  <tr>
+                    <td style="vertical-align:bottom; text-transform:none;">Date: ${f.date}<br/>Place: ${f.place}</td>
+                    <td style="vertical-align:bottom; text-align:right; text-transform:uppercase;">( ${f.signName || p.name} )</td>
+                  </tr>
                 </table>
               </div>
             </div>
@@ -572,760 +822,12 @@
       `;
     }
 
-    function renderPrintNode() {
-      const container = document.getElementById('cv-print-container');
-      if (container) {
-        container.innerHTML = getDocumentHTML('cv-actual-print-node', true);
-      }
-    }
-
-    function renderApp() {
-      const container = document.getElementById('main-view-container');
-      const progressBar = document.getElementById('progress-bar-line');
-      const progress = Math.round((currentPage / 7) * 100);
-
-      if (progressBar) {
-        progressBar.style.width = `${progress}%`;
-      }
-
-      if (activeView === 'preview') {
-        renderPreviewView(container);
-      } else {
-        renderEditorView(container);
-      }
-
-      renderPrintNode();
-    }
-
-    function renderEditorView(container) {
-      const animClass = animDirection === 'next' ? 'anim-next' : 'anim-prev';
-      const progress = Math.round((currentPage / 7) * 100);
-      const stepName = STEP_NAMES[currentPage - 1];
-
-      let stepContentHTML = '';
-
-      if (currentPage === 1) {
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <!-- Photo Card (No ratio text) -->
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5">
-              <div class="flex items-center gap-3.5">
-                <div
-                  class="w-[72px] h-[88px] rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden shrink-0 bg-cover bg-top relative"
-                  style="background-image: ${cvData.personal.photo ? `url('${cvData.personal.photo}')` : 'none'}; border-style: ${cvData.personal.photo ? 'solid' : 'dashed'}; border-color: ${cvData.personal.photo ? '#6366f1' : undefined};"
-                >
-                  ${!cvData.personal.photo ? `
-                    <div class="flex flex-col items-center gap-1 text-[10px] text-zinc-400">
-                      <svg class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                      <span>Photo</span>
-                    </div>
-                  ` : ''}
-                </div>
-                <div class="flex-1 min-w-0 space-y-2">
-                  <span class="text-xs font-bold text-zinc-200 block">Passport Photo</span>
-                  <div class="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onclick="document.getElementById('file-input-photo').click()"
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold active:scale-95"
-                    >
-                      <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                      <span>${cvData.personal.photo ? 'Change' : 'Upload'}</span>
-                    </button>
-                    ${cvData.personal.photo ? `
-                      <button
-                        type="button"
-                        onclick="removePhoto()"
-                        class="p-1.5 rounded-xl bg-red-500/15 text-red-400 text-xs active:scale-95 shrink-0"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                      </button>
-                    ` : ''}
-                    <input id="file-input-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Header Style -->
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-1.5">
-              <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400">Header Format</label>
-              <select
-                onchange="cvData.personal.headerStyle = this.value; saveState();"
-                class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3 py-2.5 text-xs text-zinc-100 outline-none focus:border-indigo-500"
-              >
-                <option value="labeled" ${cvData.personal.headerStyle === 'labeled' ? 'selected' : ''}>Colon Aligned Table (Standard)</option>
-                <option value="standard" ${cvData.personal.headerStyle === 'standard' ? 'selected' : ''}>Standard Text Style</option>
-              </select>
-            </div>
-
-            <!-- Inputs (Full Visibility, No Cut-Off) -->
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="w-full">
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Full Name *</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.personal.name || '')}"
-                  oninput="cvData.personal.name = this.value; saveState();"
-                  placeholder="e.g. MO ASAR"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Mobile Number *</label>
-                <input
-                  type="tel"
-                  value="${escapeHtml(cvData.personal.mobile || '')}"
-                  oninput="cvData.personal.mobile = this.value; saveState();"
-                  placeholder="e.g. 9528143932"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  value="${escapeHtml(cvData.personal.email || '')}"
-                  oninput="cvData.personal.email = this.value; saveState();"
-                  placeholder="e.g. asarwrite@gmail.com"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Address (Vill & Post / Mohalla)</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.personal.villagePost || '')}"
-                  oninput="cvData.personal.villagePost = this.value; saveState();"
-                  placeholder="e.g. Moh. Razaganj Ward No 08"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div class="grid grid-cols-2 gap-2.5 w-full">
-                <div class="min-w-0">
-                  <label class="block text-xs font-semibold text-zinc-300 mb-1">Tehsil</label>
-                  <input
-                    type="text"
-                    value="${escapeHtml(cvData.personal.tehsil || '')}"
-                    oninput="cvData.personal.tehsil = this.value; saveState();"
-                    placeholder="e.g. Puranpur"
-                    class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div class="min-w-0">
-                  <label class="block text-xs font-semibold text-zinc-300 mb-1">District</label>
-                  <input
-                    type="text"
-                    value="${escapeHtml(cvData.personal.district || '')}"
-                    oninput="cvData.personal.district = this.value; saveState();"
-                    placeholder="e.g. Distt. Pilibhit"
-                    class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-              <div class="w-full">
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">State</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.personal.state || '')}"
-                  oninput="cvData.personal.state = this.value; saveState();"
-                  placeholder="e.g. Uttar Pradesh (U.P.)"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (currentPage === 2) {
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <label class="block text-xs font-bold text-zinc-200">Career Objective Statement</label>
-              <textarea
-                rows="4"
-                oninput="cvData.objective = this.value; saveState();"
-                placeholder="Write your career objective..."
-                class="w-full min-h-[110px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 leading-relaxed outline-none focus:border-indigo-500"
-              >${escapeHtml(cvData.objective || '')}</textarea>
-              <div class="pt-2 border-t border-zinc-800">
-                <span class="text-[11px] font-semibold text-zinc-400 block mb-1.5">Quick Template:</span>
-                <button
-                  type="button"
-                  onclick="setObjectivePreset('To contribute to the overall growth of your organization by applying my skills, knowledge, honesty & hard-working.')"
-                  class="w-full text-left text-xs bg-[#181826] hover:bg-[#1f1f32] p-3 rounded-xl border border-zinc-700/70 text-zinc-300 active:scale-[0.99] transition-all"
-                >
-                  "To contribute to the overall growth of your organization by applying my skills, knowledge, honesty & hard-working."
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (currentPage === 3) {
-        const academicItems = (cvData.academic || []).map((item, idx) => `
-          <div class="flex items-center gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
-            <input
-              type="text"
-              value="${escapeHtml(item)}"
-              oninput="updateArrayItem('academic', ${idx}, this.value)"
-              class="flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 outline-none px-1"
-            />
-            <button type="button" onclick="removeArrayItem('academic', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-            </button>
-          </div>
-        `).join('');
-
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Academic Qualifications</h3>
-                <button
-                  type="button"
-                  onclick="addArrayItem('academic', '')"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold active:scale-95 shrink-0"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                  <span>Add</span>
-                </button>
-              </div>
-              <div class="space-y-2">
-                ${academicItems}
-              </div>
-              <div class="pt-2 border-t border-zinc-800 space-y-1.5">
-                <span class="text-[11px] font-semibold text-zinc-400 block">1-Tap Add:</span>
-                <div class="flex flex-wrap gap-1.5">
-                  <button type="button" onclick="addArrayItem('academic', 'High School Passed from U.P Board in 2020')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ High School</button>
-                  <button type="button" onclick="addArrayItem('academic', 'Intermediate Passed from U.P Board. in 2022')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ Intermediate</button>
-                  <button type="button" onclick="addArrayItem('academic', 'B.A Passed From M.J.P. Rohilkhand University Bareilly in 2025')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ B.A Degree</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (currentPage === 4) {
-        const otherItems = (cvData.other || []).map((item, idx) => `
-          <div class="flex items-center gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
-            <input
-              type="text"
-              value="${escapeHtml(item)}"
-              oninput="updateArrayItem('other', ${idx}, this.value)"
-              class="flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 outline-none px-1"
-            />
-            <button type="button" onclick="removeArrayItem('other', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-            </button>
-          </div>
-        `).join('');
-
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Other Courses & Diplomas</h3>
-                <button
-                  type="button"
-                  onclick="addArrayItem('other', '')"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold active:scale-95 shrink-0"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                  <span>Add</span>
-                </button>
-              </div>
-              <div class="space-y-2">
-                ${otherItems}
-              </div>
-              <div class="pt-2 border-t border-zinc-800 space-y-1.5">
-                <span class="text-[11px] font-semibold text-zinc-400 block">1-Tap Add:</span>
-                <div class="flex flex-wrap gap-1.5">
-                  <button type="button" onclick="addArrayItem('other', 'Course On Computer Concepts Diploma (CCC)')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ CCC Diploma</button>
-                  <button type="button" onclick="addArrayItem('other', 'Diploma in Computer Application (DCA)')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ DCA Diploma</button>
-                  <button type="button" onclick="addArrayItem('other', 'Hindi & English Typing Speed 35 W.P.M.')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ Typing 35 WPM</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (currentPage === 5) {
-        const expItems = (cvData.experience || []).map((item, idx) => `
-          <div class="flex items-center gap-2 bg-[#181826] p-2 rounded-xl border border-zinc-700/80 w-full overflow-hidden">
-            <span class="w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
-            <input
-              type="text"
-              value="${escapeHtml(item)}"
-              oninput="updateArrayItem('experience', ${idx}, this.value)"
-              class="flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 outline-none px-1"
-            />
-            <button type="button" onclick="removeArrayItem('experience', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-            </button>
-          </div>
-        `).join('');
-
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Working Experience</h3>
-                <button
-                  type="button"
-                  onclick="addArrayItem('experience', '')"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold active:scale-95 shrink-0"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                  <span>Add</span>
-                </button>
-              </div>
-              <div class="space-y-2">
-                ${expItems}
-              </div>
-              <div class="pt-2 border-t border-zinc-800 space-y-1.5">
-                <span class="text-[11px] font-semibold text-zinc-400 block">1-Tap Add:</span>
-                <div class="flex flex-wrap gap-1.5">
-                  <button type="button" onclick="addArrayItem('experience', '7 years working experience Cyber Cafe from New Love Computer puranpur')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ Cyber Cafe</button>
-                  <button type="button" onclick="addArrayItem('experience', '6 months working experience in a Farm Mandi Samiti Puranpur As a Cashier')" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#181826] border border-zinc-700 text-zinc-300">+ Cashier</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (currentPage === 6) {
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Personal Details Table</h3>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Date of Birth</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.details.dob || '')}"
-                  oninput="cvData.details.dob = this.value; saveState();"
-                  placeholder="DD/MM/YYYY"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Father's Name</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.details.father || '')}"
-                  oninput="cvData.details.father = this.value; saveState();"
-                  placeholder="e.g. Mr. Munne Khan"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div class="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label class="block text-xs font-semibold text-zinc-300 mb-1">Gender</label>
-                  <select
-                    onchange="cvData.details.gender = this.value; saveState();"
-                    class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3 py-2.5 text-xs text-zinc-100 outline-none focus:border-indigo-500"
-                  >
-                    <option value="Male" ${cvData.details.gender === 'Male' ? 'selected' : ''}>Male</option>
-                    <option value="Female" ${cvData.details.gender === 'Female' ? 'selected' : ''}>Female</option>
-                    <option value="Other" ${cvData.details.gender === 'Other' ? 'selected' : ''}>Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-zinc-300 mb-1">Marital Status</label>
-                  <select
-                    onchange="cvData.details.marital = this.value; saveState();"
-                    class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3 py-2.5 text-xs text-zinc-100 outline-none focus:border-indigo-500"
-                  >
-                    <option value="Unmarried" ${cvData.details.marital === 'Unmarried' ? 'selected' : ''}>Unmarried</option>
-                    <option value="Married" ${cvData.details.marital === 'Married' ? 'selected' : ''}>Married</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Nationality</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.details.nationality || '')}"
-                  oninput="cvData.details.nationality = this.value; saveState();"
-                  placeholder="Indian"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Language Known</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.details.languages || '')}"
-                  oninput="cvData.details.languages = this.value; saveState();"
-                  placeholder="Hindi & English"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Hobbies</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.details.hobbies || '')}"
-                  oninput="cvData.details.hobbies = this.value; saveState();"
-                  placeholder="Editing, Listening Music"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (currentPage === 7) {
-        stepContentHTML = `
-          <div class="space-y-3.5">
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-2.5">
-              <label class="block text-xs font-bold text-zinc-200">Declaration Statement</label>
-              <textarea
-                rows="3"
-                oninput="cvData.declaration = this.value; saveState();"
-                class="w-full min-h-[90px] bg-[#181826] border border-zinc-700/80 rounded-xl p-3 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500 leading-relaxed"
-              >${escapeHtml(cvData.declaration || '')}</textarea>
-            </div>
-            <div class="bg-[#11111c] border border-zinc-800 rounded-2xl p-3.5 space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Sign-Off & Details</h3>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Date</label>
-                <div class="flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="input-footer-date"
-                    value="${escapeHtml(cvData.footer.date || '')}"
-                    oninput="cvData.footer.date = this.value; saveState();"
-                    placeholder="DD/MM/YYYY"
-                    class="flex-1 bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                  />
-                  <button
-                    type="button"
-                    onclick="setTodayFooterDate()"
-                    class="px-3.5 py-2.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold active:scale-95 shrink-0"
-                  >
-                    Today
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Place</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.footer.place || '')}"
-                  oninput="cvData.footer.place = this.value; saveState();"
-                  placeholder="e.g. Puranpur"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Signature Name</label>
-                <input
-                  type="text"
-                  value="${escapeHtml(cvData.footer.signName || '')}"
-                  oninput="cvData.footer.signName = this.value; saveState();"
-                  placeholder="e.g. MO ASAR"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-[15px] sm:text-sm text-zinc-100 outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Document Font</label>
-                <select
-                  onchange="cvData.font = this.value; saveState();"
-                  class="w-full bg-[#181826] border border-zinc-700/80 rounded-xl px-3 py-2.5 text-xs text-zinc-100 outline-none focus:border-indigo-500"
-                >
-                  <option value="Times New Roman" ${cvData.font === 'Times New Roman' ? 'selected' : ''}>Times New Roman (Cyber Cafe Standard)</option>
-                  <option value="Arial" ${cvData.font === 'Arial' ? 'selected' : ''}>Arial (Modern Clean)</option>
-                  <option value="Calibri" ${cvData.font === 'Calibri' ? 'selected' : ''}>Calibri (Office)</option>
-                  <option value="Algerian" ${cvData.font === 'Algerian' ? 'selected' : ''}>Algerian (Heading Style)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      container.innerHTML = `
-        <div class="flex-1 flex flex-col overflow-hidden">
-          <!-- Clean Inline Section Badge (No 1, 2, 3 buttons, zero wasted space) -->
-          <div class="px-4 py-2.5 bg-[#0a0a12] border-b border-zinc-800/60 flex items-center justify-between shrink-0">
-            <span class="text-xs font-bold text-zinc-200 tracking-tight">
-              Step ${currentPage}/7: <span class="text-indigo-400">${stepName}</span>
-            </span>
-            <span class="text-[11px] font-semibold text-zinc-400">${progress}%</span>
-          </div>
-
-          <!-- Form Scroll Area -->
-          <div class="flex-1 overflow-y-auto px-3.5 py-3 pb-28">
-            <div class="${animClass}">
-              ${stepContentHTML}
-            </div>
-          </div>
-
-          <!-- Bottom Navigation -->
-          <div class="fixed bottom-0 left-0 right-0 z-30 bg-[#0c0c16]/95 backdrop-blur-md border-t border-zinc-800 px-4 py-2.5 flex items-center justify-between gap-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
-            <button
-              type="button"
-              ${currentPage === 1 ? 'disabled' : ''}
-              onclick="goPrevStep()"
-              class="flex items-center gap-1 px-3.5 py-2 rounded-xl bg-[#181826] disabled:opacity-30 text-zinc-300 text-xs font-semibold border border-zinc-700/60 active:scale-95 shrink-0"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
-              <span>Prev</span>
-            </button>
-
-            <button
-              type="button"
-              onclick="openPreview()"
-              class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 text-xs font-bold active:scale-95 shadow-sm"
-            >
-              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              <span>Preview CV</span>
-            </button>
-
-            <button
-              type="button"
-              onclick="goNextStep()"
-              class="flex items-center gap-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold active:scale-95 shadow-md shadow-indigo-600/30 shrink-0"
-            >
-              <span>${currentPage === 7 ? 'Review' : 'Next'}</span>
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg>
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderPreviewView(container) {
-      const scaledW = Math.round(794 * previewZoom);
-      const scaledH = Math.round(1123 * previewZoom);
-
-      container.innerHTML = `
-        <div class="flex-1 flex flex-col overflow-hidden bg-[#06060a] anim-pop">
-          <!-- Top Bar -->
-          <div class="bg-[#0e0e18] border-b border-zinc-800 px-3 py-2 flex items-center justify-between gap-2 z-20 shrink-0">
-            <button
-              type="button"
-              onclick="closePreview()"
-              class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-100 text-xs font-semibold border border-zinc-700 active:scale-95"
-            >
-              <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
-              <span>Edit</span>
-            </button>
-
-            <div class="flex items-center gap-1 bg-[#141422] p-1 rounded-lg border border-zinc-800">
-              <button type="button" onclick="zoomPreview(-0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg>
-              </button>
-              <span class="text-[11px] font-semibold text-zinc-300 min-w-9 text-center tabular-nums">
-                ${Math.round(previewZoom * 100)}%
-              </span>
-              <button type="button" onclick="zoomPreview(0.1)" class="w-6 h-6 flex items-center justify-center text-zinc-400 active:scale-90">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg>
-              </button>
-              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold text-indigo-400 bg-indigo-500/10 active:scale-90">
-                Fit
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onclick="handleDirectPrint()"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-semibold border border-zinc-700 active:scale-95 shadow-sm"
-            >
-              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-              <span>Print</span>
-            </button>
-          </div>
-
-          <!-- Viewport -->
-          <div
-            id="preview-viewport-container"
-            class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-20 flex flex-col items-center relative"
-            style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;"
-          >
-            <div
-              class="relative my-auto shrink-0 bg-white transition-all duration-150"
-              style="width: ${scaledW}px; height: ${scaledH}px; min-height: ${scaledH}px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 15px 35px -5px rgba(0, 0, 0, 0.85);"
-            >
-              <div
-                style="width: 794px; min-height: 1123px; transform: scale(${previewZoom}); transform-origin: top left; position: absolute; top: 0; left: 0;"
-              >
-                ${getDocumentHTML('cv-screen-preview-node', false)}
-              </div>
-            </div>
-          </div>
-
-          <!-- Floating Action Bar (Only Edit & Direct Print) -->
-          <div class="fixed bottom-3 left-4 right-4 z-30 flex items-center justify-between gap-3 bg-[#10101c]/95 backdrop-blur-lg px-3 py-2 rounded-2xl border border-zinc-800 shadow-2xl">
-            <button
-              type="button"
-              onclick="closePreview()"
-              class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-semibold active:scale-95"
-            >
-              <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-              <span>Edit Details</span>
-            </button>
-
-            <button
-              type="button"
-              onclick="handleDirectPrint()"
-              class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold active:scale-95 shadow-lg shadow-emerald-600/30 transition-all"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-              <span>Print CV</span>
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    function goNextStep() {
-      if (currentPage < 7) {
-        animDirection = 'next';
-        currentPage++;
-        renderApp();
-      } else {
-        openPreview();
-      }
-    }
-
-    function goPrevStep() {
-      if (currentPage > 1) {
-        animDirection = 'prev';
-        currentPage--;
-        renderApp();
-      }
-    }
-
-    function openPreview() {
-      activeView = 'preview';
-      fitPreviewWidth();
-      renderApp();
-    }
-
-    function closePreview() {
-      activeView = 'editor';
-      renderApp();
-    }
-
-    function fitPreviewWidth() {
-      const container = document.getElementById('preview-viewport-container');
-      const w = container ? container.clientWidth - 16 : window.innerWidth - 16;
-      previewZoom = Number(Math.max(0.35, Math.min(1.1, w / 794)).toFixed(2));
-      if (activeView === 'preview') renderApp();
-    }
-
-    function zoomPreview(delta) {
-      previewZoom = Number(Math.max(0.35, Math.min(1.4, previewZoom + delta)).toFixed(2));
-      renderApp();
-    }
-
-    // 100% Reliable Print: Renders fresh print node and waits 80ms for layout settle
-    function handleDirectPrint() {
-      renderPrintNode();
-      setTimeout(() => {
-        window.print();
-      }, 80);
-    }
-
-    async function onPhotoSelected(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try {
-        const cropped = await processPassportPhoto(file);
-        cvData.personal.photo = cropped;
-        saveState();
-        renderApp();
-      } catch(err) {
-        alert('Could not load image. Please select a valid photo.');
-      }
-    }
-
-    function removePhoto() {
-      cvData.personal.photo = '';
-      saveState();
-      renderApp();
-    }
-
-    function setObjectivePreset(val) {
-      cvData.objective = val;
-      saveState();
-      renderApp();
-    }
-
-    function addArrayItem(key, val) {
-      if (!cvData[key]) cvData[key] = [];
-      cvData[key].push(val);
-      saveState();
-      renderApp();
-    }
-
-    function removeArrayItem(key, idx) {
-      if (!cvData[key]) return;
-      cvData[key].splice(idx, 1);
-      saveState();
-      renderApp();
-    }
-
-    function updateArrayItem(key, idx, val) {
-      if (!cvData[key]) return;
-      cvData[key][idx] = val;
-      saveState();
-    }
-
-    function setTodayFooterDate() {
-      const today = new Date();
-      const d = String(today.getDate()).padStart(2, '0');
-      const m = String(today.getMonth() + 1).padStart(2, '0');
-      const y = today.getFullYear();
-      cvData.footer.date = `${d}/${m}/${y}`;
-      const input = document.getElementById('input-footer-date');
-      if (input) input.value = cvData.footer.date;
-      saveState();
-    }
-
-    function openResetDialog() {
-      const m = document.getElementById('reset-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-      }
-    }
-
-    function closeResetDialog() {
-      const m = document.getElementById('reset-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-      }
-    }
-
-    function confirmReset() {
-      cvData = JSON.parse(JSON.stringify(defaultCVData));
-      currentPage = 1;
-      activeView = 'editor';
-      saveState();
-      closeResetDialog();
-      renderApp();
-    }
-
     function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      if(!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    window.addEventListener('resize', () => {
-      if (activeView === 'preview') fitPreviewWidth();
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      renderApp();
-    });
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      renderApp();
-    }
+    document.addEventListener('DOMContentLoaded', () => setView('home'));
   </script>
 </body>
 </html>
