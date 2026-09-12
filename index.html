@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, interactive-widget=resizes-content, viewport-fit=cover" />
   <title>TECH ASAR CV BUILDER</title>
 
   <!-- Tailwind CSS CDN -->
@@ -19,7 +19,7 @@
     }
   </script>
 
-  <!-- Algerian & Google Fonts -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -39,7 +39,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Strict Page Lock */
     :root {
       --app-height: 100vh;
     }
@@ -49,9 +48,9 @@
       height: 100%;
       overflow: hidden;
       overscroll-behavior: none;
+      background-color: #08080e !important;
     }
 
-    /* Hide Scrollbars completely */
     * {
       -ms-overflow-style: none !important;
       scrollbar-width: none !important;
@@ -63,11 +62,8 @@
       background: transparent !important;
     }
 
-    .font-algerian {
-      font-family: 'Algerian', 'Times New Roman', serif !important;
-    }
+    .font-algerian { font-family: 'Algerian', 'Times New Roman', serif !important; }
 
-    /* GLOBAL APP UI STYLES */
     #app-root, #picker-modal, #step-modal {
       text-transform: uppercase;
       height: var(--app-height);
@@ -84,47 +80,34 @@
       opacity: 0.7;
     }
 
-    /* ULTRA-SMOOTH SPRING ANIMATIONS */
-    @keyframes slideInRightSmooth {
-      0% { opacity: 0; transform: translate3d(35px, 0, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes slideInLeftSmooth {
-      0% { opacity: 0; transform: translate3d(-35px, 0, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes popInOrigin {
-      0% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3); }
-      100% { opacity: 1; transform: translate(0, 0) scale(1); }
-    }
-    @keyframes popOutOrigin {
-      0% { opacity: 1; transform: translate(0, 0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3); }
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    @keyframes slideInDownSmooth {
-      0% { opacity: 0; transform: translateY(-15px) scale(0.98); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    /* SMOOTH SPRING & TOAST ANIMATIONS */
+    @keyframes slideInRightSmooth { 0% { opacity: 0; transform: translate3d(40px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes slideInLeftSmooth { 0% { opacity: 0; transform: translate3d(-40px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes popInOrigin { 0% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.15); } 100% { opacity: 1; transform: translate(0, 0) scale(1); } }
+    @keyframes popOutOrigin { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.15); } }
+    @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes slideInDownSmooth { 0% { opacity: 0; transform: translateY(-15px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes slideOutUpSmooth { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-20px) scale(0.95); } }
+    @keyframes floatFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-    .anim-next { animation: slideInRightSmooth 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: slideInLeftSmooth 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
+    /* Glass Water Drop Toast Animations */
+    @keyframes toastDrop { 0% { transform: translateY(-60px) scale(0.8); opacity: 0; } 60% { transform: translateY(10px) scale(1.05); opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes toastUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-60px) scale(0.8); opacity: 0; } }
+
+    .anim-next { animation: slideInRightSmooth 0.35s cubic-bezier(0.25, 1, 0.35, 1) forwards; will-change: transform, opacity; }
+    .anim-prev { animation: slideInLeftSmooth 0.35s cubic-bezier(0.25, 1, 0.35, 1) forwards; will-change: transform, opacity; }
     .anim-none { animation: none !important; }
-    .anim-pop-in-origin { animation: popInOrigin 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .anim-pop-out-origin { animation: popOutOrigin 0.25s cubic-bezier(0.3, 0, 0.8, 0.2) forwards; will-change: transform, opacity; }
-    .anim-fade { animation: fadeIn 0.25s ease-out forwards; }
+    .anim-pop-in-origin { animation: popInOrigin 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
+    .anim-pop-out-origin { animation: popOutOrigin 0.3s cubic-bezier(0.3, 0, 0.8, 0.2) forwards; will-change: transform, opacity; }
+    .anim-fade { animation: fadeIn 0.3s ease-out forwards; }
     .anim-new-item { animation: slideInDownSmooth 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; transform-origin: top; }
+    .anim-remove-item { animation: slideOutUpSmooth 0.28s cubic-bezier(0.4, 0, 1, 1) forwards; transform-origin: top; }
+    .anim-float { animation: floatFloat 4s ease-in-out infinite; }
+    
+    .toast-enter { animation: toastDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .toast-exit { animation: toastUp 0.3s cubic-bezier(0.36, 0, 0.66, -0.56) forwards; }
 
-    .step-1-noscroll {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.5rem;
-    }
+    .step-1-noscroll { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
 
     /* Print Setup */
     #cv-print-container { display: none; }
@@ -135,7 +118,7 @@
         width: 210mm !important; height: 297mm !important; margin: 0 !important;
         padding: 0 !important; background: #ffffff !important; color: #000000 !important;
       }
-      #app-root, .no-print, #picker-modal, #step-modal { display: none !important; }
+      #app-root, .no-print, #picker-modal, #step-modal, #toast-container { display: none !important; }
       #cv-print-container {
         display: block !important; position: static !important;
         width: 210mm !important; height: 297mm !important;
@@ -147,6 +130,9 @@
 </head>
 <body class="bg-[#08080e] text-zinc-100 antialiased font-sans select-none font-bold">
 
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="fixed top-8 left-0 right-0 z-[9999] flex justify-center pointer-events-none px-4"></div>
+
   <div id="app-root" class="w-full flex flex-col relative overflow-hidden"></div>
 
   <!-- POPUP PICKER MODAL -->
@@ -155,7 +141,7 @@
     <div id="picker-box" class="relative w-full max-w-sm bg-[#11111c] border border-zinc-700 rounded-3xl shadow-2xl flex flex-col max-h-[70vh] opacity-0 transition-all duration-300">
       <div class="px-5 py-4 border-b border-zinc-800 flex flex-col gap-3 shrink-0">
         <div class="flex justify-between items-center">
-          <h3 id="picker-title" class="font-bold text-zinc-100 text-sm tracking-wide uppercase">Select Location</h3>
+          <h3 id="picker-title" class="font-bold text-zinc-100 text-sm tracking-wide uppercase">Select</h3>
           <button onclick="closePicker()" class="p-2 rounded-full bg-zinc-800/80 text-zinc-300 active:scale-90 transition-all">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
@@ -188,16 +174,34 @@
     const HISTORY_KEY = 'techasar_cv_history_final';
     
     let initialViewWidth = window.innerWidth;
-    function setRealViewportHeight() {
-      document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
-    }
+    function setRealViewportHeight() { document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px'); }
     window.addEventListener('resize', () => {
-      if (window.innerWidth !== initialViewWidth) {
-        initialViewWidth = window.innerWidth;
-        setRealViewportHeight();
-      }
+      if (window.innerWidth !== initialViewWidth) { initialViewWidth = window.innerWidth; setRealViewportHeight(); }
     });
     setRealViewportHeight();
+
+    let toastTimeout;
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      container.innerHTML = ''; 
+      clearTimeout(toastTimeout);
+      
+      const toast = document.createElement('div');
+      toast.className = 'bg-[#6362e7]/85 backdrop-blur-md text-white px-5 py-3 rounded-full flex items-center gap-2.5 shadow-[0_10px_30px_rgba(99,98,231,0.4)] toast-enter border border-white/20';
+      toast.innerHTML = `
+        <svg class="w-5 h-5 shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <span class="font-bold text-[13px] tracking-widest uppercase leading-none mt-[2px]">${message}</span>
+      `;
+      container.appendChild(toast);
+      
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 400); 
+      }, 1500);
+    }
 
     const indianStates = [
       "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", 
@@ -208,7 +212,9 @@
     ];
 
     const nationalities = ["Indian", "American", "Australian", "British", "Canadian", "Chinese", "French", "German", "Italian", "Japanese", "Russian", "South African", "Other"];
+    const languageList = ["Hindi", "English", "Hindi & English", "Spanish", "French", "German", "Urdu", "Marathi", "Bengali"];
 
+    // Fully restored UP Data[cite: 1]
     const upTehsils = {
       "Agra": ["Agra", "Bah", "Etmadpur", "Fatehabad", "Kheragarh", "Kiraoli"],
       "Aligarh": ["Atrauli", "Gabhasana", "Iglas", "Khair", "Koil"],
@@ -291,6 +297,14 @@
     function getDistricts(state) { return state === "Uttar Pradesh" ? upDistricts : []; }
     function getTehsils(state, dist) { return state === "Uttar Pradesh" && upTehsils[dist] ? upTehsils[dist] : []; }
 
+    function getFontFamilyCss(fontName) {
+      if(fontName === 'Algerian') return "'Algerian', 'Times New Roman', serif";
+      if(fontName === 'Arial') return "Arial, sans-serif";
+      if(fontName === 'Calibri') return "Calibri, 'Open Sans', sans-serif";
+      if(fontName === 'Nirmala UI') return "'Nirmala UI', 'Segoe UI', sans-serif";
+      return "'Times New Roman', Times, serif"; // Default
+    }
+
     const defaultCVData = {
       id: null, lastModified: null, font: "Times New Roman",
       personal: { photo: "", name: "", villagePost: "", state: "", district: "", tehsil: "", mobile: "", email: "", headerStyle: "labeled" },
@@ -298,18 +312,17 @@
       academic: ["High School Passed from U.P Board in 2020", "Intermediate Passed from U.P Board. in 2022"],
       other: ["Course On Computer Concepts Diploma (CCC)"],
       experience: ["Fresher"],
-      details: { dob: "", father: "", gender: "Male", marital: "Unmarried", nationality: "Indian", languages: "Hindi & English", hobbies: "Reading, Editing" },
+      details: { dob: "", father: "", gender: "MALE", marital: "UNMARRIED", nationality: "Indian", languages: "Hindi & English", hobbies: "Reading, Editing" },
       declaration: "I hereby declare that all the information mentioned above is true to the best of my knowledge.",
-      footer: { date: "", place: "", signName: "" }
+      footer: { date: "", place: "", signName: "" },
+      style: { title: "CURRICULUM VITAE", font: "Times New Roman", casing: "uppercase", weight: "bold" }
     };
 
-    let appState = { view: 'home', cvData: null, currentPage: 1, animDirection: 'next', previewZoom: 0.46, pickerType: '', pickerOptions: [], lastAddedKey: null };
+    let appState = { view: 'home', cvData: null, currentPage: 1, animDirection: 'fade', previewZoom: 0.46, pickerType: '', pickerOptions: [], lastAddedKey: null };
+    let lastPickerOrigin = { tx: 0, ty: 0 }; 
+    let lastEditorOrigin = { tx: 0, ty: 0 };
 
-    function autoResize(el) {
-      el.style.height = 'auto';
-      el.style.height = (el.scrollHeight) + 'px';
-    }
-
+    function autoResize(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }
     function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { return []; } }
     
     function saveSilently() {
@@ -322,13 +335,8 @@
       renderPrintNode();
     }
 
-    function saveAndRender() { 
-      appState.animDirection = 'none'; 
-      saveSilently(); 
-      renderApp(); 
-    }
+    function saveAndRender() { appState.animDirection = 'none'; saveSilently(); renderApp(); }
 
-    // SUGGESTION LOGIC
     function applySuggestion(type, key, text) {
       const decodedText = decodeURIComponent(text);
       if (type === 'array') {
@@ -343,7 +351,6 @@
       }
     }
 
-    // GRID LAYOUT: Short text pills applying long values
     function buildPills(type, key, suggestions) {
       if(!suggestions || !suggestions.length) return '';
       return `<div class="grid grid-cols-3 gap-1.5 mt-2 w-full">` + 
@@ -360,21 +367,60 @@
     function updateDet(k, v) { appState.cvData.details[k] = v; saveSilently(); }
     function updateArr(key, idx, val) { appState.cvData[key][idx] = val; saveSilently(); }
 
-    function setView(view, anim = 'fade') {
-      appState.view = view;
-      if(view === 'editor' && !appState.cvData) {
+    function openEditorFromHome(e) {
+      if(e) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickX = rect.left + rect.width / 2;
+        const clickY = rect.top + rect.height / 2;
+        lastEditorOrigin = { tx: `${clickX - window.innerWidth/2}px`, ty: `${clickY - window.innerHeight/2}px` };
+      }
+      
+      appState.view = 'editor';
+      if(!appState.cvData) {
         appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
         appState.cvData.id = 'cv_' + Date.now();
         appState.currentPage = 1;
-        appState.animDirection = 'next';
       }
+      appState.animDirection = 'pop-in'; 
+      renderApp();
+    }
+
+    function closeEditorToHome() {
+      const editorEl = document.getElementById('editor-root-container');
+      if(editorEl) {
+        editorEl.style.setProperty('--tx', lastEditorOrigin.tx);
+        editorEl.style.setProperty('--ty', lastEditorOrigin.ty);
+        editorEl.classList.remove('anim-pop-in-origin', 'anim-next', 'anim-prev', 'anim-none');
+        editorEl.classList.add('anim-pop-out-origin');
+        setTimeout(() => {
+          appState.view = 'home';
+          appState.animDirection = 'fade';
+          renderApp();
+        }, 280);
+      } else {
+        appState.view = 'home';
+        appState.animDirection = 'fade';
+        renderApp();
+      }
+    }
+
+    function setView(view, anim = 'fade') {
+      appState.view = view;
+      appState.animDirection = anim; 
       renderApp();
     }
 
     function editCV(id) {
       const history = getHistory();
       const cv = history.find(x => x.id === id);
-      if(cv) { appState.cvData = JSON.parse(JSON.stringify(cv)); appState.currentPage = 1; appState.animDirection = 'next'; setView('editor'); }
+      if(cv) { 
+        appState.cvData = JSON.parse(JSON.stringify(cv)); 
+        // Migrate old CVs to have formatting style mapping if not present
+        if(!appState.cvData.style) appState.cvData.style = { title: "CURRICULUM VITAE", font: appState.cvData.font || "Times New Roman", casing: "uppercase", weight: "bold" };
+        appState.currentPage = 1; 
+        appState.animDirection = 'next'; 
+        setView('editor'); 
+      }
     }
 
     function resetCurrentCV() {
@@ -404,27 +450,68 @@
       }
     }
 
+    // Enhanced Logo Animation
     function getHomeHTML() {
+      const homeAnim = appState.animDirection === 'prev' ? 'anim-prev' : 'anim-fade';
+      
+      const logoSVG = `
+        <svg class="relative z-10 w-full h-full drop-shadow-2xl anim-float" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bgGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#001aff"/>
+              <stop offset="1" stop-color="#000080"/>
+            </linearGradient>
+            <linearGradient id="docGrad" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#e6f2ff"/>
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <rect width="100" height="100" rx="22" fill="url(#bgGrad)"/>
+          
+          <path d="M 12 50 A 38 38 0 0 1 70 12" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" filter="url(#glow)"/>
+          <path d="M 88 50 A 38 38 0 0 1 30 88" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" filter="url(#glow)"/>
+          
+          <path d="M 28 20 Q 28 15 33 15 L 60 15 Q 63 15 65 17 L 78 30 Q 80 32 80 35 L 80 80 Q 80 85 75 85 L 33 85 Q 28 85 28 80 Z" fill="url(#docGrad)"/>
+          <path d="M 60 15 L 60 30 Q 60 33 63 33 L 78 33 Z" fill="#b3d9ff"/>
+          
+          <circle cx="45" cy="40" r="11" fill="#0033ff"/>
+          <circle cx="45" cy="36" r="4.5" fill="white"/>
+          <path d="M 36 47 Q 45 35 54 47 Z" fill="white"/>
+          
+          <rect x="62" y="38" width="10" height="3" rx="1.5" fill="#0033ff"/>
+          <rect x="62" y="45" width="10" height="3" rx="1.5" fill="#0033ff"/>
+          <rect x="34" y="55" width="40" height="4" rx="2" fill="#0033ff"/>
+          <rect x="34" y="63" width="40" height="4" rx="2" fill="#0033ff"/>
+          
+          <circle cx="36" cy="74" r="2.5" fill="#0033ff"/>
+          <rect x="42" y="72" width="32" height="4" rx="2" fill="#0033ff"/>
+        </svg>
+      `;
+
       return `
-        <div class="flex-1 flex flex-col items-center justify-center p-6 bg-[#08080e] anim-fade relative font-bold">
-          <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-transparent pointer-events-none"></div>
-          <div class="w-24 h-24 bg-indigo-500 rounded-full blur-[80px] absolute top-1/3 opacity-30 pointer-events-none"></div>
+        <div class="flex-1 flex flex-col items-center justify-center p-6 bg-[#08080e] ${homeAnim} relative font-bold overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-transparent pointer-events-none"></div>
+          <div class="w-32 h-32 bg-indigo-500 rounded-full blur-[100px] absolute top-1/3 opacity-40 pointer-events-none"></div>
           <div class="relative z-10 w-full max-w-sm space-y-10">
             <div class="text-center space-y-2">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 mx-auto mb-6">
-                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+              <div class="w-28 h-28 mx-auto mb-6 relative">
+                 <div class="absolute inset-0 bg-[#001aff] rounded-[1.25rem] blur-xl opacity-60"></div>
+                 <div class="absolute inset-0 bg-white/5 backdrop-blur-md rounded-[1.25rem]"></div>
+                 ${logoSVG}
               </div>
               <h1 class="text-3xl font-black text-white tracking-tight uppercase">TECH ASAR CV</h1>
               <p class="text-sm text-zinc-400 uppercase font-bold">PROFESSIONAL CV BUILDER</p>
             </div>
             <div class="space-y-4">
-              <button onclick="appState.cvData=null; setView('editor')" class="w-full py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
+              <button onclick="appState.cvData=null; openEditorFromHome(event)" class="w-full py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 CREATE NEW CV
               </button>
-              <button onclick="setView('history')" class="w-full py-4 rounded-full border border-zinc-700 text-white font-bold text-lg hover:bg-zinc-800 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase bg-transparent">
+              <button onclick="setView('history', 'next')" class="w-full py-4 rounded-full border border-zinc-700 text-white font-bold text-lg hover:bg-zinc-800 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase bg-transparent">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 CV HISTORY
               </button>
@@ -464,9 +551,9 @@
       }
 
       return `
-        <div class="flex-1 flex flex-col bg-[#08080e] anim-next h-full overflow-hidden">
+        <div class="flex-1 flex flex-col bg-[#08080e] ${appState.animDirection === 'next' ? 'anim-next' : 'anim-fade'} h-full overflow-hidden">
           <header class="flex items-center justify-between px-4 pt-4 pb-2 z-30 shrink-0 bg-transparent">
-            <button onclick="setView('home')" class="px-4 py-2 flex items-center gap-2 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 font-bold text-xs uppercase">
+            <button onclick="setView('home', 'prev')" class="px-4 py-2 flex items-center gap-2 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 font-bold text-xs uppercase">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               BACK
             </button>
@@ -484,15 +571,19 @@
 
     function getEditorHTML() {
       const page = appState.currentPage;
-      const animClass = appState.animDirection === 'next' ? 'anim-next' : 
-                        appState.animDirection === 'prev' ? 'anim-prev' : 'anim-none';
+      let animClass = '';
+      if(appState.animDirection === 'next') animClass = 'anim-next';
+      else if(appState.animDirection === 'prev') animClass = 'anim-prev';
+      else if(appState.animDirection === 'pop-in') animClass = 'anim-pop-in-origin';
       
       let stepContent = '';
       if(page === 1) stepContent = getStep1HTML();
       else if(page === 2) stepContent = getStepTextarea('objective', 'CAREER OBJECTIVE', [
         { label: 'OPTION 1', value: 'To contribute to the overall growth of your organization by applying my skills, knowledge, honesty & hard-working.' },
         { label: 'OPTION 2', value: 'Seeking an entry-level position to begin my career in a high-level professional environment.' },
-        { label: 'OPTION 3', value: 'To secure a challenging position in a reputable organization to expand my learnings and skills.' }
+        { label: 'OPTION 3', value: 'To secure a challenging position in a reputable organization to expand my learnings and skills.' },
+        { label: 'OPTION 4', value: 'A highly organized and hard-working individual looking for a responsible position to gain practical experience.' },
+        { label: 'OPTION 5', value: 'To enhance my professional skills, capabilities and knowledge in an organization which recognizes the value of hard work.' }
       ]);
       else if(page === 3) stepContent = getStepArray('academic', 'ACADEMIC QUALIFICATION', [
         { label: 'High School', value: 'High School Passed from U.P Board in ' },
@@ -510,7 +601,7 @@
         { label: 'DCA', value: 'Diploma in Computer Application (DCA)' },
         { label: 'ADCA', value: 'Advanced Diploma in Computer Application (ADCA)' },
         { label: 'O Level', value: 'O Level from NIELIT' },
-        { label: 'Tally ERP 9', value: 'Tally ERP 9' },
+        { label: 'Tally ERP', value: 'Tally ERP 9' },
         { label: 'Typing', value: 'Typing (Hindi & English)' },
         { label: 'Data Entry', value: 'Data Entry' },
         { label: 'Web Design', value: 'Web Designing' },
@@ -518,21 +609,25 @@
       ]);
       else if(page === 5) stepContent = getStepArray('experience', 'WORKING EXPERIENCE', [
         { label: 'Fresher', value: 'Fresher' },
-        { label: '6 Months Exp.', value: '6 Months Experience in ' },
+        { label: '6 Months Exp', value: '6 Months Experience in ' },
         { label: '1 Year Exp.', value: '1 Year Experience in ' },
-        { label: '2 Years Exp.', value: '2 Years Experience in ' },
-        { label: '3 Years Exp.', value: '3 Years Experience in ' },
+        { label: '2 Years Exp', value: '2 Years Experience in ' },
+        { label: '3 Years Exp', value: '3 Years Experience in ' },
         { label: 'Internship', value: 'Completed Internship in ' }
       ]);
       else if(page === 6) stepContent = getStep6HTML();
       else if(page === 7) stepContent = getStep7HTML();
       else if(page === 8) stepContent = getStep8HTML();
 
+      // Ensure origin values match for symmetrical open/close
+      const originTx = appState.animDirection === 'pop-in' ? lastEditorOrigin.tx : '0px';
+      const originTy = appState.animDirection === 'pop-in' ? lastEditorOrigin.ty : '100px';
+
       return `
-        <div class="flex-1 flex flex-col bg-[#08080e] h-full overflow-hidden">
+        <div id="editor-root-container" class="flex-1 flex flex-col bg-[#08080e] h-full overflow-hidden ${appState.animDirection === 'pop-in' ? 'anim-pop-in-origin' : ''}" style="--tx:${originTx}; --ty:${originTy};">
           
           <header class="flex items-center justify-between px-4 pt-5 pb-3 z-30 shrink-0 bg-transparent">
-            <button onclick="appState.cvData=null; setView('home')" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
+            <button onclick="closeEditorToHome()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               BACK
             </button>
@@ -546,7 +641,7 @@
           </header>
 
           <div class="flex-1 overflow-y-auto px-4 py-1 flex flex-col scroll-smooth">
-            <div class="${animClass} flex-1 ${page === 1 ? 'step-1-noscroll' : ''}">
+            <div class="${appState.animDirection !== 'pop-in' ? animClass : ''} flex-1 ${page === 1 ? 'step-1-noscroll' : ''}">
               ${stepContent}
             </div>
           </div>
@@ -655,20 +750,39 @@
     function removeSmoothArrayItem(key, idx) {
       const el = document.getElementById(`array-item-${key}-${idx}`);
       if(el) {
-        el.style.animation = 'popOutOrigin 0.25s forwards';
+        el.style.animation = 'slideOutUpSmooth 0.3s cubic-bezier(0.4, 0, 1, 1) forwards';
         setTimeout(() => {
           appState.cvData[key].splice(idx, 1);
           appState.animDirection = 'none';
           saveAndRender();
-        }, 240);
+        }, 290);
       } else {
         appState.cvData[key].splice(idx, 1);
         saveAndRender();
       }
     }
+    
+    function getDobParts() {
+      let dob = appState.cvData.details.dob || '';
+      let parts = dob.split('/');
+      return { dd: parts[0] || '', mm: parts[1] || '', yyyy: parts[2] || '' };
+    }
+    function handleDob(part, el) {
+      let val = el.value.replace(/[^0-9]/g, '');
+      el.value = val;
+      let dob = getDobParts();
+      dob[part] = val;
+      appState.cvData.details.dob = `${dob.dd}/${dob.mm}/${dob.yyyy}`;
+      saveSilently();
+      
+      if(part === 'dd' && val.length === 2) document.getElementById('dob-mm').focus();
+      if(part === 'mm' && val.length === 2) document.getElementById('dob-yyyy').focus();
+    }
 
     function getStep6HTML() {
       const d = appState.cvData.details;
+      const dob = getDobParts();
+      
       const hobbiesPills = buildPills('details_append', 'hobbies', [
         { label: 'Reading', value: 'Reading' },
         { label: 'Cricket', value: 'Cricket' },
@@ -678,33 +792,43 @@
         { label: 'Editing', value: 'Editing' },
         { label: 'Cooking', value: 'Cooking' },
         { label: 'Photography', value: 'Photography' },
-        { label: 'Gaming', value: 'Gaming' },
-        { label: 'Singing', value: 'Singing' },
-        { label: 'Writing', value: 'Writing' },
-        { label: 'Art & Craft', value: 'Art & Craft' }
+        { label: 'Gaming', value: 'Gaming' }
       ]);
 
       return `
-        <div class="flex flex-col gap-3 w-full">
+        <div class="flex flex-col gap-3 w-full pb-4">
           <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1 mb-1">PERSONAL DETAILS</h3>
-          <textarea rows="1" oninput="autoResize(this); updateDet('dob', this.value)" placeholder="DATE OF BIRTH (DD/MM/YYYY)" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(d.dob)}</textarea>
-          <textarea rows="1" oninput="autoResize(this); updateDet('father', this.value)" placeholder="FATHER'S NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(d.father)}</textarea>
+          
+          <div class="flex flex-col gap-1 w-full">
+            <h4 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">DATE OF BIRTH</h4>
+            <div class="flex gap-2 w-full">
+              <input type="text" inputmode="numeric" maxlength="2" id="dob-dd" value="${dob.dd}" oninput="handleDob('dd', this)" placeholder="DD" class="w-1/3 bg-transparent border border-zinc-700 rounded-xl px-2 py-3 text-sm text-center text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase transition-all" />
+              <input type="text" inputmode="numeric" maxlength="2" id="dob-mm" value="${dob.mm}" oninput="handleDob('mm', this)" placeholder="MM" class="w-1/3 bg-transparent border border-zinc-700 rounded-xl px-2 py-3 text-sm text-center text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase transition-all" />
+              <input type="text" inputmode="numeric" maxlength="4" id="dob-yyyy" value="${dob.yyyy}" oninput="handleDob('yyyy', this)" placeholder="YYYY" class="w-1/3 bg-transparent border border-zinc-700 rounded-xl px-2 py-3 text-sm text-center text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase transition-all" />
+            </div>
+          </div>
+
+          <input type="text" value="${escapeHtml(d.father)}" oninput="updateDet('father', this.value)" placeholder="FATHER'S NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase mt-1" />
+          
           <div class="grid grid-cols-2 gap-3">
-            <select onchange="updateDet('gender', this.value); saveAndRender();" class="w-full bg-transparent border border-zinc-700 rounded-xl px-3 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase appearance-none text-center">
-              <option value="Male" ${d.gender==='Male'?'selected':''}>MALE</option>
-              <option value="Female" ${d.gender==='Female'?'selected':''}>FEMALE</option>
-            </select>
-            <select onchange="updateDet('marital', this.value); saveAndRender();" class="w-full bg-transparent border border-zinc-700 rounded-xl px-3 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase appearance-none text-center">
-              <option value="Unmarried" ${d.marital==='Unmarried'?'selected':''}>UNMARRIED</option>
-              <option value="Married" ${d.marital==='Married'?'selected':''}>MARRIED</option>
-            </select>
+             <div onclick="openLocationPicker(event, 'gender')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase transition-all ${d.gender ? 'text-zinc-100' : 'text-zinc-500'}">
+               <span id="display-gender" class="truncate">${d.gender || 'GENDER'}</span>
+               <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+             </div>
+             <div onclick="openLocationPicker(event, 'marital')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase transition-all ${d.marital ? 'text-zinc-100' : 'text-zinc-500'}">
+               <span id="display-marital" class="truncate">${d.marital || 'MARITAL'}</span>
+               <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+             </div>
           </div>
           
           <div onclick="openLocationPicker(event, 'nationality')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase ${d.nationality ? 'text-zinc-100' : 'text-zinc-500'}">
             <span id="display-nationality" class="truncate">${d.nationality || 'SELECT NATIONALITY'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </div>
 
-          <textarea rows="1" oninput="autoResize(this); updateDet('languages', this.value)" placeholder="LANGUAGES KNOWN" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(d.languages)}</textarea>
+          <div onclick="openLocationPicker(event, 'language')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase transition-all ${d.languages ? 'text-zinc-100' : 'text-zinc-500'}">
+             <span id="display-language" class="truncate">${escapeHtml(d.languages) || 'SELECT LANGUAGE'}</span>
+             <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
           
           <div class="flex flex-col gap-0 w-full mt-1">
             <textarea rows="1" oninput="autoResize(this); updateDet('hobbies', this.value)" placeholder="HOBBIES" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(d.hobbies)}</textarea>
@@ -723,7 +847,7 @@
       ]);
 
       return `
-        <div class="flex flex-col gap-6 w-full">
+        <div class="flex flex-col gap-6 w-full pb-4">
           <div class="flex flex-col gap-3">
             <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">DECLARATION STATEMENT</h3>
             <textarea rows="1" oninput="autoResize(this); appState.cvData.declaration=this.value; saveSilently();" class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed resize-none overflow-hidden auto-expand" style="min-height: 52px;">${escapeHtml(cv.declaration)}</textarea>
@@ -732,30 +856,47 @@
           <div class="flex flex-col gap-3 mt-2">
             <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">SIGN-OFF DETAILS</h3>
             <div class="flex gap-3">
-              <textarea rows="1" oninput="autoResize(this); appState.cvData.footer.date=this.value; saveSilently();" placeholder="DATE" class="flex-1 bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(cv.footer.date)}</textarea>
+              <input type="text" value="${escapeHtml(cv.footer.date)}" oninput="appState.cvData.footer.date=this.value; saveSilently();" placeholder="DATE" class="flex-1 bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
               <button onclick="appState.cvData.footer.date = new Date().toLocaleDateString('en-GB'); saveAndRender();" class="px-6 py-3 rounded-full bg-transparent border border-indigo-500 text-indigo-400 text-xs font-bold uppercase active:scale-95 transition-all">TODAY</button>
             </div>
-            <textarea rows="1" oninput="autoResize(this); appState.cvData.footer.place=this.value; saveSilently();" placeholder="PLACE" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(cv.footer.place)}</textarea>
-            <textarea rows="1" oninput="autoResize(this); appState.cvData.footer.signName=this.value; saveSilently();" placeholder="SIGNATURE NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase resize-none overflow-hidden auto-expand">${escapeHtml(cv.footer.signName)}</textarea>
+            <input type="text" value="${escapeHtml(cv.footer.place)}" oninput="appState.cvData.footer.place=this.value; saveSilently();" placeholder="PLACE" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
+            <input type="text" value="${escapeHtml(cv.footer.signName)}" oninput="appState.cvData.footer.signName=this.value; saveSilently();" placeholder="SIGNATURE NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
           </div>
         </div>
       `;
     }
 
     function getStep8HTML() {
-      const p = appState.cvData.personal;
+      const cvStyle = appState.cvData.style || { title: "CURRICULUM VITAE", font: "Times New Roman", casing: "uppercase", weight: "bold" };
       return `
-        <div class="flex flex-col gap-4 w-full text-center mt-4">
-          <div class="w-16 h-16 rounded-full border border-indigo-500/50 flex items-center justify-center mx-auto text-indigo-400 mb-2">
-             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        <div class="flex flex-col gap-4 w-full mt-2 pb-4">
+          <div class="w-16 h-16 rounded-full border border-indigo-500/50 flex items-center justify-center mx-auto text-indigo-400 mb-2 mt-4 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
           </div>
-          <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-200">CV HEADER FORMAT</h3>
-          <p class="text-xs text-zinc-500 mb-2 font-bold uppercase">CHOOSE HOW YOUR CONTACT DETAILS APPEAR.</p>
+          <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-200 text-center">CV FORMATTING</h3>
+          <p class="text-xs text-zinc-500 mb-3 font-bold uppercase text-center">FINETUNE YOUR DOCUMENT'S LOOK</p>
           
-          <select onchange="appState.cvData.personal.headerStyle=this.value; saveAndRender();" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase text-center appearance-none">
-            <option value="labeled" ${p.headerStyle === 'labeled' ? 'selected' : ''}>COLON ALIGNED TABLE</option>
-            <option value="standard" ${p.headerStyle === 'standard' ? 'selected' : ''}>STANDARD TEXT STYLE</option>
-          </select>
+          <div class="grid grid-cols-2 gap-3 w-full">
+             <div onclick="openLocationPicker(event, 'cvTitle')" class="bg-[#11111c] border border-zinc-700 rounded-xl p-3.5 flex flex-col gap-1.5 cursor-pointer hover:bg-[#181826] active:scale-95 transition-all shadow-sm">
+                <span class="text-[9px] font-black text-indigo-400 tracking-widest uppercase">1. RESUME TITLE</span>
+                <span id="display-cvTitle" class="text-xs text-zinc-100 font-bold uppercase truncate">${cvStyle.title}</span>
+             </div>
+             
+             <div onclick="openLocationPicker(event, 'cvFont')" class="bg-[#11111c] border border-zinc-700 rounded-xl p-3.5 flex flex-col gap-1.5 cursor-pointer hover:bg-[#181826] active:scale-95 transition-all shadow-sm">
+                <span class="text-[9px] font-black text-indigo-400 tracking-widest uppercase">2. TEXT FONT</span>
+                <span id="display-cvFont" class="text-xs text-zinc-100 font-bold uppercase truncate">${cvStyle.font}</span>
+             </div>
+             
+             <div onclick="openLocationPicker(event, 'cvCase')" class="bg-[#11111c] border border-zinc-700 rounded-xl p-3.5 flex flex-col gap-1.5 cursor-pointer hover:bg-[#181826] active:scale-95 transition-all shadow-sm">
+                <span class="text-[9px] font-black text-indigo-400 tracking-widest uppercase">3. TEXT CASE</span>
+                <span id="display-cvCase" class="text-xs text-zinc-100 font-bold uppercase truncate">${cvStyle.casing === 'capitalize' ? 'PROPER CASE' : 'CAPITAL CASE'}</span>
+             </div>
+             
+             <div onclick="openLocationPicker(event, 'cvWeight')" class="bg-[#11111c] border border-zinc-700 rounded-xl p-3.5 flex flex-col gap-1.5 cursor-pointer hover:bg-[#181826] active:scale-95 transition-all shadow-sm">
+                <span class="text-[9px] font-black text-indigo-400 tracking-widest uppercase">4. TEXT WEIGHT</span>
+                <span id="display-cvWeight" class="text-xs text-zinc-100 font-bold uppercase truncate">${cvStyle.weight === 'normal' ? 'NORMAL' : 'BOLD'}</span>
+             </div>
+          </div>
         </div>
       `;
     }
@@ -833,24 +974,29 @@
 
     function openLocationPicker(e, type) {
       const p = appState.cvData.personal;
-      const d = appState.cvData.details;
       let options = [];
 
       if(type === 'state') options = indianStates;
       else if (type === 'district') {
-        if(!p.state) return alert("PLEASE SELECT A STATE FIRST!");
+        if(!p.state) return showToast("PLEASE SELECT A STATE FIRST!");
         options = getDistricts(p.state);
       } else if (type === 'tehsil') {
-        if(!p.district) return alert("PLEASE SELECT A DISTRICT FIRST!");
+        if(!p.district) return showToast("PLEASE SELECT A DISTRICT FIRST!");
         options = getTehsils(p.state, p.district);
-      } else if (type === 'nationality') {
-        options = nationalities;
-      }
+      } else if (type === 'nationality') options = nationalities;
+      else if (type === 'language') options = languageList;
+      else if (type === 'gender') options = ["MALE", "FEMALE"];
+      else if (type === 'marital') options = ["UNMARRIED", "MARRIED"];
+      else if (type === 'cvTitle') options = ["RESUME", "CURRICULUM VITAE"];
+      else if (type === 'cvFont') options = ["Algerian", "Times New Roman", "Arial", "Calibri", "Nirmala UI"];
+      else if (type === 'cvCase') options = ["CAPITAL CASE", "PROPER CASE"];
+      else if (type === 'cvWeight') options = ["BOLD", "NORMAL"];
 
       appState.pickerType = type;
       appState.pickerOptions = options;
       
-      document.getElementById('picker-title').innerText = `SELECT ${type}`;
+      let titleLabel = type.replace('cv', 'CV ');
+      document.getElementById('picker-title').innerText = `SELECT ${titleLabel}`;
       document.getElementById('picker-search').value = '';
       
       renderPickerList(options);
@@ -861,12 +1007,15 @@
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
       
+      lastPickerOrigin.tx = `${clickX - centerX}px`;
+      lastPickerOrigin.ty = `${clickY - centerY}px`;
+      
       const modal = document.getElementById('picker-modal');
       const backdrop = document.getElementById('picker-backdrop');
       const box = document.getElementById('picker-box');
       
-      box.style.setProperty('--tx', `${clickX - centerX}px`);
-      box.style.setProperty('--ty', `${clickY - centerY}px`);
+      box.style.setProperty('--tx', lastPickerOrigin.tx);
+      box.style.setProperty('--ty', lastPickerOrigin.ty);
       
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -916,43 +1065,60 @@
         appState.cvData.personal[type] = val;
         if(type === 'state') { appState.cvData.personal.district=''; appState.cvData.personal.tehsil=''; }
         if(type === 'district') { appState.cvData.personal.tehsil=''; }
-      } else if (type === 'nationality') {
-        appState.cvData.details[type] = val;
-      }
+      } 
+      else if (type === 'nationality' || type === 'gender' || type === 'marital') appState.cvData.details[type] = val;
+      else if (type === 'language') appState.cvData.details.languages = val;
+      else if (type === 'cvTitle') appState.cvData.style.title = val;
+      else if (type === 'cvFont') appState.cvData.style.font = val;
+      else if (type === 'cvCase') appState.cvData.style.casing = (val === 'PROPER CASE' ? 'capitalize' : 'uppercase');
+      else if (type === 'cvWeight') appState.cvData.style.weight = (val === 'NORMAL' ? 'normal' : 'bold');
       
       saveSilently();
       
-      const setVal = (id, val, placeholder) => {
+      const setVal = (id, value, placeholder) => {
         const el = document.getElementById(id);
         if(el) {
-          el.innerText = val || placeholder;
-          el.parentElement.className = el.parentElement.className.replace(/text-zinc-100|text-zinc-500/g, '') + (val ? ' text-zinc-100' : ' text-zinc-500');
+          el.innerText = value || placeholder;
+          el.parentElement.className = el.parentElement.className.replace(/text-zinc-100|text-zinc-500/g, '') + (value ? ' text-zinc-100' : ' text-zinc-500');
         }
       };
       
-      if (type === 'nationality') {
-        setVal('display-nationality', val, 'SELECT NATIONALITY');
-      } else {
+      if (type === 'nationality') setVal('display-nationality', val, 'SELECT NATIONALITY');
+      else if (type === 'language') setVal('display-language', val, 'SELECT LANGUAGE');
+      else if (type === 'gender') setVal('display-gender', val, 'GENDER');
+      else if (type === 'marital') setVal('display-marital', val, 'MARITAL');
+      else if (['cvTitle', 'cvFont', 'cvCase', 'cvWeight'].includes(type)) {
+         let dispVal = val;
+         if(type === 'cvCase') dispVal = (val === 'capitalize' ? 'PROPER CASE' : 'CAPITAL CASE');
+         if(type === 'cvWeight') dispVal = (val === 'normal' ? 'NORMAL' : 'BOLD');
+         setVal(`display-${type}`, dispVal, type);
+      }
+      else {
         setVal('display-state', appState.cvData.personal.state, 'SELECT STATE');
         setVal('display-district', appState.cvData.personal.district, 'SELECT DISTRICT');
         setVal('display-tehsil', appState.cvData.personal.tehsil, 'SELECT TEHSIL');
       }
       
-      closePicker(false);
+      closePicker();
     }
 
     function closePicker() {
       const backdrop = document.getElementById('picker-backdrop');
       const box = document.getElementById('picker-box');
+      
+      box.style.setProperty('--tx', lastPickerOrigin.tx);
+      box.style.setProperty('--ty', lastPickerOrigin.ty);
+      
       box.classList.remove('anim-pop-in-origin');
       box.classList.add('anim-pop-out-origin');
       backdrop.classList.remove('opacity-100');
+      
       setTimeout(() => {
         const modal = document.getElementById('picker-modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         box.classList.remove('anim-pop-out-origin');
-      }, 250);
+      }, 280);
     }
 
     function goNext() {
@@ -1032,7 +1198,14 @@
       const p = cv.personal;
       const d = cv.details;
       const f = cv.footer;
-      const font = cv.font === 'Times New Roman' ? '"Times New Roman", Times, serif' : cv.font;
+      
+      const cvStyle = cv.style || { title: "CURRICULUM VITAE", font: "Times New Roman", casing: "uppercase", weight: "bold" };
+      const font = getFontFamilyCss(cvStyle.font);
+      const textTransform = cvStyle.casing;
+      const textWeight = cvStyle.weight;
+
+      let printDob = d.dob || '';
+      if(printDob === '//') printDob = '';
 
       const contactList = [
         { label: 'Name', val: p.name, bold: true, upper: true },
@@ -1048,13 +1221,13 @@
         <tr>
           <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:80px; text-transform:none;">${item.label}</td>
           <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
-          <td style="font-weight:${idx === 0 ? 'bold' : 'normal'}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
+          <td style="font-weight:${idx === 0 ? textWeight : (textWeight === 'bold' ? 'bold' : 'normal')}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${item.upper ? textTransform : 'none'}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
         </tr>
       `).join('');
 
       const personalDetailsHTML = [
         { l: 'Name', v: p.name, upper: true, bold: true },
-        { l: 'Date of Birth', v: d.dob },
+        { l: 'Date of Birth', v: printDob },
         { l: "Father's Name", v: d.father },
         { l: 'Gender', v: d.gender },
         { l: 'Marital Status', v: d.marital },
@@ -1065,11 +1238,11 @@
         <tr>
           <td style="padding:2px 0; vertical-align:top; color:#000; width:140px; font-weight:normal; text-transform:none;">${item.l}</td>
           <td style="padding:2px 0; text-align:center; font-weight:bold; vertical-align:top; color:#000; width:18px;">:</td>
-          <td style="padding:2px 0; font-weight:${item.bold ? 'bold' : 'normal'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; color:#000;">${item.v || ''}</td>
+          <td style="padding:2px 0; font-weight:${item.bold ? textWeight : (textWeight === 'bold' ? 'bold' : 'normal')}; text-transform:${item.upper ? textTransform : 'none'}; vertical-align:top; color:#000;">${item.v || ''}</td>
         </tr>
       `).join('');
 
-      const genList = (arr) => (arr||[]).filter(x => x.trim()).map(x => `<li style="padding-left:4px; line-height:1.35; color:#000; font-weight:normal; text-transform:none;">${x}</li>`).join('');
+      const genList = (arr) => (arr||[]).filter(x => x.trim()).map(x => `<li style="padding-left:4px; line-height:1.35; color:#000; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:none;">${x}</li>`).join('');
       
       const academicHTML = genList(cv.academic);
       const otherHTML = genList(cv.other);
@@ -1077,15 +1250,19 @@
 
       const photoBoxHTML = p.photo ? 
         `<img src="${p.photo}" style="width:96px !important; height:124px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : 
-        `<div style="width:96px; height:124px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #71717a;"><span style="font-size:7.5pt; font-weight:bold; color:#000;">PHOTO</span></div>`;
+        `<div style="width:96px; height:124px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #71717a;"><span style="font-size:7.5pt; font-weight:bold; color:#000; text-transform:none;">PHOTO</span></div>`;
 
+      // Use the chosen font for the title if it's Algerian, else use Algerian just for title or fallback to doc font. 
+      // The prompt specified "Text Font men Algerian..." so we apply it to the whole document if selected.
+      // But usually, Resume Title keeps Algerian. We'll use the user's chosen title but apply the chosen text weight/case to the whole document.
+      
       return `
-        <div id="${id}" style="width:${isPrintMode ? '100%' : '794px'}; min-height:${isPrintMode ? '288mm' : '1123px'}; background-color:#ffffff; color:#000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; box-sizing:border-box; font-weight:normal;">
+        <div id="${id}" style="width:${isPrintMode ? '100%' : '794px'}; min-height:${isPrintMode ? '288mm' : '1123px'}; background-color:#ffffff; color:#000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; box-sizing:border-box; font-weight:normal; text-transform:${textTransform};">
           <div style="width:100%; min-height:${isPrintMode ? '282mm' : '1085px'}; border:1.5px solid #000; padding:2.5px; box-sizing:border-box;">
             <div style="width:100%; min-height:calc(${isPrintMode ? '282mm' : '1085px'} - 7px); border:2.5px solid #000; padding:6mm 8mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
               
               <div>
-                <h1 class="font-algerian" style="text-align:center; font-size:22pt; font-weight:bold; text-decoration:underline; margin-bottom:8px; color:#000; text-transform:uppercase;">CURRICULUM VITAE</h1>
+                <h1 class="font-algerian" style="text-align:center; font-size:22pt; font-weight:bold; text-decoration:underline; margin-bottom:8px; color:#000; text-transform:uppercase;">${cvStyle.title}</h1>
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse;">
                   <tr>
                     <td style="vertical-align:top; width:calc(100% - 116px);">
@@ -1100,7 +1277,7 @@
               </div>
 
               <div style="display:flex; flex-direction:column; flex:1; justify-content:space-evenly; margin:4px 0; gap:8px; font-size:11pt; color:#000;">
-                ${cv.objective ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Carrier Objective:-</h2><ul style="list-style-type:disc; margin-left:24px;"><li style="padding-left:4px; text-align:justify; font-weight:normal; text-transform:none;">${cv.objective}</li></ul></div>` : ''}
+                ${cv.objective ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Carrier Objective:-</h2><ul style="list-style-type:disc; margin-left:24px;"><li style="padding-left:4px; text-align:justify; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:none;">${cv.objective}</li></ul></div>` : ''}
                 ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Academic Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${academicHTML}</ul></div>` : ''}
                 ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Other Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${otherHTML}</ul></div>` : ''}
                 ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Working Experience:-</h2><ul style="list-style-type:disc; margin-left:24px;">${expHTML}</ul></div>` : ''}
@@ -1110,14 +1287,14 @@
                   <table style="width:100%; font-size:11pt; margin-left:14px; color:#000;">${personalDetailsHTML}</table>
                 </div>
 
-                ${cv.declaration ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Declaration:-</h2><p style="text-align:justify; font-weight:normal; text-transform:none;">${cv.declaration}</p></div>` : ''}
+                ${cv.declaration ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Declaration:-</h2><p style="text-align:justify; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:none;">${cv.declaration}</p></div>` : ''}
               </div>
 
               <div style="padding-top:10px;">
                 <table style="width:100%; font-size:11.5pt; font-weight:bold; color:#000;">
                   <tr>
                     <td style="vertical-align:bottom; text-transform:none;">Date: ${f.date}<br/>Place: ${f.place}</td>
-                    <td style="vertical-align:bottom; text-align:right; text-transform:uppercase;">( ${f.signName || p.name} )</td>
+                    <td style="vertical-align:bottom; text-align:right; font-weight:${textWeight === 'bold' ? 'bold' : 'normal'}; text-transform:${textTransform};">( ${f.signName || p.name} )</td>
                   </tr>
                 </table>
               </div>
