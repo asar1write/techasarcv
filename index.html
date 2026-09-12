@@ -66,7 +66,7 @@
 
     .font-algerian { font-family: 'Algerian', 'Times New Roman', serif !important; }
 
-    #app-root, #picker-modal, #step-modal, #delete-modal {
+    #app-root, #picker-modal, #step-modal, #delete-modal, #reset-modal {
       text-transform: uppercase;
       height: var(--app-height);
       max-height: var(--app-height);
@@ -82,6 +82,10 @@
       opacity: 0.7;
     }
 
+    textarea.auto-expand {
+      transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, border-color 0.3s ease;
+    }
+
     /* SMOOTH SPRING & TOAST ANIMATIONS */
     @keyframes slideInRightSmooth { 0% { opacity: 0; transform: translate3d(40px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes slideInLeftSmooth { 0% { opacity: 0; transform: translate3d(-40px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
@@ -92,12 +96,12 @@
     @keyframes slideOutUpSmooth { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-20px) scale(0.95); } }
     @keyframes floatFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-    /* Delete Item Smooth Collapse Animation */
+    /* Universal Collapse Animation for History & Array Items */
     @keyframes collapseItem { 
       0% { opacity: 1; transform: scale(1); max-height: 200px; margin-bottom: 0.75rem; padding: 0.625rem; } 
       100% { opacity: 0; transform: scale(0.9); max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; overflow: hidden; } 
     }
-    .anim-collapse-item { animation: collapseItem 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .anim-collapse-item { animation: collapseItem 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
     /* Suggestion Pill Fill Flash Animation */
     @keyframes flashSuccess { 
@@ -132,7 +136,7 @@
         width: 210mm !important; height: 297mm !important; margin: 0 !important;
         padding: 0 !important; background: #ffffff !important; color: #000000 !important;
       }
-      #app-root, .no-print, #picker-modal, #step-modal, #delete-modal, #toast-container { display: none !important; }
+      #app-root, .no-print, #picker-modal, #step-modal, #delete-modal, #reset-modal, #toast-container { display: none !important; }
       #cv-print-container {
         display: block !important; position: static !important;
         width: 210mm !important; height: 297mm !important;
@@ -161,6 +165,22 @@
       <div class="flex gap-2">
          <button onclick="closeDeleteModal()" class="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all hover:bg-zinc-800">CANCEL</button>
          <button id="confirm-delete-btn" class="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-md shadow-red-500/30">DELETE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET CONFIRMATION MODAL -->
+  <div id="reset-modal" class="fixed inset-0 z-[150] hidden items-center justify-center p-5 h-full w-full">
+    <div id="reset-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="closeResetModal()"></div>
+    <div id="reset-box" class="relative w-full max-w-[280px] bg-[#11111c] border border-zinc-700 rounded-3xl shadow-2xl flex flex-col p-6 opacity-0 transition-all duration-300 scale-95 text-center">
+      <div class="w-12 h-12 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center mx-auto mb-3 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
+         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+      </div>
+      <h3 class="font-bold text-zinc-100 text-sm tracking-wide uppercase mb-1">RESET CV?</h3>
+      <p class="text-[10px] text-zinc-400 font-bold uppercase mb-5">ALL FIELDS WILL BE CLEARED.</p>
+      <div class="flex gap-2">
+         <button onclick="closeResetModal()" class="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all hover:bg-zinc-800">CANCEL</button>
+         <button onclick="confirmResetCV()" class="flex-1 py-2.5 rounded-xl bg-orange-600 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-md shadow-orange-500/30">RESET</button>
       </div>
     </div>
   </div>
@@ -205,9 +225,9 @@
     const CUSTOM_PLACES_KEY = 'techasar_custom_places';
     const CUSTOM_SIGNS_KEY = 'techasar_custom_signs';
     
-    // Prevent scrolling when keyboard opens via JS
+    // Fixed Viewport Scrolling Bug - ignoring picker bounds
     document.addEventListener('focusin', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && !e.target.closest('#picker-modal')) {
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
       }
@@ -355,14 +375,21 @@
       style: { title: "CURRICULUM VITAE", font: "Times New Roman", casing: "uppercase", weight: "bold" }
     };
 
-    let appState = { view: 'home', cvData: null, currentPage: 1, animDirection: 'fade', previewZoom: 0.46, pickerType: '', pickerOptions: [], lastAddedKey: null };
+    let appState = { view: 'home', editorOpenedFrom: 'home', cvData: null, currentPage: 1, animDirection: 'fade', previewZoom: 0.46, pickerType: '', pickerOptions: [], lastAddedKey: null };
     let lastPickerOrigin = { tx: 0, ty: 0 }; 
     let lastEditorOrigin = { tx: 0, ty: 0 };
     let deleteTargetId = null;
 
-    function autoResize(el) { 
+    // Fully smoothly resizing Textboxes
+    function autoResize(el) {
       el.style.height = 'auto'; 
-      el.style.height = (el.scrollHeight) + 'px'; 
+      let targetHeight = el.scrollHeight;
+      el.style.height = el.getAttribute('data-h') || targetHeight + 'px';
+      
+      requestAnimationFrame(() => {
+        el.style.height = targetHeight + 'px';
+        el.setAttribute('data-h', targetHeight + 'px');
+      });
     }
     
     function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { return []; } }
@@ -385,6 +412,7 @@
         el.classList.add('anim-flash');
     }
 
+    // Fleshed out smoothly updating Suggestion Fills
     function applySuggestion(type, key, text) {
       const decodedText = decodeURIComponent(text);
       if (type === 'array') { 
@@ -430,6 +458,7 @@
 
     function openEditorFromHome(e) {
       captureOrigin(e);
+      appState.editorOpenedFrom = 'home';
       appState.view = 'editor';
       if(!appState.cvData) {
         appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
@@ -440,16 +469,18 @@
       renderApp();
     }
 
-    function closeEditorToHome() {
+    function closeEditorAnim() {
       const editorEl = document.getElementById('editor-root-container');
+      const targetView = appState.editorOpenedFrom || 'home';
+      
       if(editorEl) {
         editorEl.style.setProperty('--tx', lastEditorOrigin.tx);
         editorEl.style.setProperty('--ty', lastEditorOrigin.ty);
         editorEl.classList.remove('anim-pop-in-origin', 'anim-next', 'anim-prev', 'anim-none');
         editorEl.classList.add('anim-pop-out-origin');
-        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 290);
+        setTimeout(() => { appState.view = targetView; appState.animDirection = 'fade'; renderApp(); }, 250);
       } else {
-        appState.view = 'home'; appState.animDirection = 'fade'; renderApp();
+        appState.view = targetView; appState.animDirection = 'fade'; renderApp();
       }
     }
 
@@ -467,7 +498,7 @@
         el.style.setProperty('--ty', lastEditorOrigin.ty);
         el.classList.remove('anim-pop-in-origin', 'anim-none');
         el.classList.add('anim-pop-out-origin');
-        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 290);
+        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 250);
       } else {
         appState.view = 'home'; appState.animDirection = 'fade'; renderApp();
       }
@@ -487,16 +518,46 @@
         appState.cvData = JSON.parse(JSON.stringify(cv)); 
         if(!appState.cvData.style) appState.cvData.style = { title: "CURRICULUM VITAE", font: appState.cvData.font || "Times New Roman", casing: "uppercase", weight: "bold" };
         appState.currentPage = 1; 
+        appState.editorOpenedFrom = 'history';
         appState.animDirection = 'pop-in'; 
         setView('editor', 'pop-in'); 
       }
     }
 
-    function resetCurrentCV() {
-      const currentId = appState.cvData.id;
-      appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
-      appState.cvData.id = currentId;
-      saveAndRender();
+    function triggerResetModal() {
+      const modal = document.getElementById('reset-modal');
+      const backdrop = document.getElementById('reset-backdrop');
+      const box = document.getElementById('reset-box');
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      void modal.offsetWidth; 
+      backdrop.classList.add('opacity-100');
+      box.classList.remove('scale-95', 'opacity-0');
+      box.classList.add('scale-100', 'opacity-100');
+    }
+
+    function closeResetModal() {
+      const backdrop = document.getElementById('reset-backdrop');
+      const box = document.getElementById('reset-box');
+      box.classList.remove('scale-100', 'opacity-100');
+      box.classList.add('scale-95', 'opacity-0');
+      backdrop.classList.remove('opacity-100');
+      setTimeout(() => {
+        const modal = document.getElementById('reset-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 300);
+    }
+
+    function confirmResetCV() {
+      closeResetModal();
+      setTimeout(() => {
+        const currentId = appState.cvData.id;
+        appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
+        appState.cvData.id = currentId;
+        saveAndRender();
+      }, 250);
     }
 
     function triggerDeleteHistory(id) {
@@ -510,8 +571,8 @@
          closeDeleteModal();
          const el = document.getElementById(`history-item-${deleteTargetId}`);
          if (el) {
-           el.style.animation = 'slideOutUpSmooth 0.3s cubic-bezier(0.4, 0, 1, 1) forwards';
-           setTimeout(() => { executeDeleteFromHistory(deleteTargetId); }, 290);
+           el.style.animation = 'collapseItem 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+           setTimeout(() => { executeDeleteFromHistory(deleteTargetId); }, 250);
          } else {
            executeDeleteFromHistory(deleteTargetId);
          }
@@ -560,6 +621,7 @@
          for(let i = 0; i < textareas.length; i++) {
            if (textareas[i].scrollHeight > 0) {
              textareas[i].style.height = textareas[i].scrollHeight + 'px';
+             textareas[i].setAttribute('data-h', textareas[i].scrollHeight + 'px');
            }
          }
       });
@@ -720,14 +782,14 @@
       return `
         <div id="editor-root-container" class="flex-1 flex flex-col bg-[#08080e] h-full overflow-hidden ${appState.animDirection === 'pop-in' ? 'anim-pop-in-origin' : ''}" style="--tx:${originTx}; --ty:${originTy};">
           <header class="flex items-center justify-between px-4 pt-5 pb-3 z-30 shrink-0 bg-transparent">
-            <button onclick="closeEditorToHome()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
+            <button onclick="closeEditorAnim()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               BACK
             </button>
             <div class="px-5 py-2 bg-transparent rounded-full text-[11px] font-extrabold text-white tracking-widest border border-zinc-700 uppercase">
               STEP ${page}/8
             </div>
-            <button onclick="resetCurrentCV()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-red-400 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
+            <button onclick="triggerResetModal()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-orange-400 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
               RESET
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
             </button>
@@ -846,7 +908,7 @@
           appState.cvData[key].splice(idx, 1);
           appState.animDirection = 'none';
           saveAndRender();
-        }, 190);
+        }, 150); // Instant but smooth sliding timing
       } else {
         appState.cvData[key].splice(idx, 1);
         saveAndRender();
@@ -1380,7 +1442,7 @@
         { l: 'Hobbies', v: d.hobbies }
       ].map(item => `
         <tr>
-          <td style="padding:2px 0; vertical-align:top; color:#000; width:140px; font-weight:${tw}; text-transform:${tt};">${item.l}</td>
+          <td style="padding:2px 0; vertical-align:top; color:#000; width:160px; font-weight:${tw}; text-transform:${tt}; white-space:nowrap;">${item.l}</td>
           <td style="padding:2px 0; text-align:center; font-weight:${tw}; vertical-align:top; color:#000; width:18px;">:</td>
           <td style="padding:2px 0; font-weight:${tw}; text-transform:${tt}; vertical-align:top; color:#000;">${item.v || ''}</td>
         </tr>
