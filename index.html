@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>TECH ASAR CV BUILDER</title>
+  <title>TECH ASAR CV</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -25,6 +25,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/algerian">
 
+  <!-- FIREBASE MODULE SETUP (Global Attach) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcNjmNG1zG6vBtM3z8lB5PIcPlyvv8PRE",
+      authDomain: "techasarcv.firebaseapp.com",
+      projectId: "techasarcv",
+      storageBucket: "techasarcv.firebasestorage.app",
+      messagingSenderId: "1024111980495",
+      appId: "1:1024111980495:web:f04d4815a29dc62fa5ecba"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    
+    // Expose to global window for inline HTML functions
+    window.auth = getAuth(app);
+    window.db = getFirestore(app);
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.signOut = signOut;
+    window.collection = collection;
+    window.doc = doc;
+    window.setDoc = setDoc;
+    window.getDocs = getDocs;
+    window.deleteDoc = deleteDoc;
+    window.getDoc = getDoc;
+
+    if(window.onFirebaseReady) window.onFirebaseReady();
+  </script>
+
   <style>
     @font-face {
       font-family: 'Algerian';
@@ -39,6 +73,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* 1. HIDE ALL SCROLLBARS GLOBALLY */
     * {
       -ms-overflow-style: none !important;
       scrollbar-width: none !important;
@@ -55,879 +90,1464 @@
       font-family: 'Algerian', 'Times New Roman', serif !important;
     }
 
-    /* GLOBAL APP UI STYLES (Capital and Bold) */
-    #app-root, #picker-modal, #app-toast {
-      text-transform: uppercase;
-    }
-    #app-root input, #app-root textarea, #app-root select, #app-root button,
-    #picker-modal input, #picker-modal button {
-      font-weight: 700 !important;
-      text-transform: uppercase;
-    }
-    #app-root input::placeholder, #app-root textarea::placeholder, #picker-modal input::placeholder {
-      text-transform: uppercase;
-      font-weight: 600;
-      opacity: 0.7;
+    /* Dark Mode Date Picker */
+    input[type="date"] { position: relative; color-scheme: dark; }
+    input[type="date"]::-webkit-calendar-picker-indicator { background: transparent; bottom: 0; color: transparent; cursor: pointer; height: auto; left: 0; position: absolute; right: 0; top: 0; width: auto; }
+    .date-wrapper { position: relative; }
+    .date-wrapper::after {
+      content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-size: contain;
     }
 
-    /* ULTRA-SMOOTH SPRING ANIMATIONS */
-    @keyframes slideInRightSmooth {
-      0% { opacity: 0; transform: translate3d(35px, 0, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes slideInLeftSmooth {
-      0% { opacity: 0; transform: translate3d(-35px, 0, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes popInOrigin {
-      0% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3); }
-      100% { opacity: 1; transform: translate(0, 0) scale(1); }
-    }
-    @keyframes popOutOrigin {
-      0% { opacity: 1; transform: translate(0, 0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.3); }
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
+    /* ULTRA-SMOOTH, FAST, & ELEGANT ANIMATIONS */
+    @keyframes smoothSlideRight { 0% { opacity: 0; transform: translate3d(25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes smoothSlideLeft { 0% { opacity: 0; transform: translate3d(-25px, 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes elegantFadeIn { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes elegantFadeOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -15px, 0); } }
+
+    .anim-next { animation: smoothSlideRight 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .anim-prev { animation: smoothSlideLeft 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .elegant-entry { animation: elegantFadeIn 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .elegant-exit { pointer-events: none; animation: elegantFadeOut 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; will-change: transform, opacity; }
+    .zoom-transition { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+    /* Custom Scrollbar for dropdown */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px !important; display: block !important; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+
+    /* Background Blobs */
+    @keyframes blobFloat1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.05); } }
+    @keyframes blobFloat2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20px, 20px) scale(0.95); } }
+    .blob-1 { animation: blobFloat1 12s ease-in-out infinite; will-change: transform; }
+    .blob-2 { animation: blobFloat2 15s ease-in-out infinite; will-change: transform; }
+
+    @keyframes fadeUpEntry { 0% { opacity: 0; transform: translate3d(0, 15px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    .stagger-entry { opacity: 0; animation: fadeUpEntry 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+    .d-0 { animation-delay: 0ms; } .d-1 { animation-delay: 60ms; } .d-2 { animation-delay: 120ms; } .d-3 { animation-delay: 180ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .elegant-exit, .elegant-entry, .anim-next, .anim-prev { animation: none !important; opacity: 1 !important; transform: none !important; }
     }
 
-    .anim-next { animation: slideInRightSmooth 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .anim-prev { animation: slideInLeftSmooth 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .anim-none { animation: none !important; }
-    .anim-pop-in-origin { animation: popInOrigin 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
-    .anim-pop-out-origin { animation: popOutOrigin 0.25s cubic-bezier(0.3, 0, 0.8, 0.2) forwards; will-change: transform, opacity; }
-    .anim-fade { animation: fadeIn 0.25s ease-out forwards; }
-
-    /* Compact No-Scroll layout specifically for Step 1 */
-    .step-1-noscroll {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.5rem; /* tight gaps */
-    }
-
-    /* Print Setup */
+    .cv-page-canvas { width: 794px; min-height: 1123px; box-sizing: border-box; background-color: #ffffff; }
     #cv-print-container { display: none; }
+
+    /* ROCK-SOLID PRINT ENGINE FIX - EXACT 1 PAGE & PERFECT BORDERS */
+    body.is-printing {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        overflow: hidden !important;
+    }
+    body.is-printing > *:not(#cv-print-container) {
+        display: none !important;
+    }
+    body.is-printing #cv-print-container {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        visibility: visible !important;
+    }
+
     @media print {
-      @page { size: A4 portrait; margin: 0mm !important; }
-      html, body {
-        width: 210mm !important; height: 297mm !important; margin: 0 !important;
-        padding: 0 !important; background: #ffffff !important; color: #000000 !important;
-      }
-      #app-root, .no-print, #picker-modal, #app-toast { display: none !important; }
+      @page { size: A4 portrait; margin: 0 !important; }
+      *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box !important; }
+      
+      html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: hidden !important; }
+      
+      body > *:not(#cv-print-container) { display: none !important; }
+      
       #cv-print-container {
-        display: block !important; position: static !important;
-        width: 210mm !important; height: 297mm !important;
-        padding: 4mm !important; background: #ffffff !important;
+        display: block !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-after: avoid !important; page-break-inside: avoid !important; page-break-before: avoid !important; z-index: 999999 !important; visibility: visible !important;
       }
-      #cv-print-container * { text-transform: none; }
+      #cv-print-container * { visibility: visible !important; }
     }
   </style>
 </head>
-<body class="bg-[#08080e] text-zinc-100 antialiased overflow-hidden font-sans select-none font-bold">
+<body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans uppercase font-bold">
 
-  <!-- MODERN APP TOAST NOTIFICATION -->
-  <div id="app-toast" class="fixed top-[-100%] left-1/2 -translate-x-1/2 z-[9999] transition-all duration-300 pointer-events-none flex items-center justify-center w-full px-4">
-    <div class="bg-red-600/95 backdrop-blur-md text-white px-5 py-3 rounded-full shadow-2xl font-bold text-xs tracking-wider border border-red-500 flex items-center gap-2">
-      <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-      <span id="app-toast-msg" class="truncate mt-0.5">MESSAGE</span>
+  <!-- 1. SCREEN WORKSPACE -->
+  <div id="app-screen-workspace" class="h-[100dvh] w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
+    <div id="main-view-container" class="flex-1 flex flex-col overflow-hidden relative">
+      <!-- Dynamically injected UI -->
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
-  <div id="app-root" class="h-[100dvh] w-full flex flex-col relative overflow-hidden">
-    <!-- Content Injected via JS -->
+  <!-- Custom Alert/Confirm UI Modal -->
+  <div id="custom-alert-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div id="custom-alert-box" class="bg-[#141420] border border-zinc-800 rounded-2xl p-5 max-w-[320px] w-full shadow-2xl text-center space-y-4 transform scale-75 opacity-0 transition-all duration-300">
+       <h3 id="custom-alert-title" class="font-bold text-zinc-100 text-[15px] uppercase tracking-wide"></h3>
+       <p id="custom-alert-msg" class="text-xs font-bold text-zinc-400 uppercase leading-relaxed"></p>
+       <div id="custom-alert-actions" class="flex gap-2.5 justify-center pt-2"></div>
+    </div>
   </div>
 
-  <!-- POPUP PICKER MODAL -->
-  <div id="picker-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-5 pb-10">
-    <div id="picker-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="closePicker()"></div>
-    <div id="picker-box" class="relative w-full max-w-sm bg-[#11111c] border border-zinc-700 rounded-3xl shadow-2xl flex flex-col max-h-[70vh] opacity-0 transition-all duration-300">
-      <div class="px-5 py-4 border-b border-zinc-800 flex flex-col gap-3 shrink-0">
-        <div class="flex justify-between items-center">
-          <h3 id="picker-title" class="font-bold text-zinc-100 text-sm tracking-wide uppercase">Select Location</h3>
-          <button onclick="closePicker()" class="p-2 rounded-full bg-zinc-800/80 text-zinc-300 active:scale-90 transition-all">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-        <div class="relative">
-          <input type="text" id="picker-search" oninput="filterPickerList(this.value)" placeholder="SEARCH OR TYPE CUSTOM..." class="w-full bg-[#181826] border border-zinc-600 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-400 font-bold" />
-        </div>
+  <!-- Reset Modal -->
+  <div id="reset-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#141420] border border-zinc-800 rounded-2xl p-4 max-w-xs w-full shadow-2xl text-center space-y-3 elegant-entry">
+      <div class="w-9 h-9 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
       </div>
-      <div id="picker-list" class="flex-1 overflow-y-auto p-2 space-y-1">
-        <!-- Items Injected Here -->
+      <div>
+        <h3 class="font-bold text-sm text-zinc-100 uppercase">RESET CV DATA?</h3>
+        <p class="text-xs text-zinc-400 mt-1 uppercase">CLEAR ALL INPUTS AND START FRESH?</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="closeResetDialog()" class="py-2 px-3 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+        <button type="button" onclick="confirmReset()" class="py-2 px-3 rounded-xl bg-red-600 text-white text-xs font-bold uppercase active:scale-95 transition-all">RESET</button>
       </div>
     </div>
   </div>
 
+  <!-- History Modal -->
+  <div id="cv-history-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-[#11111c] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden elegant-entry max-h-[85vh]">
+      <div class="flex items-center justify-between p-4 border-b border-zinc-800/80 bg-[#181826]/50">
+         <div class="flex items-center gap-2">
+           <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+           <h3 class="font-bold text-zinc-100 text-sm uppercase">CV HISTORY</h3>
+         </div>
+         <button type="button" onclick="closeHistory()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 active:scale-95 transition-all">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+         </button>
+      </div>
+      <div id="history-list-container" class="p-3 overflow-y-auto flex-1 space-y-2">
+         <!-- Populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL DROPDOWN MODAL (Android XY Origin Popover w/ Search) -->
+  <div id="global-dropdown-modal" class="fixed inset-0 z-[150] bg-black/60 backdrop-blur-[2px] hidden opacity-0" onclick="closeGlobalDropdown(event)">
+    <div id="global-dropdown-box" class="bg-[#181826] border border-zinc-700/80 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative w-[340px] max-w-[90vw]" style="opacity: 0; transform: scale(0);" onclick="event.stopPropagation();">
+      <div class="flex items-center justify-between p-3.5 border-b border-zinc-800/80 bg-[#141420]">
+         <span id="global-dropdown-title" class="text-[13px] font-bold text-zinc-100 uppercase tracking-wider">SELECT</span>
+         <button type="button" onclick="closeGlobalDropdown(null, true)" class="p-1.5 rounded-lg text-zinc-400 hover:text-white active:scale-95 bg-zinc-800/80 transition-all">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+         </button>
+      </div>
+      <!-- SEARCH BAR SECTION -->
+      <div class="p-2.5 border-b border-zinc-800/80 bg-[#181826] shrink-0">
+        <div class="flex items-center gap-2 bg-[#11111c] border border-zinc-700/50 rounded-xl px-3 py-2 shadow-inner">
+          <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input type="text" id="global-dropdown-search" oninput="filterGlobalDropdown(this.value)" placeholder="SEARCH..." class="bg-transparent border-none outline-none text-[13px] text-zinc-100 font-bold uppercase w-full placeholder:text-zinc-600" autocomplete="off" />
+        </div>
+      </div>
+      <div id="global-dropdown-list" class="flex-1 overflow-y-auto p-2.5 custom-scrollbar space-y-1 relative" style="max-height: 40vh;">
+         <!-- Populated Dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. DEDICATED PRINT CONTAINER -->
   <div id="cv-print-container"></div>
 
   <script>
-    const HISTORY_KEY = 'techasar_cv_history_final';
+    const STORAGE_KEY = 'techasar_cv_final_standalone_v23';
     
-    // Comprehensive India States
-    const indianStates = [
-      "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", 
-      "Dadra & Nagar Haveli", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", 
-      "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", 
-      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
-      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-    ];
-
-    const nationalities = ["Indian", "American", "Australian", "British", "Canadian", "Chinese", "French", "German", "Italian", "Japanese", "Russian", "South African", "Other"];
-
-    // ALL 75 UP Districts mapped to their exact Tehsils
-    const upTehsils = {
-      "Agra": ["Agra", "Bah", "Etmadpur", "Fatehabad", "Kheragarh", "Kiraoli"],
-      "Aligarh": ["Atrauli", "Gabhasana", "Iglas", "Khair", "Koil"],
-      "Ambedkar Nagar": ["Akbarpur", "Allapur", "Jalalpur", "Tanda", "Bhitargaon"],
-      "Amethi": ["Amethi", "Gauriganj", "Musafirkhana", "Tiloi"],
-      "Amroha": ["Amroha", "Dhanaura", "Hasanpur", "Naugaon Sadat"],
-      "Auraiya": ["Auraiya", "Bidhuna", "Ajitmal"],
-      "Ayodhya": ["Bikapur", "Milkipur", "Rudauli", "Sadar", "Sohawal"],
-      "Azamgarh": ["Azamgarh", "Burhanpur", "Lalganj", "Mehnagar", "Nizamabad", "Phulpur", "Sagri"],
-      "Baghpat": ["Baghpat", "Baraut", "Khekada"],
-      "Bahraich": ["Bahraich", "Kaiserganj", "Mahasi", "Mihipurwa", "Nanpara", "Payagpur"],
-      "Ballia": ["Bairia", "Ballia", "Bansdih", "Belthara Road", "Rasra", "Sikandarpur"],
-      "Balrampur": ["Balrampur", "Tulsipur", "Utraula"],
-      "Banda": ["Atarra", "Baberu", "Banda", "Naraini", "Pailani"],
-      "Barabanki": ["Fatehpur", "Haidergarh", "Nawabganj", "Ram Sanehi Ghat", "Sirauli Gauspur"],
-      "Bareilly": ["Aonla", "Baheri", "Bareilly", "Faridpur", "Mirganj", "Nawabganj"],
-      "Basti": ["Basti", "Bhanpur", "Harraiya", "Rudhauli"],
-      "Bhadohi": ["Aurai", "Bhadohi", "Gyanpur"],
-      "Bijnor": ["Bijnor", "Chandpur", "Dhampur", "Nagina", "Najibabad"],
-      "Budaun": ["Bilsi", "Bisauli", "Budaun", "Dataganj", "Sahaswan"],
-      "Bulandshahr": ["Anupshahr", "Bulandshahr", "Debai", "Khurja", "Shikarpur", "Sikandrabad"],
-      "Chandauli": ["Chakia", "Chandauli", "Mughalsarai", "Naukhi", "Sakaldiha"],
-      "Chitrakoot": ["Karwi", "Mau"],
-      "Deoria": ["Barhaj", "Bhatpar Rani", "Deoria", "Rudrapur", "Salempur"],
-      "Etah": ["Aliganj", "Etah", "Jalesar"],
-      "Etawah": ["Bharthana", "Chakarnagar", "Etawah", "Jaswantnagar", "Saifai", "Taakhaa"],
-      "Farrukhabad": ["Amritpur", "Farrukhabad", "Kaimganj"],
-      "Fatehpur": ["Bindki", "Fatehpur", "Khaga"],
-      "Firozabad": ["Firozabad", "Jasrana", "Shikohabad", "Tundla", "Siraganj"],
-      "Gautam Buddha Nagar": ["Dadri", "Gautam Buddha Nagar", "Jewar"],
-      "Ghaziabad": ["Ghaziabad", "Loni", "Modinagar"],
-      "Ghazipur": ["Ghazipur", "Jakhanian", "Jamania", "Mohammadabad", "Qasimabad", "Saidpur", "Zamania"],
-      "Gonda": ["Colonelganj", "Gonda", "Mankapur", "Tarabganj"],
-      "Gorakhpur": ["Bansgaon", "Campierganj", "Chauri Chaura", "Gorakhpur", "Khajani", "Sahjanwa"],
-      "Hamirpur": ["Hamirpur", "Maudaha", "Rath", "Sarila"],
-      "Hapur": ["Dhaulana", "Garhmukteshwar", "Hapur"],
-      "Hardoi": ["Balamau", "Bilgram", "Hardoi", "Sandila", "Sawayajpur", "Shahabad"],
-      "Hathras": ["Hathras", "Sadabad", "Sikandra Rao", "Sasni"],
-      "Jalaun": ["Jalaun", "Kalpi", "Konch", "Madhaugarh", "Orai"],
-      "Jaunpur": ["Badlapur", "Jaunpur", "Kerakat", "Machhlishahr", "Madiyahun", "Shahganj"],
-      "Jhansi": ["Garautha", "Jhansi", "Mauranipur", "Moth", "Tahrauli"],
-      "Kannauj": ["Chhibramau", "Kannauj", "Tirwa"],
-      "Kanpur Dehat": ["Akbarpur", "Bhognipur", "Derapur", "Rasulabad", "Sikandara"],
-      "Kanpur Nagar": ["Bilhaur", "Ghatampur", "Kanpur", "Narwal"],
-      "Kasganj": ["Kasganj", "Patiyali", "Sahawar"],
-      "Kaushambi": ["Chail", "Manjhanpur", "Sirathu"],
-      "Kheri": ["Dhaurahara", "Gola Gokarannath", "Lakhimpur", "Mohammdi", "Nighasan", "Palia"],
-      "Kushinagar": ["Hata", "Kasya", "Padrauna", "Tamkuhi Raj", "Khadda"],
-      "Lalitpur": ["Lalitpur", "Mahroni", "Talbehat"],
-      "Lucknow": ["Bakshi Ka Talab", "Lucknow", "Malihabad", "Mohanlalganj"],
-      "Maharajganj": ["Anandnagar", "Maharajganj", "Nautanwa", "Nichlaul"],
-      "Mahoba": ["Charkhari", "Kulpahar", "Mahoba"],
-      "Mainpuri": ["Bhongaon", "Karhal", "Mainpuri", "Kishni", "Kurawali"],
-      "Mathura": ["Chhata", "Gowardhan", "Mahavan", "Mant", "Mathura"],
-      "Mau": ["Ghosi", "Madhuban", "Maunath Bhanjan", "Muhammadabad Gohna"],
-      "Meerut": ["Meerut", "Mawana", "Sardhana"],
-      "Mirzapur": ["Chunar", "Lalganj", "Madihan", "Mirzapur"],
-      "Moradabad": ["Bilari", "Kanth", "Moradabad", "Thakurdwara"],
-      "Muzaffarnagar": ["Budhana", "Jansath", "Khatuli", "Muzaffarnagar"],
-      "Pilibhit": ["Amariya", "Bisalpur", "Kalinagar", "Pilibhit", "Puranpur"],
-      "Pratapgarh": ["Kunda", "Lalganj", "Patti", "Pratapgarh", "Raniganj"],
-      "Prayagraj": ["Allahabad", "Bara", "Handia", "Karchhana", "Koraon", "Meja", "Phulpur", "Soraon"],
-      "Raebareli": ["Dalmau", "Lalganj", "Maharajganj", "Raebareli", "Salon", "Unchahar"],
-      "Rampur": ["Bilaspur", "Milak", "Rampur", "Shahabad", "Suar", "Tanda"],
-      "Saharanpur": ["Behat", "Deoband", "Nakur", "Rampur Maniharan", "Saharanpur"],
-      "Sambhal": ["Chandausi", "Gunnaur", "Sambhal"],
-      "Sant Kabir Nagar": ["Dhanghata", "Khalilabad", "Mehdawal"],
-      "Shahjahanpur": ["Jalalabad", "Powayan", "Sadar", "Tilhar"],
-      "Shamli": ["Kairana", "Shamli", "Unn"],
-      "Shravasti": ["Bhinga", "Ikauna"],
-      "Siddharthnagar": ["Bansi", "Domariyaganj", "Itwa", "Naugarh", "Shohratgarh"],
-      "Sitapur": ["Biswan", "Laharpur", "Mahmudabad", "Misrikh", "Sidhauli", "Sitapur"],
-      "Sonbhadra": ["Duddhi", "Ghorawal", "Robertsganj"],
-      "Sultanpur": ["Jaisinghpur", "Kadipur", "Lambhua", "Sultanpur"],
-      "Unnao": ["Bighapur", "Hasanganj", "Purwa", "Safipur", "Unnao"],
-      "Varanasi": ["Pindra", "Varanasi"]
+    // Expanded Geographical Data List 
+    const indiaData = {
+      states: [
+        "ANDAMAN AND NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", "BIHAR",
+        "CHANDIGARH", "CHHATTISGARH", "DADRA AND NAGAR HAVELI", "DAMAN AND DIU", "DELHI",
+        "GOA", "GUJARAT", "HARYANA", "HIMACHAL PRADESH", "JAMMU AND KASHMIR", "JHARKHAND",
+        "KARNATAKA", "KERALA", "LADAKH", "LAKSHADWEEP", "MADHYA PRADESH", "MAHARASHTRA",
+        "MANIPUR", "MEGHALAYA", "MIZORAM", "NAGALAND", "ODISHA", "PUDUCHERRY", "PUNJAB",
+        "RAJASTHAN", "SIKKIM", "TAMIL NADU", "TELANGANA", "TRIPURA", "UTTAR PRADESH",
+        "UTTARAKHAND", "WEST BENGAL"
+      ],
+      districts: {
+        "UTTAR PRADESH": ["AGRA", "ALIGARH", "PRAYAGRAJ", "AMBEDKAR NAGAR", "AMETHI", "AMROHA", "AURAIYA", "AYODHYA", "AZAMGARH", "BAGHPAT", "BAHRAICH", "BALLIA", "BALRAMPUR", "BANDA", "BARABANKI", "BAREILLY", "BASTI", "BHADOHI", "BIJNOR", "BUDAUN", "BULANDSHAHR", "CHANDAULI", "CHITRAKOOT", "DEORIA", "ETAH", "ETAWAH", "FARRUKHABAD", "FATEHPUR", "FIROZABAD", "GAUTAM BUDDHA NAGAR", "GHAZIABAD", "GHAZIPUR", "GONDA", "GORAKHPUR", "HAMIRPUR", "HAPUR", "HARDOI", "HATHRAS", "JALAUN", "JAUNPUR", "JHANSI", "KANNAUJ", "KANPUR DEHAT", "KANPUR NAGAR", "KASGANJ", "KAUSHAMBI", "LAKHIMPUR KHERI", "KUSHINAGAR", "LALITPUR", "LUCKNOW", "MAHARAJGANJ", "MAHOBA", "MAINPURI", "MATHURA", "MAU", "MEERUT", "MIRZAPUR", "MORADABAD", "MUZAFFARNAGAR", "PILIBHIT", "PRATAPGARH", "RAEBARELI", "RAMPUR", "SAHARANPUR", "SAMBHAL", "SANT KABIR NAGAR", "SHAHJAHANPUR", "SHAMLI", "SHRAVASTI", "SIDDHARTHNAGAR", "SITAPUR", "SONBHADRA", "SULTANPUR", "UNNAO", "VARANASI"],
+        "DELHI": ["CENTRAL DELHI", "EAST DELHI", "NEW DELHI", "NORTH DELHI", "NORTH EAST DELHI", "NORTH WEST DELHI", "SHAHDARA", "SOUTH DELHI", "SOUTH EAST DELHI", "SOUTH WEST DELHI", "WEST DELHI"],
+        "BIHAR": ["PATNA", "GAYA", "MUZAFFARPUR", "BHAGALPUR", "DARBHANGA", "AURANGABAD", "BEGUSARAI", "BHOJPUR", "CHAMPARAN"],
+        "MADHYA PRADESH": ["BHOPAL", "INDORE", "GWALIOR", "JABALPUR", "UJJAIN", "SAGAR", "REWA", "SATNA"],
+        "MAHARASHTRA": ["MUMBAI", "PUNE", "NAGPUR", "THANE", "NASHIK", "AURANGABAD", "SOLAPUR", "KOLHAPUR"],
+        "RAJASTHAN": ["JAIPUR", "JODHPUR", "UDAIPUR", "KOTA", "AJMER", "BIKANER", "ALWAR", "BHARATPUR"],
+        "UTTARAKHAND": ["DEHRADUN", "HARIDWAR", "ROORKEE", "HALDWANI", "RUDRAKSH", "NAINITAL"],
+        "HARYANA": ["GURUGRAM", "FARIDABAD", "PANIPAT", "AMBALA", "ROHTAK", "HISAR", "KARNAL"],
+        "PUNJAB": ["LUDHIANA", "AMRITSAR", "JALANDHAR", "PATIALA", "MOHALI", "BATHINDA"],
+        "GUJARAT": ["AHMEDABAD", "SURAT", "VADODARA", "RAJKOT", "GANDHINAGAR", "BHAVNAGAR", "JAMNAGAR"]
+      },
+      tehsils: {
+        "PILIBHIT": ["PURANPUR", "BISALPUR", "AMARIA", "KALINAGAR"],
+        "LAKHIMPUR KHERI": ["LAKHIMPUR", "MOHAMMADI", "GOLA GOKARAN NATH", "NIGHASAN", "DHAURAHRA", "MITAULI", "PALIA"]
+      }
     };
+    
+    let currentUser = null;
+    let authLoading = true;
+    let saveTimeout = null;
 
-    const upDistricts = Object.keys(upTehsils);
+    let dropdownOriginX = 0;
+    let dropdownOriginY = 0;
 
-    function getDistricts(state) {
-      if (state === "Uttar Pradesh") return upDistricts;
-      return []; 
-    }
-    function getTehsils(state, dist) {
-      if (state === "Uttar Pradesh" && upTehsils[dist]) return upTehsils[dist];
-      return [];
-    }
+    window.onFirebaseReady = () => {
+       window.onAuthStateChanged(window.auth, (user) => {
+          currentUser = user;
+          authLoading = false;
+          renderApp(); 
+       });
+    };
 
     const defaultCVData = {
-      id: null, lastModified: null, font: "Times New Roman",
-      personal: { photo: "", name: "", villagePost: "", state: "", district: "", tehsil: "", mobile: "", email: "", headerStyle: "labeled" },
-      objective: "To contribute to the overall growth of your organization by applying my skills, knowledge, honesty & hard-working.",
-      academic: ["High School Passed from U.P Board in 2020", "Intermediate Passed from U.P Board. in 2022"],
-      other: ["Course On Computer Concepts Diploma (CCC)"],
-      experience: ["Fresher"],
-      details: { dob: "", father: "", gender: "Male", marital: "Unmarried", nationality: "Indian", languages: "Hindi & English", hobbies: "Reading, Editing" },
-      declaration: "I hereby declare that all the information mentioned above is true to the best of my knowledge.",
-      footer: { date: "", place: "", signName: "" }
+      documentTitle: "CURRICULUM VITAE",
+      font: "Times New Roman", fontWeight: "bold", textCase: "uppercase",
+      personal: { photo: "", name: "", villagePost: "", tehsil: "", customTehsil: "", district: "", customDistrict: "", state: "", customState: "", mobile: "", email: "", headerStyle: "labeled" },
+      objective: "", academic: [], other: [], experience: [],
+      details: { dob: "", father: "", gender: "MALE", marital: "UNMARRIED", nationality: "INDIAN", customNationality: "", languages: "", hobbies: "" },
+      declaration: "", footer: { date: "", place: "", signName: "" }
     };
 
-    let appState = { view: 'home', cvData: null, currentPage: 1, animDirection: 'next', previewZoom: 0.46, pickerType: '', pickerOptions: [] };
+    let cvData = (function() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            let data = JSON.parse(saved);
+            data.fontWeight = data.fontWeight || "bold";
+            data.textCase = data.textCase || "uppercase";
+            data.documentTitle = data.documentTitle || "CURRICULUM VITAE";
+            return data;
+        }
+      } catch(e) {}
+      return JSON.parse(JSON.stringify(defaultCVData));
+    })();
 
-    let toastTimeout;
-    function showToast(msg) {
-      const toast = document.getElementById('app-toast');
-      document.getElementById('app-toast-msg').innerText = msg;
-      toast.style.top = '1.5rem';
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => { toast.style.top = '-100%'; }, 2500);
+    let currentCvId = localStorage.getItem('techasar_current_cv_id');
+    let appStarted = false; 
+    let enteringEditor = false; 
+    let isNavigating = true; 
+    let currentPage = 1;
+    const TOTAL_STEPS = 9; 
+    let activeView = 'editor';
+    let animDirection = 'next';
+    let previewZoom = 0.46;
+
+    function getNested(obj, path) { return path.split('.').reduce((acc, part) => acc && acc[part], obj); }
+    function setNested(obj, path, value) {
+        const parts = path.split('.'); let current = obj;
+        for (let i = 0; i < parts.length - 1; i++) { if (!current[parts[i]]) current[parts[i]] = {}; current = current[parts[i]]; }
+        current[parts[parts.length - 1]] = value;
     }
 
-    function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { return []; } }
-    
-    function saveSilently() {
-      if(!appState.cvData) return;
-      appState.cvData.lastModified = Date.now();
-      const history = getHistory();
-      const idx = history.findIndex(x => x.id === appState.cvData.id);
-      if (idx >= 0) history[idx] = appState.cvData; else history.push(appState.cvData);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-      renderPrintNode();
+    function showUIAlert(title, msg, isConfirm = false, callback = null) {
+        document.getElementById('custom-alert-title').innerText = title;
+        document.getElementById('custom-alert-msg').innerText = msg;
+        const actions = document.getElementById('custom-alert-actions');
+        alertCallback = callback;
+        if(isConfirm) {
+            actions.innerHTML = `
+                <button type="button" onclick="closeUIAlert(false)" class="flex-1 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold uppercase active:scale-95 transition-all">CANCEL</button>
+                <button type="button" onclick="closeUIAlert(true)" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">CONFIRM</button>
+            `;
+        } else {
+            actions.innerHTML = `
+                <button type="button" onclick="closeUIAlert(true)" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase active:scale-95 transition-all shadow-lg shadow-indigo-600/30">OKAY</button>
+            `;
+        }
+        const modal = document.getElementById('custom-alert-modal');
+        const box = document.getElementById('custom-alert-box');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        requestAnimationFrame(() => {
+            modal.classList.remove('opacity-0');
+            box.classList.remove('scale-75', 'opacity-0');
+            box.classList.add('scale-100', 'opacity-100');
+        });
     }
 
-    function saveAndRender() { 
-      appState.animDirection = 'none'; // Prevents Left-Side Slide Blink!
-      saveSilently(); 
-      renderApp(); 
+    function closeUIAlert(result) {
+        const modal = document.getElementById('custom-alert-modal');
+        const box = document.getElementById('custom-alert-box');
+        modal.classList.add('opacity-0');
+        box.classList.remove('scale-100', 'opacity-100');
+        box.classList.add('scale-75', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            if(alertCallback) alertCallback(result);
+        }, 300);
     }
 
-    function updatePers(k, v) { appState.cvData.personal[k] = v; saveSilently(); }
-    function updateDet(k, v) { appState.cvData.details[k] = v; saveSilently(); }
-    function updateArr(key, idx, val) { appState.cvData[key][idx] = val; saveSilently(); }
+    async function loginWithGoogle() {
+        if (!window.auth || !window.GoogleAuthProvider) return;
+        const provider = new window.GoogleAuthProvider();
+        try { await window.signInWithPopup(window.auth, provider); } 
+        catch (error) { showUIAlert("LOGIN FAILED", "Please try again later.", false); console.error(error); }
+    }
 
-    function setView(view, anim = 'fade') {
-      appState.view = view;
-      if(view === 'editor' && !appState.cvData) {
-        appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
-        appState.cvData.id = 'cv_' + Date.now();
-        appState.currentPage = 1;
-        appState.animDirection = 'next';
+    async function logoutGoogle() {
+        if (!window.auth) return;
+        try { await window.signOut(window.auth); } catch (e) {}
+    }
+
+    function triggerPrint(onComplete = null) {
+        renderPrintNode();
+        setTimeout(() => { 
+            window.print(); 
+            if(onComplete) onComplete();
+        }, 150);
+    }
+
+    // Clean Input Box with Label inside on top (Clean, Modern UI)
+    function createTextInput(label, val, onInputCode, type = "text", placeholder = "") {
+        return `
+          <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+            <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">${label}</span>
+            <input type="${type}" value="${escapeHtml(val || '')}" oninput="${onInputCode}" placeholder="${placeholder}" class="uppercase w-full bg-transparent border-none text-[14px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" />
+          </div>
+        `;
+    }
+
+    // Clean Dropdown Box with Label inside on top
+    function createCustomDropdown(fieldPath, options, label, placeholder) {
+        const val = getNested(cvData, fieldPath);
+        const displayLabel = options.find(o => o.val === val)?.label || placeholder;
+        const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
+        const optionsStr = encodeURIComponent(JSON.stringify(options));
+        return `
+            <div onclick="openGlobalDropdown(event, '${fieldPath}', '${optionsStr}', '${placeholder}')" class="w-full bg-[#131320] border border-zinc-800/90 hover:border-zinc-700 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none">
+                <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 pointer-events-none">${label}</span>
+                <div class="flex items-center justify-between">
+                    <span id="${btnId}" class="truncate pr-2 text-[14px] sm:text-sm font-bold text-zinc-100 uppercase">${displayLabel}</span>
+                    <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+            </div>
+        `;
+    }
+
+    function filterGlobalDropdown(val) {
+        const query = val.toUpperCase();
+        const items = document.querySelectorAll('.dropdown-item');
+        let hasVisible = false;
+        items.forEach(el => {
+            const txt = el.innerText.toUpperCase();
+            if(txt.includes(query)) {
+                el.style.display = 'flex';
+                hasVisible = true;
+            } else {
+                el.style.display = 'none';
+            }
+        });
+        
+        let noRes = document.getElementById('no-results-msg');
+        if(!hasVisible) {
+            if(!noRes) {
+                noRes = document.createElement('div');
+                noRes.id = 'no-results-msg';
+                noRes.className = 'text-zinc-500 text-xs text-center py-6 font-bold uppercase';
+                noRes.innerText = 'NO MATCHES FOUND';
+                document.getElementById('global-dropdown-list').appendChild(noRes);
+            }
+        } else {
+            if(noRes) noRes.remove();
+        }
+    }
+
+    function openGlobalDropdown(e, fieldPath, optionsStr, placeholder) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        dropdownOriginX = (rect.left + rect.width / 2) - (window.innerWidth / 2);
+        dropdownOriginY = (rect.top + rect.height / 2) - (window.innerHeight / 2);
+
+        const options = JSON.parse(decodeURIComponent(optionsStr));
+        const list = document.getElementById('global-dropdown-list');
+        const currentVal = getNested(cvData, fieldPath);
+        
+        document.getElementById('global-dropdown-title').innerText = placeholder;
+        
+        const searchInput = document.getElementById('global-dropdown-search');
+        if(searchInput) searchInput.value = '';
+
+        list.innerHTML = options.map(opt => `
+            <div onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label}')" class="dropdown-item px-4 py-3 rounded-xl text-[13px] font-bold uppercase cursor-pointer transition-all flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'hover:bg-zinc-800/80 text-zinc-300 bg-zinc-900/30'}">
+                <span>${opt.label}</span>
+                ${currentVal === opt.val ? `<svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>` : ''}
+            </div>
+        `).join('');
+
+        const modal = document.getElementById('global-dropdown-modal');
+        const box = document.getElementById('global-dropdown-box');
+        
+        modal.style.height = window.innerHeight + 'px';
+        document.body.style.overflow = 'hidden';
+        
+        box.style.transition = 'none';
+        modal.style.transition = 'none';
+        box.style.transform = `translate(${dropdownOriginX}px, ${dropdownOriginY}px) scale(0)`;
+        box.style.opacity = '0';
+        modal.style.opacity = '0';
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex', 'items-center', 'justify-center'); 
+        
+        requestAnimationFrame(() => {
+            box.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease';
+            modal.style.transition = 'opacity 0.35s ease';
+            
+            box.style.transform = `translate(0px, 0px) scale(1)`;
+            box.style.opacity = '1';
+            modal.style.opacity = '1';
+        });
+    }
+
+    function closeGlobalDropdown(e, force = false) {
+        if(!force && e && e.target.id !== 'global-dropdown-modal') return; 
+        
+        const modal = document.getElementById('global-dropdown-modal');
+        const box = document.getElementById('global-dropdown-box');
+        
+        box.style.transform = `translate(${dropdownOriginX}px, ${dropdownOriginY}px) scale(0)`;
+        box.style.opacity = '0';
+        modal.style.opacity = '0';
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex', 'items-center', 'justify-center');
+            modal.style.height = '';
+            document.body.style.overflow = '';
+        }, 350); 
+    }
+
+    function selectGlobalDropdown(fieldPath, val, label) {
+        setNested(cvData, fieldPath, val);
+        let needsReRender = false;
+        
+        if(fieldPath === 'personal.state') {
+            cvData.personal.district = '';
+            cvData.personal.tehsil = '';
+            needsReRender = true;
+        } else if(fieldPath === 'personal.district') {
+            cvData.personal.tehsil = '';
+            needsReRender = true;
+        } else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') {
+            needsReRender = true;
+        }
+        
+        saveState(); 
+        closeGlobalDropdown(null, true);
+
+        if (needsReRender && activeView === 'editor') {
+            isNavigating = false;
+            const scrollArea = document.getElementById('editor-scroll-area');
+            const exactScroll = scrollArea ? scrollArea.scrollTop : 0;
+            
+            setTimeout(() => { 
+                renderApp(); 
+                const newScroll = document.getElementById('editor-scroll-area');
+                if(newScroll) {
+                    newScroll.style.scrollBehavior = 'auto';
+                    newScroll.scrollTop = exactScroll;
+                    setTimeout(() => { newScroll.style.scrollBehavior = 'smooth'; }, 50);
+                }
+            }, 350); 
+        } else {
+            const btnId = 'dd-btn-' + fieldPath.replace('.', '-');
+            const btn = document.getElementById(btnId);
+            if (btn) btn.innerText = label;
+        }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        if (currentCvId) localStorage.setItem('techasar_current_cv_id', currentCvId);
+
+        if (currentUser && currentCvId && window.db) {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(async () => {
+                try {
+                    const title = cvData.personal.name.trim().toUpperCase() || "UNTITLED CV";
+                    const historyItem = { 
+                        id: currentCvId, name: title, data: cvData, 
+                        date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                        timestamp: Date.now()
+                    };
+                    const cvRef = window.doc(window.db, `users/${currentUser.uid}/cvs`, currentCvId);
+                    await window.setDoc(cvRef, historyItem);
+                } catch(e) {}
+            }, 1000);
+        }
+      } catch(e) {}
+    }
+
+    function setLanguage(val) {
+      cvData.details.languages = val;
+      saveState();
+      const input = document.getElementById('lang-input');
+      if(input) input.value = cvData.details.languages;
+    }
+
+    function appendHobby(val) {
+      let current = cvData.details.hobbies || '';
+      let arr = current.split(',').map(s => s.trim()).filter(Boolean);
+      if(!arr.includes(val)) {
+        arr.push(val);
+        cvData.details.hobbies = arr.join(', ');
+        saveState();
+        const input = document.getElementById('hobbies-input');
+        if(input) input.value = cvData.details.hobbies;
       }
+    }
+
+    function setObjectivePreset(val) {
+      cvData.objective = val;
+      saveState();
+      const input = document.getElementById('objective-input');
+      if (input) { input.value = cvData.objective; autoResizeTextarea(input); }
+    }
+
+    function setDeclarationPreset(val) {
+      cvData.declaration = val;
+      saveState();
+      const input = document.getElementById('declaration-input');
+      if(input) { input.value = cvData.declaration; autoResizeTextarea(input); }
+    }
+
+    function removeArrayItem(key, idx) {
+      if (!cvData[key]) return;
+      cvData[key].splice(idx, 1);
+      saveState();
+      isNavigating = false; 
       renderApp();
     }
 
-    function editCV(id) {
-      const history = getHistory();
-      const cv = history.find(x => x.id === id);
-      if(cv) { appState.cvData = JSON.parse(JSON.stringify(cv)); appState.currentPage = 1; appState.animDirection = 'next'; setView('editor'); }
+    function addArrayItem(key, val) {
+      if (!cvData[key]) cvData[key] = [];
+      cvData[key].push(val); 
+      saveState();
+      isNavigating = false; 
+      renderApp();
+      setTimeout(() => { const scrollArea = document.getElementById('editor-scroll-area'); if(scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight; }, 50);
     }
 
-    function resetCurrentCV() {
-      const currentId = appState.cvData.id;
-      appState.cvData = JSON.parse(JSON.stringify(defaultCVData));
-      appState.cvData.id = currentId;
-      saveAndRender();
-      showToast("CV RESET TO DEFAULT");
+    function updateArrayItem(key, idx, val) {
+      if (!cvData[key]) return;
+      cvData[key][idx] = val;
+      saveState();
     }
 
-    function deleteFromHistory(id) {
-      let history = getHistory(); history = history.filter(x => x.id !== id);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); renderApp();
-      showToast("CV DELETED");
+    function processPassportPhoto(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("Failed to read image"));
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onerror = () => reject(new Error("Invalid image"));
+          img.onload = () => {
+            const targetW = 413, targetH = 531;
+            const targetAspect = targetW / targetH;
+            const srcW = img.naturalWidth || img.width;
+            const srcH = img.naturalHeight || img.height;
+            let sx = 0, sy = 0, sw = srcW, sh = srcH;
+            if (srcW / srcH > targetAspect) { sw = srcH * targetAspect; sx = (srcW - sw) / 2; } 
+            else { sh = srcW / targetAspect; sy = Math.max(0, (srcH - sh) * 0.22); }
+            const canvas = document.createElement('canvas');
+            canvas.width = targetW; canvas.height = targetH;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return resolve(ev.target.result);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, targetW, targetH);
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
+            resolve(canvas.toDataURL('image/jpeg', 0.92));
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
     }
 
-    function renderApp() {
-      const root = document.getElementById('app-root');
-      if(appState.view === 'home') root.innerHTML = getHomeHTML();
-      else if(appState.view === 'history') root.innerHTML = getHistoryHTML();
-      else if(appState.view === 'editor') root.innerHTML = getEditorHTML();
-      else if(appState.view === 'preview') root.innerHTML = getPreviewHTML();
-      if(appState.view === 'editor' || appState.view === 'preview') renderPrintNode();
-    }
-
-    function getHomeHTML() {
-      return `
-        <div class="flex-1 flex flex-col items-center justify-center p-6 bg-[#08080e] anim-fade relative font-bold">
-          <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-transparent pointer-events-none"></div>
-          <div class="w-24 h-24 bg-indigo-500 rounded-full blur-[80px] absolute top-1/3 opacity-30 pointer-events-none"></div>
-          <div class="relative z-10 w-full max-w-sm space-y-10">
-            <div class="text-center space-y-2">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 mx-auto mb-6">
-                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h1 class="text-3xl font-black text-white tracking-tight uppercase">TECH ASAR CV</h1>
-              <p class="text-sm text-zinc-400 uppercase font-bold">PROFESSIONAL CV BUILDER</p>
-            </div>
-            <div class="space-y-4">
-              <button onclick="appState.cvData=null; setView('editor')" class="w-full py-4 rounded-full bg-indigo-600 text-white font-bold text-lg shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                CREATE NEW CV
-              </button>
-              <button onclick="setView('history')" class="w-full py-4 rounded-full border border-zinc-700 text-white font-bold text-lg hover:bg-zinc-800 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase bg-transparent">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                CV HISTORY
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function getHistoryHTML() {
-      const history = getHistory();
-      let listHTML = `<div class="text-center text-zinc-500 mt-10 text-sm font-bold uppercase">NO CVS FOUND. CREATE ONE!</div>`;
-      if(history.length > 0) {
-        listHTML = history.sort((a,b) => b.lastModified - a.lastModified).map(cv => {
-          const date = new Date(cv.lastModified).toLocaleDateString('en-GB');
-          const name = cv.personal.name || "UNTITLED CV";
-          return `
-            <div class="bg-transparent border border-zinc-800 rounded-2xl p-4 flex items-center justify-between mb-3 shadow-sm">
-              <div class="flex-1 min-w-0 pr-3">
-                <h3 class="font-bold text-zinc-100 truncate uppercase">${name}</h3>
-                <p class="text-xs text-zinc-500 mt-0.5 font-bold">${date}</p>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <button onclick="editCV('${cv.id}')" class="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-indigo-400 active:scale-90 transition-all border border-zinc-700">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </button>
-                <button onclick="appState.cvData = ${JSON.stringify(cv).replace(/"/g, '&quot;')}; renderPrintNode(); setTimeout(()=>window.print(),100);" class="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-emerald-400 active:scale-90 transition-all border border-emerald-500/50">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-                </button>
-                <button onclick="deleteFromHistory('${cv.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-red-400 active:scale-90 transition-all ml-1">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      return `
-        <div class="flex-1 flex flex-col bg-[#08080e] anim-next">
-          <header class="flex items-center justify-between px-4 pt-4 pb-2 z-30 shrink-0 bg-transparent">
-            <button onclick="setView('home')" class="px-4 py-2 flex items-center gap-2 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 font-bold text-xs uppercase">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-              BACK
-            </button>
-            <div class="px-5 py-2 bg-transparent rounded-full text-xs font-bold text-white border border-zinc-700 uppercase">
-              CV HISTORY
-            </div>
-            <div class="w-20"></div>
-          </header>
-          <div class="flex-1 overflow-y-auto px-4 pb-10 pt-2">
-            ${listHTML}
-          </div>
-        </div>
-      `;
-    }
-
-    function getEditorHTML() {
-      const page = appState.currentPage;
-      const animClass = appState.animDirection === 'next' ? 'anim-next' : 
-                        appState.animDirection === 'prev' ? 'anim-prev' : 'anim-none';
-      
-      let stepContent = '';
-      if(page === 1) stepContent = getStep1HTML();
-      else if(page === 2) stepContent = getStepTextarea('objective', 'CAREER OBJECTIVE');
-      else if(page === 3) stepContent = getStepArray('academic', 'ACADEMIC QUALIFICATION');
-      else if(page === 4) stepContent = getStepArray('other', 'OTHER QUALIFICATION');
-      else if(page === 5) stepContent = getStepArray('experience', 'WORKING EXPERIENCE');
-      else if(page === 6) stepContent = getStep6HTML();
-      else if(page === 7) stepContent = getStep7HTML();
-      else if(page === 8) stepContent = getStep8HTML();
-
-      // FIXED LAYOUT: Strict Flexbox to guarantee ZERO OVERLAP. Backgrounds on headers removed (transparent).
-      return `
-        <div class="flex-1 flex flex-col bg-[#08080e] h-full overflow-hidden">
-          
-          <!-- FULLY TRANSPARENT FIXED HEADER (No Card/Background) -->
-          <header class="flex items-center justify-between px-4 pt-5 pb-3 z-30 shrink-0 bg-transparent">
-            <button onclick="appState.cvData=null; setView('home')" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-zinc-300 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-              BACK
-            </button>
-            <div class="px-5 py-2 bg-transparent rounded-full text-[11px] font-extrabold text-white tracking-widest border border-zinc-700 uppercase">
-              STEP ${page}/8
-            </div>
-            <button onclick="resetCurrentCV()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-red-400 border border-zinc-700 active:scale-90 text-[11px] font-extrabold uppercase transition-all">
-              RESET
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-            </button>
-          </header>
-
-          <!-- SCROLLABLE CONTENT (Flex-1) -->
-          <div class="flex-1 overflow-y-auto px-4 py-1 flex flex-col">
-            <div class="${animClass} flex-1 ${page === 1 ? 'step-1-noscroll' : ''}">
-              ${stepContent}
-            </div>
-          </div>
-
-          <!-- FULLY TRANSPARENT FIXED FOOTER (No Card/Background) -->
-          <div class="flex items-center justify-between gap-3 px-4 pt-3 pb-6 z-30 shrink-0 bg-transparent">
-            <button onclick="goPrev()" class="flex items-center gap-1.5 px-5 py-3.5 rounded-full bg-transparent border border-zinc-700 text-zinc-200 text-xs font-bold active:scale-95 uppercase transition-all ${page === 1 ? 'opacity-0 pointer-events-none' : ''}">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-              PREV
-            </button>
-            <button onclick="appState.animDirection='pop-in'; setView('preview')" class="flex-1 flex justify-center items-center gap-2 py-3.5 rounded-full bg-transparent border border-zinc-600 text-zinc-100 text-xs font-bold active:scale-95 uppercase transition-all">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              PREVIEW
-            </button>
-            <button onclick="goNext()" class="flex items-center gap-1.5 px-5 py-3.5 rounded-full bg-indigo-600 border border-indigo-500 text-white text-xs font-bold active:scale-95 uppercase transition-all">
-              ${page === 8 ? 'DONE' : 'NEXT'}
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    function getStep1HTML() {
-      const p = appState.cvData.personal;
-      return `
-        <div class="flex flex-col gap-3 w-full">
-          <div class="flex items-center gap-4 w-full border border-zinc-700 rounded-2xl p-3 bg-transparent">
-            <div class="w-[68px] h-[84px] rounded-xl border border-zinc-600 bg-zinc-900 flex items-center justify-center shrink-0 overflow-hidden bg-cover bg-top" style="background-image: ${p.photo ? `url('${p.photo}')` : 'none'}">
-               ${!p.photo ? `<svg class="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>` : ''}
-            </div>
-            <div class="flex-1">
-              <span class="text-[13px] text-zinc-200 font-bold block mb-1.5 uppercase">PASSPORT PHOTO</span>
-              <button onclick="document.getElementById('file-photo').click()" class="px-3.5 py-2 rounded-lg bg-indigo-600 text-white text-[11px] font-bold active:scale-95 uppercase transition-all">${p.photo ? 'CHANGE PHOTO' : 'UPLOAD IMAGE'}</button>
-              <input id="file-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
-            </div>
-            ${p.photo ? `<button onclick="appState.cvData.personal.photo=''; saveAndRender();" class="p-2 text-red-400 active:scale-90"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>` : ''}
-          </div>
-
-          <input type="text" value="${escapeHtml(p.name)}" oninput="updatePers('name', this.value)" placeholder="FULL NAME *" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          <input type="tel" value="${escapeHtml(p.mobile)}" oninput="updatePers('mobile', this.value)" placeholder="MOBILE NUMBER *" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          <input type="email" value="${escapeHtml(p.email)}" oninput="updatePers('email', this.value)" placeholder="EMAIL ADDRESS" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          <input type="text" value="${escapeHtml(p.villagePost)}" oninput="updatePers('villagePost', this.value)" placeholder="ADDRESS (MOHALLA / VILLAGE & POST)" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-
-          <div onclick="openLocationPicker(event, 'state')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase ${p.state ? 'text-zinc-100' : 'text-zinc-500'}">
-            <span id="display-state" class="truncate">${p.state || 'SELECT STATE'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </div>
-          <div onclick="openLocationPicker(event, 'district')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase ${p.district ? 'text-zinc-100' : 'text-zinc-500'}">
-            <span id="display-district" class="truncate">${p.district || 'SELECT DISTRICT'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </div>
-          <div onclick="openLocationPicker(event, 'tehsil')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase ${p.tehsil ? 'text-zinc-100' : 'text-zinc-500'}">
-            <span id="display-tehsil" class="truncate">${p.tehsil || 'SELECT TEHSIL'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </div>
-        </div>
-      `;
-    }
-
-    function getStepTextarea(key, title) {
-      return `
-        <div class="flex flex-col gap-3 w-full">
-          <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">${title}</h3>
-          <textarea rows="6" oninput="appState.cvData['${key}']=this.value; saveSilently();" placeholder="ENTER ${title}..." class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed">${escapeHtml(appState.cvData[key])}</textarea>
-        </div>
-      `;
-    }
-
-    function getStepArray(key, title) {
-      const arr = appState.cvData[key] || [];
-      const items = arr.map((val, i) => `
-        <div class="flex items-center gap-2 bg-transparent p-2.5 rounded-xl border border-zinc-700">
-          <span class="w-6 h-6 rounded border border-zinc-600 text-zinc-400 text-xs font-bold flex items-center justify-center shrink-0">${i+1}</span>
-          <input type="text" value="${escapeHtml(val)}" oninput="updateArr('${key}', ${i}, this.value)" class="flex-1 bg-transparent border-none text-sm text-zinc-100 outline-none px-1.5 font-bold uppercase" />
-          <button onclick="appState.cvData['${key}'].splice(${i},1); saveAndRender();" class="p-2 text-zinc-500 hover:text-red-400"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-        </div>
-      `).join('');
-
-      return `
-        <div class="flex flex-col gap-3 w-full">
-          <div class="flex items-center justify-between ml-1 mb-1">
-            <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300">${title}</h3>
-            <button onclick="appState.cvData['${key}'].push(''); saveAndRender();" class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-transparent border border-indigo-500 text-indigo-400 text-xs font-bold active:scale-95 uppercase transition-all">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> ADD
-            </button>
-          </div>
-          <div class="flex flex-col gap-3">${items}</div>
-        </div>
-      `;
-    }
-
-    function getStep6HTML() {
-      const d = appState.cvData.details;
-      return `
-        <div class="flex flex-col gap-3 w-full">
-          <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1 mb-1">PERSONAL DETAILS</h3>
-          <input type="text" value="${escapeHtml(d.dob)}" oninput="updateDet('dob', this.value)" placeholder="DATE OF BIRTH (DD/MM/YYYY)" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          <input type="text" value="${escapeHtml(d.father)}" oninput="updateDet('father', this.value)" placeholder="FATHER'S NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          <div class="grid grid-cols-2 gap-3">
-            <select onchange="updateDet('gender', this.value); saveAndRender();" class="w-full bg-transparent border border-zinc-700 rounded-xl px-3 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase appearance-none text-center">
-              <option value="Male" ${d.gender==='Male'?'selected':''}>MALE</option>
-              <option value="Female" ${d.gender==='Female'?'selected':''}>FEMALE</option>
-            </select>
-            <select onchange="updateDet('marital', this.value); saveAndRender();" class="w-full bg-transparent border border-zinc-700 rounded-xl px-3 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase appearance-none text-center">
-              <option value="Unmarried" ${d.marital==='Unmarried'?'selected':''}>UNMARRIED</option>
-              <option value="Married" ${d.marital==='Married'?'selected':''}>MARRIED</option>
-            </select>
-          </div>
-          
-          <!-- Nationality with Custom Location-Style Picker -->
-          <div onclick="openLocationPicker(event, 'nationality')" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500 flex items-center justify-between cursor-pointer font-bold uppercase ${d.nationality ? 'text-zinc-100' : 'text-zinc-500'}">
-            <span id="display-nationality" class="truncate">${d.nationality || 'SELECT NATIONALITY'}</span> <svg class="w-4 h-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </div>
-
-          <input type="text" value="${escapeHtml(d.languages)}" oninput="updateDet('languages', this.value)" placeholder="LANGUAGES KNOWN" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          <input type="text" value="${escapeHtml(d.hobbies)}" oninput="updateDet('hobbies', this.value)" placeholder="HOBBIES" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-        </div>
-      `;
-    }
-
-    function getStep7HTML() {
-      const cv = appState.cvData;
-      return `
-        <div class="flex flex-col gap-6 w-full">
-          <div class="flex flex-col gap-3">
-            <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">DECLARATION STATEMENT</h3>
-            <textarea rows="4" oninput="appState.cvData.declaration=this.value; saveSilently();" class="w-full bg-transparent border border-zinc-700 rounded-xl p-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase leading-relaxed">${escapeHtml(cv.declaration)}</textarea>
-          </div>
-          <div class="flex flex-col gap-3">
-            <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-300 ml-1">SIGN-OFF DETAILS</h3>
-            <div class="flex gap-3">
-              <input type="text" value="${escapeHtml(cv.footer.date)}" oninput="appState.cvData.footer.date=this.value; saveSilently();" placeholder="DATE" class="flex-1 bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-              <button onclick="appState.cvData.footer.date = new Date().toLocaleDateString('en-GB'); saveAndRender();" class="px-6 py-3 rounded-full bg-transparent border border-indigo-500 text-indigo-400 text-xs font-bold uppercase active:scale-95 transition-all">TODAY</button>
-            </div>
-            <input type="text" value="${escapeHtml(cv.footer.place)}" oninput="appState.cvData.footer.place=this.value; saveSilently();" placeholder="PLACE" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-            <input type="text" value="${escapeHtml(cv.footer.signName)}" oninput="appState.cvData.footer.signName=this.value; saveSilently();" placeholder="SIGNATURE NAME" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 outline-none focus:border-indigo-500 placeholder-zinc-500 font-bold uppercase" />
-          </div>
-        </div>
-      `;
-    }
-
-    function getStep8HTML() {
-      const p = appState.cvData.personal;
-      return `
-        <div class="flex flex-col gap-4 w-full text-center mt-4">
-          <div class="w-16 h-16 rounded-full border border-indigo-500/50 flex items-center justify-center mx-auto text-indigo-400 mb-2">
-             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-          </div>
-          <h3 class="text-[13px] font-bold uppercase tracking-wider text-zinc-200">CV HEADER FORMAT</h3>
-          <p class="text-xs text-zinc-500 mb-2 font-bold uppercase">CHOOSE HOW YOUR CONTACT DETAILS APPEAR.</p>
-          
-          <select onchange="appState.cvData.personal.headerStyle=this.value; saveAndRender();" class="w-full bg-transparent border border-zinc-700 rounded-xl px-4 py-4 text-sm text-zinc-100 outline-none focus:border-indigo-500 font-bold uppercase text-center appearance-none">
-            <option value="labeled" ${p.headerStyle === 'labeled' ? 'selected' : ''}>COLON ALIGNED TABLE</option>
-            <option value="standard" ${p.headerStyle === 'standard' ? 'selected' : ''}>STANDARD TEXT STYLE</option>
-          </select>
-        </div>
-      `;
-    }
-
-    function openLocationPicker(e, type) {
-      const p = appState.cvData.personal;
-      const d = appState.cvData.details;
-      let options = [];
-
-      if(type === 'state') options = indianStates;
-      else if (type === 'district') {
-        if(!p.state) return showToast("PLEASE SELECT A STATE FIRST!");
-        options = getDistricts(p.state);
-      } else if (type === 'tehsil') {
-        if(!p.district) return showToast("PLEASE SELECT A DISTRICT FIRST!");
-        options = getTehsils(p.state, p.district);
-      } else if (type === 'nationality') {
-        options = nationalities;
-      }
-
-      appState.pickerType = type;
-      appState.pickerOptions = options;
-      
-      document.getElementById('picker-title').innerText = `SELECT ${type}`;
-      document.getElementById('picker-search').value = '';
-      
-      renderPickerList(options);
-      
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = rect.left + rect.width / 2;
-      const clickY = rect.top + rect.height / 2;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      
-      const modal = document.getElementById('picker-modal');
-      const backdrop = document.getElementById('picker-backdrop');
-      const box = document.getElementById('picker-box');
-      
-      box.style.setProperty('--tx', `${clickX - centerX}px`);
-      box.style.setProperty('--ty', `${clickY - centerY}px`);
-      
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      
-      void modal.offsetWidth; 
-      
-      backdrop.classList.add('opacity-100');
-      box.classList.remove('anim-pop-out-origin');
-      box.classList.add('anim-pop-in-origin');
-    }
-
-    function renderPickerList(options, searchStr = '') {
-      const listDiv = document.getElementById('picker-list');
-      
-      let html = options.map(opt => `
-        <button onclick="selectLocationOption('${opt.replace(/'/g, "\\'")}')" class="w-full text-left px-5 py-3.5 rounded-xl hover:bg-[#181826] active:bg-zinc-800 text-sm text-zinc-200 active:scale-[0.98] transition-all font-bold uppercase tracking-wide">
-          ${opt}
-        </button>
-      `).join('');
-
-      if (searchStr.trim() !== '') {
-        const exactMatch = options.some(o => o.toLowerCase() === searchStr.toLowerCase());
-        if (!exactMatch) {
-          html = `
-            <button onclick="selectLocationOption('${searchStr.replace(/'/g, "\\'")}')" class="w-full text-left px-5 py-3.5 rounded-xl bg-transparent border border-indigo-500 text-sm text-indigo-400 active:scale-[0.98] transition-all mb-2 flex items-center gap-2 font-bold uppercase shadow-lg">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-              USE "${searchStr}"
-            </button>
-          ` + html;
-        }
-      }
-
-      if(!html) html = `<div class="text-zinc-500 text-xs text-center py-6 font-bold uppercase tracking-widest leading-relaxed">NOT FOUND.<br/>TYPE ABOVE TO ADD CUSTOM.</div>`;
-      listDiv.innerHTML = html;
-    }
-
-    function filterPickerList(val) {
-      const q = val.toLowerCase();
-      const filtered = appState.pickerOptions.filter(o => o.toLowerCase().includes(q));
-      renderPickerList(filtered, val);
-    }
-
-    // UPDATE DOM DIRECTLY INSTEAD OF REFRESHING PAGE (No Glide In From Left)
-    function selectLocationOption(val) {
-      const type = appState.pickerType;
-      
-      if (type === 'state' || type === 'district' || type === 'tehsil') {
-        appState.cvData.personal[type] = val;
-        if(type === 'state') { appState.cvData.personal.district=''; appState.cvData.personal.tehsil=''; }
-        if(type === 'district') { appState.cvData.personal.tehsil=''; }
-      } else if (type === 'nationality') {
-        appState.cvData.details[type] = val;
-      }
-      
-      saveSilently();
-      
-      const setVal = (id, val, placeholder) => {
-        const el = document.getElementById(id);
-        if(el) {
-          el.innerText = val || placeholder;
-          el.parentElement.className = el.parentElement.className.replace(/text-zinc-100|text-zinc-500/g, '') + (val ? ' text-zinc-100' : ' text-zinc-500');
-        }
-      };
-      
-      if (type === 'nationality') {
-        setVal('display-nationality', val, 'SELECT NATIONALITY');
-      } else {
-        setVal('display-state', appState.cvData.personal.state, 'SELECT STATE');
-        setVal('display-district', appState.cvData.personal.district, 'SELECT DISTRICT');
-        setVal('display-tehsil', appState.cvData.personal.tehsil, 'SELECT TEHSIL');
-      }
-      
-      closePicker(false); // NO REFRESH!
-    }
-
-    function closePicker() {
-      const backdrop = document.getElementById('picker-backdrop');
-      const box = document.getElementById('picker-box');
-      box.classList.remove('anim-pop-in-origin');
-      box.classList.add('anim-pop-out-origin');
-      backdrop.classList.remove('opacity-100');
-      setTimeout(() => {
-        const modal = document.getElementById('picker-modal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        box.classList.remove('anim-pop-out-origin');
-      }, 250);
-    }
-
-    function goNext() {
-      if(appState.currentPage < 8) { appState.animDirection = 'next'; appState.currentPage++; renderApp(); }
-      else { appState.animDirection = 'pop-in'; setView('preview'); }
-    }
-    function goPrev() {
-      if(appState.currentPage > 1) { appState.animDirection = 'prev'; appState.currentPage--; renderApp(); }
-    }
-
-    function onPhotoSelected(e) {
+    async function onPhotoSelected(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => { appState.cvData.personal.photo = ev.target.result; appState.animDirection='none'; saveAndRender(); };
-      reader.readAsDataURL(file);
+      try {
+        const cropped = await processPassportPhoto(file);
+        cvData.personal.photo = cropped;
+        saveState();
+        
+        const photoDiv = document.getElementById('photo-container');
+        const photoPlaceholder = document.getElementById('photo-placeholder');
+        const photoBtn = document.getElementById('photo-btn-text');
+        const photoRemoveBtn = document.getElementById('photo-remove-btn');
+        
+        if (photoDiv) { photoDiv.style.backgroundImage = `url('${cropped}')`; photoDiv.style.borderStyle = 'solid'; photoDiv.style.borderColor = '#6366f1'; }
+        if (photoPlaceholder) photoPlaceholder.style.display = 'none';
+        if (photoBtn) photoBtn.innerText = 'CHANGE';
+        if (photoRemoveBtn) photoRemoveBtn.style.display = 'block';
+      } catch(err) { showUIAlert("IMAGE ERROR", "Could not load image. Please select a valid photo.", false); }
     }
 
-    function closePreviewAnim() {
-      const previewRoot = document.getElementById('preview-root-container');
-      if (previewRoot) {
-        previewRoot.classList.remove('anim-pop-in-origin');
-        previewRoot.classList.add('anim-pop-out-origin');
-        setTimeout(() => {
-          appState.animDirection = 'none';
-          setView('editor', 'none');
-        }, 250);
-      } else {
-        appState.animDirection = 'none';
-        setView('editor', 'none');
-      }
-    }
-
-    function getPreviewHTML() {
-      const scaledW = Math.round(794 * appState.previewZoom);
-      const scaledH = Math.round(1123 * appState.previewZoom);
+    function removePhoto() {
+      cvData.personal.photo = '';
+      saveState();
+      const photoDiv = document.getElementById('photo-container');
+      const photoPlaceholder = document.getElementById('photo-placeholder');
+      const photoBtn = document.getElementById('photo-btn-text');
+      const photoRemoveBtn = document.getElementById('photo-remove-btn');
       
+      if (photoDiv) { photoDiv.style.backgroundImage = 'none'; photoDiv.style.borderStyle = 'dashed'; photoDiv.style.borderColor = '#3f3f46'; }
+      if (photoPlaceholder) photoPlaceholder.style.display = 'flex';
+      if (photoBtn) photoBtn.innerText = 'UPLOAD';
+      if (photoRemoveBtn) photoRemoveBtn.style.display = 'none';
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatText(str, tCase) {
+      if (!str) return '';
+      let cleanStr = escapeHtml(str);
+      if (tCase === 'capitalize') {
+          return cleanStr.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+      }
+      return cleanStr.toUpperCase();
+    }
+
+    function getDocumentHTML(id, isPrintMode) {
+      const p = cvData.personal || {};
+      const d = cvData.details || {};
+      const f = cvData.footer || {};
+      
+      const fontFamilies = { 'Arial': 'Arial, Helvetica, sans-serif', 'Calibri': 'Calibri, "Segoe UI", Candara, sans-serif', 'Algerian': '"Algerian", "Times New Roman", serif', 'Times New Roman': '"Times New Roman", Times, serif' };
+      const font = fontFamilies[cvData.font] || fontFamilies['Times New Roman'];
+      const fWeight = cvData.fontWeight || 'bold';
+      const tCase = cvData.textCase || 'uppercase';
+
+      const actualState = p.state === 'OTHER' ? p.customState : p.state;
+      const actualDistrict = p.district === 'OTHER' ? p.customDistrict : p.district;
+      const actualTehsil = p.tehsil === 'OTHER' ? p.customTehsil : p.tehsil;
+      const actualNationality = d.nationality === 'OTHER' ? d.customNationality : d.nationality;
+
+      const contactList = [];
+      if (p.mobile) contactList.push({ label: 'MOBILE NO.', val: p.mobile });
+      if (p.email) contactList.push({ label: 'EMAIL ID', val: p.email });
+      if (p.villagePost) contactList.push({ label: 'ADDRESS', val: p.villagePost });
+      if (actualTehsil) contactList.push({ label: 'TEHSIL', val: actualTehsil });
+      if (actualDistrict) contactList.push({ label: 'DISTRICT', val: actualDistrict });
+      if (actualState) contactList.push({ label: 'STATE', val: actualState });
+
+      let contactRowsHTML = '';
+      
+      contactRowsHTML = `
+        ${p.name ? `<tr>
+          <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">NAME</td>
+          <td style="font-weight:${fWeight}; font-size:12pt; text-align:center; vertical-align:top; padding:2px 0; color:#000; width:20px;">:</td>
+          <td style="font-weight:${fWeight}; font-size:12pt; vertical-align:top; padding:2px 0 2px 6px; color:#000; word-break:break-word;">${formatText(p.name, tCase)}</td>
+        </tr>` : ''}
+        ${contactList.map((item) => `
+          <tr>
+            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0; color:#000; width:125px; white-space:nowrap; text-transform:uppercase;">${item.label}</td>
+            <td style="font-weight:${fWeight}; font-size:11pt; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:20px;">:</td>
+            <td style="font-weight:${fWeight}; font-size:11pt; vertical-align:top; padding:1.5px 0 1.5px 6px; color:#000; word-break:break-word;">${formatText(item.val, tCase)}</td>
+          </tr>
+        `).join('')}
+      `;
+
+      const personalDetails = [
+        { l: 'NAME', v: p.name },
+        { l: 'DATE OF BIRTH', v: d.dob },
+        { l: "FATHER'S NAME", v: d.father },
+        { l: 'GENDER', v: d.gender },
+        { l: 'MARITAL STATUS', v: d.marital },
+        { l: 'NATIONALITY', v: actualNationality },
+        { l: 'LANGUAGE KNOWN', v: d.languages },
+        { l: 'HOBBIES', v: d.hobbies }
+      ].filter(item => item.v && item.v.trim()); 
+
+      const personalDetailsHTML = personalDetails.map(item => `
+        <tr>
+          <td style="padding:2.5px 0; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:160px; white-space:nowrap; text-transform:uppercase;">${item.l}</td>
+          <td style="padding:2.5px 0; text-align:center; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; width:15px;">:</td>
+          <td style="padding:2.5px 0 2.5px 10px; font-weight:${fWeight}; font-size:11pt; vertical-align:top; color:#000; word-break:break-word;">${formatText(item.v, tCase)}</td>
+        </tr>
+      `).join('');
+
+      const academicHTML = (cvData.academic || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
+      const otherHTML = (cvData.other || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
+      const expHTML = (cvData.experience || []).filter(x => x && x.trim()).map(x => `<li style="padding-left:4px; font-weight:${fWeight}; line-height:1.35; color:#000; word-break:break-word;">${formatText(x, tCase)}</li>`).join('');
+
+      const photoBoxHTML = p.photo ? `<img src="${p.photo}" alt="Photo" style="width:115px !important; height:145px !important; min-width:115px !important; min-height:145px !important; max-width:115px !important; max-height:145px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : `<div style="width:115px; height:145px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; box-sizing:border-box;"><div style="width:90%; height:92%; border:1px dashed #71717a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fafafa;"><span style="font-size:8pt; font-weight:bold; color:#000; text-transform:uppercase;">PHOTO</span></div></div>`;
+
+      const outerWidth = isPrintMode ? '100%' : '794px';
+      const outerHeight = isPrintMode ? '100%' : '1123px'; 
+
+      const titleDisplay = formatText(cvData.documentTitle || 'CURRICULUM VITAE', tCase);
+
       return `
-        <div id="preview-root-container" class="flex-1 flex flex-col bg-[#08080e] relative ${appState.animDirection==='pop-in'?'anim-pop-in-origin':''}" style="--tx:0px; --ty:100px;">
-          <header class="flex items-center justify-between px-4 pt-4 pb-2 z-30 shrink-0 bg-transparent">
-            <button onclick="closePreviewAnim()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-white text-[11px] font-extrabold border border-zinc-700 active:scale-90 uppercase tracking-wide transition-all">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg> EDIT
-            </button>
-            <div class="flex items-center gap-2 bg-transparent p-1.5 rounded-full border border-zinc-700">
-              <button onclick="appState.previewZoom=Math.max(0.3, appState.previewZoom-0.1); appState.animDirection='none'; renderApp();" class="w-7 h-7 flex items-center justify-center text-zinc-300 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg></button>
-              <span class="text-[11px] font-extrabold text-zinc-100 min-w-[32px] text-center tracking-wider">${Math.round(appState.previewZoom*100)}%</span>
-              <button onclick="appState.previewZoom=Math.min(1.5, appState.previewZoom+0.1); appState.animDirection='none'; renderApp();" class="w-7 h-7 flex items-center justify-center text-zinc-300 active:scale-90"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></button>
+        <div id="${id}" style="width:${outerWidth}; height:${outerHeight}; box-sizing:border-box; background-color:#ffffff; color:#000000; padding:8mm; font-family:${font}; font-weight:${fWeight} !important;">
+          <div style="width:100%; height:100%; border:1.5px solid #000000; padding:3px; box-sizing:border-box; background-color:#ffffff;">
+            <div style="width:100%; height:100%; border:2.5px solid #000000; padding:5mm 8mm; box-sizing:border-box; background-color:#ffffff; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
+              <div style="flex-shrink:0;">
+                <h1 class="font-algerian" style="font-family:'Algerian', 'Times New Roman', serif; text-align:center; font-size:24pt; font-weight:normal; font-synthesis:none; text-decoration:underline; text-underline-offset:4px; margin-bottom:10px; color:#000; letter-spacing:0.05em; text-transform:${tCase === 'capitalize' ? 'capitalize' : 'uppercase'}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-stroke: 0.4px #000; text-shadow: 0 0 1px rgba(0,0,0,0.5);">${titleDisplay}</h1>
+                <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; margin:0; padding:0;">
+                  <tbody><tr>
+                      <td style="vertical-align:top; width:calc(100% - 135px); padding-right:12px; border:none;">
+                        ${contactList.length > 0 || p.name ? `<table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; color:#000;"><colgroup><col style="width:125px;" /><col style="width:20px;" /><col style="width:auto;" /></colgroup><tbody>${contactRowsHTML}</tbody></table>` : ''}
+                      </td>
+                      <td style="width:120px; min-width:120px; max-width:120px; vertical-align:top; text-align:right; border:none;">
+                        <div style="width:115px; height:145px; min-width:115px; min-height:145px; max-width:115px; max-height:145px; border:1.5px solid #000000; display:block; overflow:hidden; background-color:#ffffff; box-sizing:border-box; text-align:center; margin-left:auto;">${photoBoxHTML}</div>
+                      </td>
+                    </tr></tbody>
+                </table>
+                <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
+              </div>
+              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between; margin:2px 0; gap:6px; font-size:11pt; color:#000; overflow:hidden;">
+                ${cvData.objective && cvData.objective.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">CARRIER OBJECTIVE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;"><li style="padding-left:4px;"><p style="font-size:11pt; font-weight:${fWeight}; line-height:1.35; text-align:justify; color:#000; word-break:break-word;">${formatText(cvData.objective, tCase)}</p></li></ul></div>` : ''}
+                ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">ACADEMIC QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${academicHTML}</ul></div>` : ''}
+                ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">OTHER QUALIFICATION:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${otherHTML}</ul></div>` : ''}
+                ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">WORKING EXPERIENCE:-</h2><ul style="list-style-type:disc; margin-left:24px; font-size:11pt;">${expHTML}</ul></div>` : ''}
+                ${personalDetailsHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">PERSONAL DETAIL:-</h2><table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11pt; margin-left:14px; color:#000;"><colgroup><col style="width:160px;" /><col style="width:15px;" /><col style="width:auto;" /></colgroup><tbody>${personalDetailsHTML}</tbody></table></div>` : ''}
+                ${cvData.declaration && cvData.declaration.trim() ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; text-underline-offset:2px; margin-bottom:2px; color:#000; text-transform:uppercase;">DECLARATION:-</h2><p style="font-size:11pt; font-weight:${fWeight}; text-align:justify; line-height:1.35; color:#000; word-break:break-word;">${formatText(cvData.declaration, tCase)}</p></div>` : ''}
+              </div>
+              <div style="flex-shrink:0; padding-top:8px;">
+                <table style="width:100%; table-layout:fixed; border-collapse:collapse; border:none; font-size:11.5pt; font-weight:${fWeight}; color:#000;">
+                  <tbody>
+                    <tr>
+                      <td style="vertical-align:bottom; text-align:left; border:none;">
+                        ${f.date ? `<div><span style="text-transform:uppercase;">DATE:</span> ${formatText(f.date, tCase)}</div>` : ''}
+                        ${f.place ? `<div><span style="text-transform:uppercase;">PLACE:</span> ${formatText(f.place, tCase)}</div>` : ''}
+                      </td>
+                      <td style="vertical-align:bottom; text-align:right; padding-right:8px; border:none;">
+                        <div>( ${formatText(f.signName, tCase) || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} )</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <button onclick="handleDirectPrint()" class="px-4 py-2 flex items-center gap-1.5 bg-transparent rounded-full text-emerald-400 text-[11px] font-extrabold active:scale-90 uppercase tracking-wide border border-emerald-500 transition-all">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PRINT
-            </button>
-          </header>
-          <div id="preview-viewport" class="flex-1 overflow-auto p-4 pb-10 flex flex-col items-center">
-             <div class="relative bg-white shadow-2xl transition-all" style="width:${scaledW}px; height:${scaledH}px; min-height:${scaledH}px;">
-                <div style="width:794px; min-height:1123px; transform: scale(${appState.previewZoom}); transform-origin: top left; position: absolute; top:0; left:0;">
-                  ${getCVDocumentHTML('cv-screen-preview', false)}
-                </div>
-             </div>
           </div>
         </div>
       `;
     }
 
     function renderPrintNode() {
-      if(!appState.cvData) return;
-      const c = document.getElementById('cv-print-container');
-      if(c) c.innerHTML = getCVDocumentHTML('cv-actual-print', true);
-    }
-    function handleDirectPrint() {
-      renderPrintNode();
-      setTimeout(() => window.print(), 100);
+      const container = document.getElementById('cv-print-container');
+      if (container) { container.innerHTML = getDocumentHTML('cv-actual-print-node', true); }
     }
 
-    function getCVDocumentHTML(id, isPrintMode) {
-      const cv = appState.cvData;
-      if(!cv) return '';
-      const p = cv.personal;
-      const d = cv.details;
-      const f = cv.footer;
-      const font = cv.font === 'Times New Roman' ? '"Times New Roman", Times, serif' : cv.font;
+    function renderApp() {
+      const container = document.getElementById('main-view-container');
+      const scrollArea = document.getElementById('editor-scroll-area');
+      const currentScroll = scrollArea ? scrollArea.scrollTop : 0;
 
-      const contactList = [
-        { label: 'Name', val: p.name, bold: true, upper: true },
-        { label: 'Address', val: p.villagePost },
-        { label: 'Tehsil', val: p.tehsil },
-        { label: 'District', val: p.district },
-        { label: 'State', val: p.state },
-        { label: 'Mobile No.', val: p.mobile },
-        { label: 'Email Id', val: p.email }
-      ].filter(x => x.val && x.val.trim());
+      if (!appStarted) {
+        renderWelcomeScreen(container);
+        return;
+      }
 
-      const contactRowsHTML = contactList.map((item, idx) => `
-        <tr>
-          <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:80px; text-transform:none;">${item.label}</td>
-          <td style="font-weight:bold; font-size:${idx === 0 ? '12pt' : '11pt'}; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
-          <td style="font-weight:${idx === 0 ? 'bold' : 'normal'}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
-        </tr>
-      `).join('');
-
-      const personalDetailsHTML = [
-        { l: 'Name', v: p.name, upper: true, bold: true },
-        { l: 'Date of Birth', v: d.dob },
-        { l: "Father's Name", v: d.father },
-        { l: 'Gender', v: d.gender },
-        { l: 'Marital Status', v: d.marital },
-        { l: 'Nationality', v: d.nationality },
-        { l: 'Language Known', v: d.languages },
-        { l: 'Hobbies', v: d.hobbies }
-      ].map(item => `
-        <tr>
-          <td style="padding:2px 0; vertical-align:top; color:#000; width:140px; font-weight:normal; text-transform:none;">${item.l}</td>
-          <td style="padding:2px 0; text-align:center; font-weight:bold; vertical-align:top; color:#000; width:18px;">:</td>
-          <td style="padding:2px 0; font-weight:${item.bold ? 'bold' : 'normal'}; text-transform:${item.upper ? 'uppercase' : 'none'}; vertical-align:top; color:#000;">${item.v || ''}</td>
-        </tr>
-      `).join('');
-
-      const genList = (arr) => (arr||[]).filter(x => x.trim()).map(x => `<li style="padding-left:4px; line-height:1.35; color:#000; font-weight:normal; text-transform:none;">${x}</li>`).join('');
+      if (activeView === 'preview') {
+        renderPreviewView(container);
+      } else {
+        renderEditorView(container);
+      }
       
-      const academicHTML = genList(cv.academic);
-      const otherHTML = genList(cv.other);
-      const expHTML = genList(cv.experience);
+      if (!isNavigating && !enteringEditor) {
+        requestAnimationFrame(() => {
+          const newScroll = document.getElementById('editor-scroll-area');
+          if(newScroll) newScroll.scrollTop = currentScroll;
+        });
+      }
+      isNavigating = false;
+    }
 
-      const photoBoxHTML = p.photo ? 
-        `<img src="${p.photo}" style="width:96px !important; height:124px !important; object-fit:cover !important; display:block !important; margin:0 auto;" />` : 
-        `<div style="width:96px; height:124px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #71717a;"><span style="font-size:7.5pt; font-weight:bold; color:#000;">PHOTO</span></div>`;
+    function goToHome() {
+      const container = document.getElementById('main-view-container');
+      if (container) container.classList.add('elegant-exit');
+      setTimeout(() => {
+        appStarted = false;
+        enteringEditor = false;
+        isNavigating = true;
+        renderApp();
+      }, 250);
+    }
 
-      return `
-        <div id="${id}" style="width:${isPrintMode ? '100%' : '794px'}; min-height:${isPrintMode ? '288mm' : '1123px'}; background-color:#ffffff; color:#000; padding:${isPrintMode ? '4mm' : '6mm'}; font-family:${font}; box-sizing:border-box; font-weight:normal;">
-          <div style="width:100%; min-height:${isPrintMode ? '282mm' : '1085px'}; border:1.5px solid #000; padding:2.5px; box-sizing:border-box;">
-            <div style="width:100%; min-height:calc(${isPrintMode ? '282mm' : '1085px'} - 7px); border:2.5px solid #000; padding:6mm 8mm; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between;">
-              
-              <div>
-                <h1 class="font-algerian" style="text-align:center; font-size:22pt; font-weight:bold; text-decoration:underline; margin-bottom:8px; color:#000; text-transform:uppercase;">CURRICULUM VITAE</h1>
-                <table style="width:100%; table-layout:fixed; border-collapse:collapse;">
-                  <tr>
-                    <td style="vertical-align:top; width:calc(100% - 116px);">
-                      <table style="width:100%; font-size:11pt; color:#000;">${contactRowsHTML}</table>
-                    </td>
-                    <td style="width:110px; vertical-align:top; text-align:right;">
-                      <div style="width:96px; height:124px; border:1.5px solid #000; overflow:hidden; margin-left:auto;">${photoBoxHTML}</div>
-                    </td>
-                  </tr>
-                </table>
-                <div style="width:100%; height:4px; border-top:1.2px solid #000; border-bottom:1.2px solid #000; margin:6px 0;"></div>
-              </div>
+    function handleCreateCVClick() {
+        if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO CREATE A CV!", false);
+        createNewCV();
+    }
 
-              <div style="display:flex; flex-direction:column; flex:1; justify-content:space-evenly; margin:4px 0; gap:8px; font-size:11pt; color:#000;">
-                ${cv.objective ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Carrier Objective:-</h2><ul style="list-style-type:disc; margin-left:24px;"><li style="padding-left:4px; text-align:justify; font-weight:normal; text-transform:none;">${cv.objective}</li></ul></div>` : ''}
-                ${academicHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Academic Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${academicHTML}</ul></div>` : ''}
-                ${otherHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Other Qualification:-</h2><ul style="list-style-type:disc; margin-left:24px;">${otherHTML}</ul></div>` : ''}
-                ${expHTML ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Working Experience:-</h2><ul style="list-style-type:disc; margin-left:24px;">${expHTML}</ul></div>` : ''}
-                
-                <div>
-                  <h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Personal Detail:-</h2>
-                  <table style="width:100%; font-size:11pt; margin-left:14px; color:#000;">${personalDetailsHTML}</table>
+    function handleHistoryClick() {
+        if (!currentUser) return showUIAlert("LOGIN REQUIRED", "PLEASE LOGIN WITH GOOGLE TO VIEW HISTORY!", false);
+        openHistory();
+    }
+
+    function createNewCV() {
+      cvData = JSON.parse(JSON.stringify(defaultCVData));
+      currentCvId = Date.now().toString();
+      localStorage.setItem('techasar_current_cv_id', currentCvId);
+      saveState();
+      
+      const card = document.getElementById('welcome-container');
+      if (card) card.classList.add('elegant-exit');
+      
+      setTimeout(() => {
+        appStarted = true;
+        enteringEditor = true;
+        isNavigating = true;
+        currentPage = 1;
+        activeView = 'editor';
+        renderApp();
+      }, 300); 
+    }
+
+    function renderWelcomeScreen(container) {
+      container.classList.remove('elegant-exit');
+      container.innerHTML = `
+        <div class="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center bg-[#08080e]">
+          <div class="absolute top-0 left-0 right-0 p-4 flex justify-end z-20">
+            ${authLoading ? `
+                <div class="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 px-4 py-2 rounded-full animate-pulse">
+                    <div class="w-5 h-5 bg-zinc-700/80 rounded-full"></div>
+                    <div class="w-16 h-2.5 bg-zinc-700/80 rounded-full"></div>
                 </div>
+            ` : currentUser ? `
+                <div class="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-full">
+                    <img src="${currentUser.photoURL}" class="w-7 h-7 rounded-full" />
+                    <span class="text-xs font-bold text-zinc-300 mr-1 uppercase">${currentUser.displayName.split(' ')[0]}</span>
+                    <button type="button" onclick="logoutGoogle()" class="text-[10px] font-bold bg-red-500/20 text-red-400 px-2.5 py-1 rounded-full active:scale-95 uppercase">LOGOUT</button>
+                </div>
+            ` : `
+                <button type="button" onclick="loginWithGoogle()" class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full font-bold text-xs active:scale-95 transition-transform shadow-lg shadow-white/10 uppercase">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    LOGIN WITH GOOGLE
+                </button>
+            `}
+          </div>
 
-                ${cv.declaration ? `<div><h2 style="font-size:11.5pt; font-weight:bold; text-decoration:underline; margin-bottom:2px; text-transform:none;">Declaration:-</h2><p style="text-align:justify; font-weight:normal; text-transform:none;">${cv.declaration}</p></div>` : ''}
-              </div>
-
-              <div style="padding-top:10px;">
-                <table style="width:100%; font-size:11.5pt; font-weight:bold; color:#000;">
-                  <tr>
-                    <td style="vertical-align:bottom; text-transform:none;">Date: ${f.date}<br/>Place: ${f.place}</td>
-                    <td style="vertical-align:bottom; text-align:right; text-transform:uppercase;">( ${f.signName || p.name} )</td>
-                  </tr>
-                </table>
-              </div>
+          <div class="absolute top-[20%] left-[20%] w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] blob-1 pointer-events-none"></div>
+          <div class="absolute bottom-[20%] right-[20%] w-80 h-80 bg-fuchsia-600/15 rounded-full blur-[100px] blob-2 pointer-events-none"></div>
+          
+          <div id="welcome-container" class="relative z-10 w-full max-w-lg flex flex-col items-center text-center p-6 elegant-entry">
+            <div class="w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 sm:mb-8 anim-icon-float stagger-entry d-0 shadow-inner">
+              <svg class="w-10 h-10 sm:w-12 sm:h-12 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h1 class="uppercase font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-indigo-300 mb-4 stagger-entry d-1" style="font-size: clamp(32px, 6.5vw, 48px); line-height: 1.1;">CREATE YOUR<br>PROFESSIONAL CV</h1>
+            <p class="text-[16px] sm:text-[17px] font-bold text-zinc-300/80 mb-10 leading-relaxed stagger-entry d-2 max-w-[320px] uppercase">BUILD A PROFESSIONAL CV IN MINUTES WITH A MODERN, SMOOTH, AND EASY EXPERIENCE.</p>
+            <div class="w-full max-w-[340px] stagger-entry d-3 flex flex-col gap-4">
+              <button type="button" onclick="handleCreateCVClick()" class="w-full h-[60px] sm:h-[64px] rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[16px] sm:text-[18px] font-bold active:scale-95 transition-all flex items-center justify-center uppercase shadow-lg shadow-indigo-600/30">CREATE NEW CV</button>
+              <button type="button" onclick="handleHistoryClick()" class="w-full h-[54px] sm:h-[58px] rounded-2xl bg-zinc-800/80 border border-zinc-700/80 hover:bg-zinc-700 text-zinc-200 text-[15px] sm:text-[16px] font-bold active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur-sm uppercase">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>CV HISTORY
+              </button>
             </div>
           </div>
         </div>
       `;
     }
 
-    function escapeHtml(str) {
-      if(!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    function openHistory() {
+      renderHistoryList();
+      const modal = document.getElementById('cv-history-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
-    document.addEventListener('DOMContentLoaded', () => setView('home'));
-  </script>
-</body>
-</html>
+    function closeHistory() {
+      const modal = document.getElementById('cv-history-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function renderHistoryList() {
+      const container = document.getElementById('history-list-container');
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-12 opacity-80">
+           <div class="w-8 h-8 border-[3px] border-zinc-800 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+           <div class="text-zinc-500 text-xs font-bold uppercase tracking-widest">FETCHING HISTORY...</div>
+        </div>
+      `;
+      
+      if (!currentUser || !window.db) return;
+
+      try {
+          const querySnapshot = await window.getDocs(window.collection(window.db, `users/${currentUser.uid}/cvs`));
+          let hist = [];
+          querySnapshot.forEach((doc) => { hist.push(doc.data()); });
+          hist.sort((a,b) => b.timestamp - a.timestamp);
+
+          if (hist.length === 0) {
+            container.innerHTML = '<div class="text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND IN HISTORY.</div>';
+            return;
+          }
+          
+          container.innerHTML = hist.map(h => `
+            <div class="flex items-center justify-between p-3 bg-[#181826] border border-zinc-700/80 hover:border-zinc-600 rounded-xl mb-2 transition-all">
+              <div class="flex flex-col flex-1 min-w-0 cursor-pointer py-1" onclick="loadCVFromHistory(event, '${h.id}')">
+                <span class="text-zinc-100 font-bold text-sm truncate uppercase">${escapeHtml(h.name)}</span>
+                <span class="text-zinc-500 text-[11px] mt-0.5 font-bold uppercase">${h.date || 'SAVED RECENTLY'}</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0 ml-3">
+                <button type="button" onclick="loadCVFromHistory(event, '${h.id}')" class="p-2 bg-indigo-600/20 hover:bg-indigo-600/40 rounded-lg text-indigo-400 active:scale-95 transition-all" title="Edit">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                </button>
+                <button type="button" onclick="printFromHistory(event, '${h.id}')" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm uppercase w-[80px] justify-center">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
+                  <span>PRINT</span>
+                </button>
+                <button type="button" onclick="deleteFromHistory(event, '${h.id}')" class="p-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-red-400 active:scale-95 transition-all" title="Delete">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+              </div>
+            </div>
+          `).join('');
+      } catch(e) {
+          container.innerHTML = '<div class="text-red-400 text-sm text-center py-8 font-bold uppercase">ERROR LOADING HISTORY.</div>';
+      }
+    }
+
+    async function loadCVFromHistory(e, id) {
+      if(e) e.stopPropagation();
+      if(!currentUser || !window.db) return;
+      try {
+          const docSnap = await window.getDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
+          if(docSnap.exists()){
+             cvData = JSON.parse(JSON.stringify(docSnap.data().data));
+             currentCvId = id;
+             localStorage.setItem('techasar_current_cv_id', currentCvId);
+             saveState();
+             closeHistory();
+             appStarted = true;
+             enteringEditor = true;
+             isNavigating = true;
+             currentPage = 1;
+             activeView = 'editor';
+             renderApp();
+          }
+      } catch(e) {}
+    }
+
+    async function printFromHistory(e, id) {
+      if(e) e.stopPropagation();
+      if(!currentUser || !window.db) return;
+      
+      const btn = e.currentTarget;
+      const ogHTML = btn.innerHTML;
+      btn.innerHTML = `<div class="w-3.5 h-3.5 border-[2px] border-white/30 border-t-white rounded-full animate-spin"></div>`;
+      
+      try {
+          const docSnap = await window.getDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
+          if(docSnap.exists()){
+             const tempOldData = cvData;
+             cvData = JSON.parse(JSON.stringify(docSnap.data().data));
+             
+             cvData.personal = cvData.personal || {};
+             cvData.details = cvData.details || {};
+             cvData.footer = cvData.footer || {};
+             
+             requestAnimationFrame(() => {
+                 triggerPrint(() => {
+                    cvData = tempOldData;
+                    if(activeView === 'preview') renderApp();
+                 });
+             });
+          }
+      } catch(err) {
+          showUIAlert("ERROR", "Failed to load CV for printing.", false);
+      }
+      btn.innerHTML = ogHTML;
+    }
+
+    function deleteFromHistory(e, id) {
+        if(e) e.stopPropagation();
+        showUIAlert("DELETE CV?", "ARE YOU SURE YOU WANT TO DELETE THIS CV FROM HISTORY?", true, async (res) => {
+            if(res) {
+                try {
+                    await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/cvs`, id));
+                    if (currentCvId === id) {
+                      cvData = JSON.parse(JSON.stringify(defaultCVData));
+                      currentCvId = null;
+                      localStorage.removeItem('techasar_current_cv_id');
+                      saveState();
+                    }
+                    renderHistoryList();
+                } catch(e) {}
+            }
+        });
+    }
+
+    function autoResizeTextarea(element) {
+      element.style.height = 'auto';
+      element.style.height = (element.scrollHeight) + 'px';
+    }
+
+    function renderEditorView(container) {
+      let animClass = '';
+      if (enteringEditor) { animClass = 'elegant-entry'; enteringEditor = false; } 
+      else if (isNavigating) { animClass = animDirection === 'next' ? 'anim-next' : 'anim-prev'; } 
+      else { animClass = ''; }
+
+      let stepContentHTML = '';
+
+      if (currentPage === 1) {
+        let stateOpts = indiaData.states.map(s => ({label: s, val: s}));
+        stateOpts.push({label: 'OTHER', val: 'OTHER'});
+
+        let selectedState = cvData.personal.state || '';
+        let distOpts = [];
+        if (selectedState && selectedState !== 'OTHER') {
+            let dists = indiaData.districts[selectedState] || [];
+            if(dists.length > 0) {
+                distOpts = dists.map(d => ({label: d, val: d}));
+                distOpts.push({label: 'OTHER', val: 'OTHER'});
+            } else {
+                distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
+                if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
+            }
+        } else if (selectedState === 'OTHER') {
+            distOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
+            if(cvData.personal.district !== 'OTHER') cvData.personal.district = 'OTHER';
+        }
+
+        let selectedDist = cvData.personal.district || '';
+        let tehsilOpts = [];
+        if (selectedDist && selectedDist !== 'OTHER') {
+            let tehsils = indiaData.tehsils[selectedDist] || [];
+            if(tehsils.length > 0) {
+                tehsilOpts = tehsils.map(t => ({label: t, val: t}));
+                tehsilOpts.push({label: 'OTHER', val: 'OTHER'});
+            } else {
+                tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
+                if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
+            }
+        } else if (selectedDist === 'OTHER') {
+            tehsilOpts = [{label: 'ENTER MANUALLY (OTHER)', val: 'OTHER'}];
+            if(cvData.personal.tehsil !== 'OTHER') cvData.personal.tehsil = 'OTHER';
+        }
+
+        stepContentHTML = `
+          <div class="space-y-3">
+            <!-- Compact Modern Photo Uploader -->
+            <div class="flex items-center gap-3.5 bg-[#131320] border border-zinc-800/90 rounded-2xl p-3">
+              <div id="photo-container" class="w-[64px] h-[78px] rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden shrink-0 bg-cover bg-top relative" style="background-image: ${cvData.personal.photo ? `url('${cvData.personal.photo}')` : 'none'}; border-style: ${cvData.personal.photo ? 'solid' : 'dashed'}; border-color: ${cvData.personal.photo ? '#6366f1' : undefined};">
+                <div id="photo-placeholder" class="flex flex-col items-center gap-1 text-[9px] text-zinc-400 uppercase font-bold" style="display: ${cvData.personal.photo ? 'none' : 'flex'}">
+                  <svg class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span>PHOTO</span>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0 space-y-1.5">
+                <span class="text-[11px] font-bold text-zinc-300 block uppercase tracking-wider">PASSPORT PHOTO</span>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('file-input-photo').click()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-bold active:scale-95 uppercase transition-all">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    <span id="photo-btn-text">${cvData.personal.photo ? 'CHANGE' : 'UPLOAD'}</span>
+                  </button>
+                  <button id="photo-remove-btn" type="button" onclick="removePhoto()" class="p-1.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 text-xs active:scale-95 shrink-0 transition-all" style="display: ${cvData.personal.photo ? 'block' : 'none'}"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                  <input id="file-input-photo" type="file" accept="image/*" onchange="onPhotoSelected(event)" class="hidden" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Unified Clean Inputs (Label on top inside the box, No outer bulky wrapper) -->
+            ${createTextInput('FULL NAME *', cvData.personal.name, 'cvData.personal.name = this.value; saveState();')}
+            ${createTextInput('MOBILE NUMBER *', cvData.personal.mobile, 'cvData.personal.mobile = this.value; saveState();', 'tel')}
+            ${createTextInput('EMAIL ADDRESS', cvData.personal.email, 'cvData.personal.email = this.value; saveState();', 'email')}
+            ${createTextInput('ADDRESS (VILL & POST / MOHALLA)', cvData.personal.villagePost, 'cvData.personal.villagePost = this.value; saveState();')}
+
+            <div class="grid grid-cols-2 gap-2.5 w-full">
+              <div class="min-w-0">
+                ${createCustomDropdown('personal.state', stateOpts, 'STATE', 'SELECT STATE')}
+                <div id="custom-state-wrapper" style="display: ${cvData.personal.state === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                  ${createTextInput('CUSTOM STATE', cvData.personal.customState, 'cvData.personal.customState = this.value; saveState();', 'text', 'ENTER STATE')}
+                </div>
+              </div>
+              <div class="min-w-0">
+                ${!selectedState || selectedState === '' 
+                  ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#131320] border border-zinc-800/90 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">DISTRICT</span><div class="flex justify-between items-center"><span class="text-[14px] sm:text-sm font-bold uppercase text-zinc-500">SELECT DISTRICT</span><svg class="w-4 h-4 text-zinc-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`
+                  : createCustomDropdown('personal.district', distOpts, 'DISTRICT', 'SELECT DISTRICT')}
+                <div id="custom-district-wrapper" style="display: ${cvData.personal.district === 'OTHER' && selectedState ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                  ${createTextInput('CUSTOM DISTRICT', cvData.personal.customDistrict, 'cvData.personal.customDistrict = this.value; saveState();', 'text', 'ENTER DISTRICT')}
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full">
+              ${!selectedState || selectedState === '' 
+                ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT STATE FIRST', false)" class="w-full bg-[#131320] border border-zinc-800/90 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">TEHSIL</span><div class="flex justify-between items-center"><span class="text-[14px] sm:text-sm font-bold uppercase text-zinc-500">SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`
+                : (!selectedDist || selectedDist === ''
+                  ? `<div onclick="showUIAlert('REQUIRED', 'PLEASE SELECT DISTRICT FIRST', false)" class="w-full bg-[#131320] border border-zinc-800/90 rounded-2xl px-3.5 py-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"><span class="block text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">TEHSIL</span><div class="flex justify-between items-center"><span class="text-[14px] sm:text-sm font-bold uppercase text-zinc-500">SELECT TEHSIL</span><svg class="w-4 h-4 text-zinc-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`
+                  : createCustomDropdown('personal.tehsil', tehsilOpts, 'TEHSIL', 'SELECT TEHSIL'))}
+              <div id="custom-tehsil-wrapper" style="display: ${cvData.personal.tehsil === 'OTHER' && selectedDist ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                ${createTextInput('CUSTOM TEHSIL', cvData.personal.customTehsil, 'cvData.personal.customTehsil = this.value; saveState();', 'text', 'ENTER TEHSIL')}
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 2) {
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl p-3.5 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-1.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">CAREER OBJECTIVE STATEMENT</span>
+              <textarea id="objective-input" rows="4" oninput="cvData.objective = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR CAREER OBJECTIVE..." class="uppercase w-full min-h-[105px] bg-transparent border-none text-[14px] sm:text-sm text-zinc-100 font-bold leading-relaxed outline-none resize-none p-0 placeholder:text-zinc-600">${escapeHtml(cvData.objective)}</textarea>
+            </div>
+            <div class="pt-1 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">QUICK TEMPLATES</span>
+              <div class="space-y-1.5">
+                <button type="button" onclick="setObjectivePreset('TO CONTRIBUTE TO THE OVERALL GROWTH OF YOUR ORGANIZATION BY APPLYING MY SKILLS, KNOWLEDGE, HONESTY & HARD-WORKING.')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO CONTRIBUTE TO THE OVERALL GROWTH..."</button>
+                <button type="button" onclick="setObjectivePreset('TO WORK IN A HIGHLY MOTIVATED AND CHALLENGING ENVIRONMENT WHERE I CAN ENHANCE MY SKILLS AND CONTRIBUTE TO THE SUCCESS OF THE COMPANY.')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"TO WORK IN A CHALLENGING ENVIRONMENT..."</button>
+                <button type="button" onclick="setObjectivePreset('SEEKING A CHALLENGING POSITION TO UTILIZE MY SKILLS AND ABILITIES IN THE INDUSTRY THAT OFFERS PROFESSIONAL GROWTH WHILE BEING RESOURCEFUL, INNOVATIVE AND FLEXIBLE.')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"SEEKING A CHALLENGING POSITION TO UTILIZE..."</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 3) {
+        const academicItems = (cvData.academic || []).map((item, idx) => `
+          <div class="flex items-center gap-2 bg-[#131320] px-3.5 py-2.5 rounded-2xl border border-zinc-800/90 focus-within:border-indigo-500/80 w-full transition-all">
+            <span class="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('academic', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 22px;">${escapeHtml(item)}</textarea>
+            <button type="button" onclick="removeArrayItem('academic', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          </div>
+        `).join('');
+
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-300">ACADEMIC QUALIFICATIONS</span>
+              <button type="button" onclick="addArrayItem('academic', '')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <span>ADD</span>
+              </button>
+            </div>
+            <div class="space-y-2">${academicItems}</div>
+            <div class="pt-2 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">1-TAP QUICK ADD</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="addArrayItem('academic', 'HIGH SCHOOL PASSED FROM U.P BOARD IN 2020')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ HIGH SCHOOL</button>
+                <button type="button" onclick="addArrayItem('academic', 'INTERMEDIATE PASSED FROM U.P BOARD IN 2022')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ INTERMEDIATE</button>
+                <button type="button" onclick="addArrayItem('academic', 'B.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY BAREILLY IN 2025')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ B.A DEGREE</button>
+                <button type="button" onclick="addArrayItem('academic', 'B.SC PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ B.SC</button>
+                <button type="button" onclick="addArrayItem('academic', 'B.COM PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ B.COM</button>
+                <button type="button" onclick="addArrayItem('academic', 'M.A PASSED FROM M.J.P. ROHILKHAND UNIVERSITY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ M.A</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 4) {
+        const otherItems = (cvData.other || []).map((item, idx) => `
+          <div class="flex items-center gap-2 bg-[#131320] px-3.5 py-2.5 rounded-2xl border border-zinc-800/90 focus-within:border-indigo-500/80 w-full transition-all">
+            <span class="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('other', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 22px;">${escapeHtml(item)}</textarea>
+            <button type="button" onclick="removeArrayItem('other', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          </div>
+        `).join('');
+
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-300">OTHER COURSES & DIPLOMAS</span>
+              <button type="button" onclick="addArrayItem('other', '')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <span>ADD</span>
+              </button>
+            </div>
+            <div class="space-y-2">${otherItems}</div>
+            <div class="pt-2 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">1-TAP QUICK ADD</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="addArrayItem('other', 'COURSE ON COMPUTER CONCEPTS DIPLOMA (CCC)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ CCC DIPLOMA</button>
+                <button type="button" onclick="addArrayItem('other', 'DIPLOMA IN COMPUTER APPLICATION (DCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ DCA DIPLOMA</button>
+                <button type="button" onclick="addArrayItem('other', 'ADVANCED DIPLOMA IN COMPUTER APPLICATION (ADCA)')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ ADCA</button>
+                <button type="button" onclick="addArrayItem('other', 'O LEVEL COMPLETED FROM NIELIT')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ O LEVEL</button>
+                <button type="button" onclick="addArrayItem('other', 'HINDI & ENGLISH TYPING SPEED 35 W.P.M.')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ TYPING</button>
+                <button type="button" onclick="addArrayItem('other', 'ENGLISH SPEAKING COURSE COMPLETED')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ SPOKEN ENG.</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 5) {
+        const expItems = (cvData.experience || []).map((item, idx) => `
+          <div class="flex items-center gap-2 bg-[#131320] px-3.5 py-2.5 rounded-2xl border border-zinc-800/90 focus-within:border-indigo-500/80 w-full transition-all">
+            <span class="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0 uppercase">${idx + 1}</span>
+            <textarea rows="1" oninput="updateArrayItem('experience', ${idx}, this.value); autoResizeTextarea(this);" class="uppercase flex-1 min-w-0 bg-transparent border-none text-[14px] sm:text-xs text-zinc-100 font-bold outline-none px-1 resize-none overflow-hidden" style="min-height: 22px;">${escapeHtml(item)}</textarea>
+            <button type="button" onclick="removeArrayItem('experience', ${idx})" class="p-1 text-zinc-500 hover:text-red-400 active:scale-90 shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          </div>
+        `).join('');
+
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-300">WORKING EXPERIENCE</span>
+              <button type="button" onclick="addArrayItem('experience', '')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase active:scale-95 shadow-md shadow-indigo-600/30 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <span>ADD</span>
+              </button>
+            </div>
+            <div class="space-y-2">${expItems}</div>
+            <div class="pt-2 space-y-1.5">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase px-1">1-TAP QUICK ADD</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="addArrayItem('experience', '1 YEAR WORKING EXPERIENCE IN DATA ENTRY')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ DATA ENTRY</button>
+                <button type="button" onclick="addArrayItem('experience', '2 YEARS WORKING EXPERIENCE IN CYBER CAFE')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ CYBER CAFE</button>
+                <button type="button" onclick="addArrayItem('experience', '6 MONTHS WORKING EXPERIENCE AS A CASHIER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ CASHIER</button>
+                <button type="button" onclick="addArrayItem('experience', 'FRESHER')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ FRESHER</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 6) {
+        let dobInputVal = '';
+        if (cvData.details.dob && cvData.details.dob.includes('/')) {
+            const parts = cvData.details.dob.split('/');
+            if(parts.length === 3) dobInputVal = `${parts[2]}-${parts}-${parts[0]}`;
+        } else { dobInputVal = cvData.details.dob; }
+
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">DATE OF BIRTH</span>
+              <div class="date-wrapper">
+                <input type="date" value="${dobInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.details.dob = parts[2]+'/'+parts+'/'+parts[0]; } else { cvData.details.dob = ''; } saveState();" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0" />
+              </div>
+            </div>
+
+            ${createTextInput("FATHER'S NAME", cvData.details.father, 'cvData.details.father = this.value; saveState();')}
+
+            <div class="grid grid-cols-2 gap-2.5">
+              ${createCustomDropdown('details.gender', [{label: 'MALE', val: 'MALE'}, {label: 'FEMALE', val: 'FEMALE'}, {label: 'OTHER', val: 'OTHER'}], 'GENDER', 'SELECT GENDER')}
+              ${createCustomDropdown('details.marital', [{label: 'UNMARRIED', val: 'UNMARRIED'}, {label: 'MARRIED', val: 'MARRIED'}], 'MARITAL STATUS', 'SELECT STATUS')}
+            </div>
+
+            <div>
+              ${createCustomDropdown('details.nationality', [{label: 'INDIAN', val: 'INDIAN'}, {label: 'OTHER', val: 'OTHER'}], 'NATIONALITY', 'SELECT NATIONALITY')}
+              <div id="custom-nationality-wrapper" style="display: ${cvData.details.nationality === 'OTHER' ? 'block' : 'none'};" class="mt-2 w-full elegant-entry">
+                ${createTextInput('CUSTOM NATIONALITY', cvData.details.customNationality, 'cvData.details.customNationality = this.value; saveState();', 'text', 'ENTER NATIONALITY')}
+              </div>
+            </div>
+
+            <div>
+              <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+                <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">LANGUAGES KNOWN</span>
+                <input id="lang-input" type="text" value="${escapeHtml(cvData.details.languages)}" oninput="cvData.details.languages = this.value; saveState();" placeholder="HINDI & ENGLISH" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" />
+              </div>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <button type="button" onclick="setLanguage('HINDI')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ HINDI</button>
+                <button type="button" onclick="setLanguage('ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ ENGLISH</button>
+                <button type="button" onclick="setLanguage('HINDI & ENGLISH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ HINDI & ENGLISH</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+                <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">HOBBIES</span>
+                <input id="hobbies-input" type="text" value="${escapeHtml(cvData.details.hobbies)}" oninput="cvData.details.hobbies = this.value; saveState();" placeholder="EDITING, MUSIC" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" />
+              </div>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <button type="button" onclick="appendHobby('EXCEL')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ EXCEL</button>
+                <button type="button" onclick="appendHobby('WORD')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ WORD</button>
+                <button type="button" onclick="appendHobby('AI LEARNING TECH')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ AI LEARNING</button>
+                <button type="button" onclick="appendHobby('MUSIC')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ MUSIC</button>
+                <button type="button" onclick="appendHobby('LISTENING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ LISTENING</button>
+                <button type="button" onclick="appendHobby('GAMING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ GAMING</button>
+                <button type="button" onclick="appendHobby('EDITING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ EDITING</button>
+                <button type="button" onclick="appendHobby('READING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ READING</button>
+                <button type="button" onclick="appendHobby('TRAVELING')" class="text-[11px] font-bold uppercase px-2.5 py-1.5 rounded-xl bg-[#131320] border border-zinc-800 text-zinc-300 hover:border-zinc-700 active:scale-95 transition-all">+ TRAVELING</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 7) {
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl p-3.5 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-1.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">DECLARATION STATEMENT</span>
+              <textarea id="declaration-input" rows="4" oninput="cvData.declaration = this.value; saveState(); autoResizeTextarea(this);" placeholder="WRITE YOUR DECLARATION HERE..." class="uppercase w-full min-h-[105px] bg-transparent border-none text-[14px] sm:text-sm text-zinc-100 font-bold outline-none leading-relaxed resize-none p-0 placeholder:text-zinc-600">${escapeHtml(cvData.declaration)}</textarea>
+            </div>
+            <div class="pt-1">
+              <span class="text-[10px] font-bold text-zinc-400 tracking-wider block mb-1.5 uppercase px-1">QUICK TEMPLATE</span>
+              <button type="button" onclick="setDeclarationPreset('I HEREBY DECLARE THAT ALL THE INFORMATION MENTIONED ABOVE IS TRUE TO THE BEST OF MY KNOWLEDGE. IF YOU GIVE ME A CHANCE, I ASSURE MY HARD WORK, DEDICATION AND SINCERITY')" class="w-full text-left text-[11.5px] font-bold bg-[#131320] hover:bg-[#18182a] p-3 rounded-2xl border border-zinc-800/80 text-zinc-300 uppercase active:scale-[0.99] transition-all">"I HEREBY DECLARE THAT ALL THE INFORMATION..."</button>
+            </div>
+          </div>
+        `;
+      } else if (currentPage === 8) {
+        let dateInputVal = '';
+        if (cvData.footer.date && cvData.footer.date.includes('/')) {
+            const parts = cvData.footer.date.split('/');
+            if(parts.length === 3) dateInputVal = `${parts[2]}-${parts}-${parts[0]}`;
+        } else { dateInputVal = cvData.footer.date; }
+
+        stepContentHTML = `
+          <div class="space-y-3">
+            <div class="w-full bg-[#131320] border border-zinc-800/90 focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-2 transition-all group">
+              <span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase mb-0.5 group-focus-within:text-indigo-400 transition-colors pointer-events-none">DATE</span>
+              <div class="date-wrapper">
+                <input type="date" value="${dateInputVal}" oninput="const d = this.value; if(d){ const parts = d.split('-'); cvData.footer.date = parts[2]+'/'+parts+'/'+parts[0]; } else { cvData.footer.date = ''; } saveState();" class="uppercase w-full bg-transparent border-none text-[15px] sm:text-sm text-zinc-100 font-bold outline-none p-0" />
+              </div>
+            </div>
+
+            ${createTextInput('PLACE', cvData.footer.place, 'cvData.footer.place = this.value; saveState();')}
+            ${createTextInput('SIGNATURE NAME', cvData.footer.signName, 'cvData.footer.signName = this.value; saveState();')}
+          </div>
+        `;
+      } else if (currentPage === 9) {
+        stepContentHTML = `
+          <div class="space-y-3">
+            ${createCustomDropdown('documentTitle', [{label: 'CURRICULUM VITAE', val: 'CURRICULUM VITAE'}, {label: 'RESUME', val: 'RESUME'}], 'DOCUMENT TITLE', 'SELECT TITLE')}
+            ${createCustomDropdown('font', [{label: 'TIMES NEW ROMAN', val: 'Times New Roman'}, {label: 'ARIAL', val: 'Arial'}, {label: 'CALIBRI', val: 'Calibri'}, {label: 'ALGERIAN', val: 'Algerian'}], 'DOCUMENT FONT', 'SELECT FONT')}
+            ${createCustomDropdown('fontWeight', [{label: 'BOLD TEXT', val: 'bold'}, {label: 'NORMAL TEXT', val: 'normal'}], 'TEXT WEIGHT', 'SELECT TEXT WEIGHT')}
+            ${createCustomDropdown('textCase', [{label: 'UPPERCASE (ALL CAPITAL)', val: 'uppercase'}, {label: 'PROPER CASE (FIRST LETTER CAPITAL)', val: 'capitalize'}], 'TEXT CASE', 'SELECT TEXT CASE')}
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+          <!-- Clean Transparent Header (No Background Card, Only Icon Toggles) -->
+          <div class="h-14 px-4 flex items-center justify-between shrink-0 sticky top-0 z-30 bg-transparent">
+            <button type="button" onclick="goToHome()" title="HOME" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-white bg-zinc-900/40 hover:bg-zinc-800/60 border border-zinc-800/60 backdrop-blur-sm active:scale-90 transition-all">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div class="px-3.5 py-1 rounded-full bg-zinc-900/50 border border-zinc-800/80 backdrop-blur-sm shadow-sm">
+              <span class="text-xs font-black text-zinc-200 tracking-wider">STEP ${currentPage}/${TOTAL_STEPS}</span>
+            </div>
+            <button type="button" onclick="openResetDialog()" title="RESET CV" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-red-400 bg-zinc-900/40 hover:bg-zinc-800/60 border border-zinc-800/60 backdrop-blur-sm active:scale-90 transition-all">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+            </button>
+          </div>
+          
+          <div id="editor-scroll-area" class="flex-1 overflow-y-auto px-4 py-3 pb-28 w-full overflow-x-hidden relative scroll-smooth bg-[#08080e]">
+            <div class="${animClass} w-full max-w-lg mx-auto">${stepContentHTML}</div>
+          </div>
+
+          <!-- Clean Floating Bottom Icon Bar (No Background Card, Only Icon Toggles) -->
+          <div class="absolute bottom-4 left-0 right-0 z-30 pointer-events-none flex justify-center items-center pb-[max(0px,env(safe-area-inset-bottom))]">
+            <div class="pointer-events-auto flex items-center justify-between px-6 max-w-xs w-full">
+              <button type="button" ${currentPage === 1 ? 'disabled' : ''} onclick="goPrevStep()" title="PREVIOUS STEP" class="w-12 h-12 rounded-full flex items-center justify-center bg-[#141422]/90 border border-zinc-700/80 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none active:scale-90 transition-all shadow-xl backdrop-blur-md">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+              </button>
+              <button type="button" onclick="openPreview()" title="PREVIEW CV" class="w-14 h-14 rounded-full flex items-center justify-center bg-[#18182a]/95 border border-zinc-600/90 text-emerald-400 hover:text-emerald-300 active:scale-90 transition-all shadow-2xl shadow-emerald-500/10 backdrop-blur-md">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              </button>
+              <button type="button" onclick="goNextStep()" title="${currentPage === TOTAL_STEPS ? 'REVIEW CV' : 'NEXT STEP'}" class="w-12 h-12 rounded-full flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white active:scale-90 transition-all shadow-xl shadow-indigo-600/40 backdrop-blur-md">
+                ${currentPage === TOTAL_STEPS 
+                  ? '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>'
+                  : '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6" /></svg>'
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      requestAnimationFrame(() => { container.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el)); });
+    }
+
+    function renderPreviewView(container) {
+      const scaledW = Math.round(794 * previewZoom);
+      const scaledH = Math.round(1123 * previewZoom);
+
+      container.innerHTML = `
+        <div class="flex-1 flex flex-col overflow-hidden bg-[#06060a] elegant-entry relative">
+          <!-- Transparent Header in Preview (No Background Card) -->
+          <div class="h-14 px-4 flex items-center justify-between shrink-0 bg-transparent z-20">
+            <button type="button" onclick="closePreview()" title="BACK TO EDIT" class="w-10 h-10 flex items-center justify-center rounded-full text-zinc-300 hover:text-white bg-zinc-900/60 border border-zinc-800 backdrop-blur-md active:scale-90 transition-all">
+              <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <div class="flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md px-2 py-1 rounded-full">
+              <button type="button" onclick="zoomPreview(-0.1)" class="w-7 h-7 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
+              <span class="text-[11px] font-bold text-zinc-300 min-w-8 text-center tabular-nums">${Math.round(previewZoom * 100)}%</span>
+              <button type="button" onclick="zoomPreview(0.1)" class="w-7 h-7 flex items-center justify-center text-zinc-400 active:scale-90"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="8" y1="11" x2="14" y2="11" /></svg></button>
+              <button type="button" onclick="fitPreviewWidth()" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-indigo-400 bg-indigo-500/15 active:scale-90">FIT</button>
+            </div>
+            <button type="button" onclick="handleDirectPrint()" title="PRINT CV" class="w-10 h-10 flex items-center justify-center rounded-full text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 backdrop-blur-md active:scale-90 transition-all">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
+            </button>
+          </div>
+
+          <div id="preview-viewport-container" class="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 pb-24 flex flex-col items-center relative" style="background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px), linear-gradient(to bottom, #090a10, #040407); background-size: 20px 20px, 100% 100%;">
+            <div class="relative my-auto shrink-0 bg-white zoom-transition" style="width: ${scaledW}px; height: ${scaledH}px; min-height: ${scaledH}px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 15px 35px -5px rgba(0, 0, 0, 0.85);">
+              <div style="width: 794px; min-height: 1123px; transform: scale(${previewZoom}); transform-origin: top left; position: absolute; top: 0; left: 0;" class="zoom-transition">
+                ${getDocumentHTML('cv-screen-preview-node', false)}
+              </div>
+            </div>
+          </div>
+
+          <!-- Clean Floating Bottom Icon Bar in Preview (No Background Card) -->
+          <div class="absolute bottom-4 left-0 right-0 z-30 pointer-events-none flex justify-center items-center pb-[max(0px,env(safe-area-inset-bottom))]">
+            <div class="pointer-events-auto flex items-center justify-between px-6 max-w-xs w-full">
+              <button type="button" onclick="closePreview()" title="EDIT DETAILS" class="w-12 h-12 rounded-full flex items-center justify-center bg-[#141422]/90 border border-zinc-700/80 text-zinc-300 hover:text-white active:scale-90 transition-all shadow-xl backdrop-blur-md">
+                <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              </button>
+              <button type="button" onclick="handleDirectPrint()" title="PRINT CV" class="w-14 h-14 rounded-full flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white active:scale-90 transition-all shadow-2xl shadow-emerald-600/40 backdrop-blur-md">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function goNextStep() {
+      if (currentPage < TOTAL_STEPS) {
+        animDirection = 'next';
+        currentPage++;
+        isNavigating = true;
+        renderApp();
+      } else {
+        openPreview();
+      }
+    }
+
+    function goPrevStep() {
+      if (currentPage > 1) {
+        animDirection = 'prev';
+        currentPage--;
+        isNavigating = true;
+        renderApp();
+      }
+    }
+
+    function openPreview() {
+      activeView = 'preview';
+      fitPreviewWidth();
+      renderApp();
+    }
+
+    function closePreview() {
+      activeView = 'editor';
+      isNavigating = true;
+      renderApp();
+    }
+
+    function fitPreviewWidth() {
+      const container = document.getElementById('preview-viewport-container');
+      const w = container ? container {
+      const container = document.getElementById('preview-viewport-container');
+      const w = container ? container.clientWidth - 16 : window.innerWidth - 16;
+      previewZoom = Number(Math.max(0.35, Math.min(1.1, w / 794)).toFixed(2));
+      if (activeView === 'preview') renderApp();
+    }
+
+    function zoomPreview(delta) {
+      previewZoom = Number(Math.max(0.35, Math.min(1.4, previewZoom + delta)).toFixed(2));
+      renderApp();
+    }
+
+    function handleDirectPrint() {
+      triggerPrint();
+    }
+
+    function openResetDialog() {
+      const m = document.getElementById('reset-modal');
+      if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+    }
+
+    function closeResetDialog() {
+      const m = document.getElementById('reset-modal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+
+    function confirmReset() {
+      cvData = JSON.parse(JSON.stringify(defaultCVData));
+      appStarted = false; 
+      currentPage = 1;
+      activeView = 'editor';
+      currentCvId = null;
+      localStorage.removeItem('techasar_current_cv_id');
+      saveState();
+      closeResetDialog();
+      renderApp();
+    }
+
+    window.addEventListener('resize', () => { if (activeView === 'preview') fitPreviewWidth(); });
+    document.addEventListener('DOMContentLoaded', () => {
