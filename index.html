@@ -29,10 +29,12 @@
        =================================================== */
     :root {
       --motion-fast: 160ms;
-      --motion-normal: 260ms; 
-      --motion-page: 320ms;
+      --motion-normal: 250ms; 
+      --motion-page: 300ms;
+      --modal-open-dur: 320ms;
+      --modal-close-dur: 240ms;
       
-      /* Premium Easings */
+      /* Apple & Namaz Tracker Premium Easings */
       --ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
       --ease-bouncy: cubic-bezier(0.34, 1.15, 0.64, 1);
       --ease-subtle: cubic-bezier(0.25, 1, 0.2, 1);
@@ -82,27 +84,27 @@
 
     /* --- CROSSFADE APP ENTRY --- */
     @keyframes appCrossfade {
-        0% { transform: scale(0.96); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+      0% { transform: scale(0.96); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
     .trigger-app-entry {
-        animation: appCrossfade 0.4s var(--ease-standard) forwards !important;
+      animation: appCrossfade 0.4s var(--ease-standard) forwards !important;
     }
 
     /* --- STAGGERED SLIDE UP ENTRY --- */
     @keyframes smoothSlideUp {
-        0% { opacity: 0; transform: translate3d(0, 16px, 0); }
-        100% { opacity: 1; transform: translate3d(0, 0, 0); }
+      0% { opacity: 0; transform: translate3d(0, 16px, 0); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-    .animate-entry > * { opacity: 0; animation: smoothSlideUp 0.38s var(--ease-subtle) forwards; will-change: transform, opacity; }
-    .animate-entry > *:nth-child(1) { animation-delay: 0.04s; }
-    .animate-entry > *:nth-child(2) { animation-delay: 0.08s; }
-    .animate-entry > *:nth-child(3) { animation-delay: 0.12s; }
-    .animate-entry > *:nth-child(4) { animation-delay: 0.16s; }
-    .animate-entry > *:nth-child(5) { animation-delay: 0.20s; }
-    .animate-entry > *:nth-child(6) { animation-delay: 0.24s; }
-    .animate-entry > *:nth-child(7) { animation-delay: 0.28s; }
-    .animate-entry > *:nth-child(8) { animation-delay: 0.32s; }
+    .animate-entry > * { opacity: 0; animation: smoothSlideUp 0.35s var(--ease-subtle) forwards; will-change: transform, opacity; }
+    .animate-entry > *:nth-child(1) { animation-delay: 0.03s; }
+    .animate-entry > *:nth-child(2) { animation-delay: 0.06s; }
+    .animate-entry > *:nth-child(3) { animation-delay: 0.09s; }
+    .animate-entry > *:nth-child(4) { animation-delay: 0.12s; }
+    .animate-entry > *:nth-child(5) { animation-delay: 0.15s; }
+    .animate-entry > *:nth-child(6) { animation-delay: 0.18s; }
+    .animate-entry > *:nth-child(7) { animation-delay: 0.21s; }
+    .animate-entry > *:nth-child(8) { animation-delay: 0.24s; }
 
     /* --- STRICT HORIZONTAL & VIEW TRANSITIONS --- */
     .app-layer {
@@ -127,36 +129,45 @@
     @keyframes pageSlideOutLeft { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(calc(var(--slide-offset) * -1), 0, 0); } }
     @keyframes pageSlideInLeft { 0% { opacity: 0; transform: translate3d(calc(var(--slide-offset) * -1), 0, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes pageSlideOutRight { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(var(--slide-offset), 0, 0); } }
-    @keyframes pageFadeUpIn { 0% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } 100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+    @keyframes pageFadeUpIn { 0% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes pageFadeUpOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, -10px, 0); } }
     @keyframes pageFadeDownIn { 0% { opacity: 0; transform: translate3d(0, -12px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes pageFadeDownOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, 12px, 0); } }
-    @keyframes fadeScaleIn { 0% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } 100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
-    @keyframes fadeScaleOut { 0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } 100% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } }
+    @keyframes fadeScaleIn { 0% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes fadeScaleOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } }
     @keyframes editorFadeOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.985); } }
     @keyframes editorFadeIn { 0% { opacity: 0; transform: scale(0.985); } 100% { opacity: 1; transform: scale(1); } }
 
     /* ===================================================
        ORIGIN-AWARE DYNAMIC MODAL PHYSICS
        =================================================== */
-    .modal-backdrop { opacity: 0; display: none; }
-    .modal-box { opacity: 0; transform: scale(0.3); }
+    .modal-backdrop { 
+      opacity: 0; 
+      display: none; 
+      will-change: opacity;
+    }
+    .modal-box { 
+      opacity: 0; 
+      will-change: transform, opacity;
+      --start-x: 0px; 
+      --start-y: 20px; 
+    }
 
-    .modal-enter-backdrop { animation: modalFadeIn 0.3s ease forwards; }
-    .modal-exit-backdrop { animation: modalFadeOut 0.28s ease forwards; pointer-events: none; }
-    .modal-enter-box { animation: originPopIn 0.35s var(--ease-bouncy) forwards; }
-    .modal-exit-box { animation: originPopOut 0.28s var(--ease-standard) forwards; pointer-events: none; }
+    .modal-enter-backdrop { animation: modalFadeIn var(--modal-open-dur) ease forwards; }
+    .modal-exit-backdrop { animation: modalFadeOut var(--modal-close-dur) ease forwards; pointer-events: none; }
+    .modal-enter-box { animation: originPopIn var(--modal-open-dur) var(--ease-bouncy) forwards; }
+    .modal-exit-box { animation: originPopOut var(--modal-close-dur) var(--ease-standard) forwards; pointer-events: none; }
 
     @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes modalFadeOut { from { opacity: 1; } to { opacity: 0; } }
     
     @keyframes originPopIn {
-        from { opacity: 0; transform: translate3d(var(--start-x), var(--start-y), 0) scale(0.3); }
-        to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      from { opacity: 0; transform: translate3d(var(--start-x), var(--start-y), 0) scale(0.2); }
+      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
     }
     @keyframes originPopOut {
-        from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-        to { opacity: 0; transform: translate3d(var(--start-x), var(--start-y), 0) scale(0.3); }
+      from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      to { opacity: 0; transform: translate3d(var(--start-x), var(--start-y), 0) scale(0.2); }
     }
 
     /* --- ANIMATED SVG TICK-BOX --- */
@@ -213,10 +224,10 @@
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       *, *::before, *::after { 
-          -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; 
-          box-sizing: border-box !important; 
-          animation: none !important; transition: none !important; transform: none !important; 
-          opacity: 1 !important; visibility: visible !important;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; 
+        box-sizing: border-box !important; 
+        animation: none !important; transition: none !important; transform: none !important; 
+        opacity: 1 !important; visibility: visible !important;
       }
       html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; overflow: hidden !important; text-transform: none !important; }
       body > *:not(#cv-print-container) { display: none !important; }
@@ -227,7 +238,7 @@
 <body class="bg-[#08080e] text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden font-sans font-bold min-h-screen">
 
   <!-- SPLASH SCREEN -->
-  <div id="app-splash-screen" class="fixed inset-0 z-[9999] bg-[#08080e] flex flex-col items-center justify-center transition-all duration-[400ms] ease-out pointer-events-none">
+  <div id="app-splash-screen" class="fixed inset-0 z-[9999] bg-[#08080e] flex flex-col items-center justify-center transition-all duration-[350ms] ease-out pointer-events-none">
     <div class="absolute top-[30%] left-[20%] w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] blob-1"></div>
     <div class="absolute bottom-[30%] right-[20%] w-80 h-80 bg-fuchsia-600/15 rounded-full blur-[100px] blob-2"></div>
     <div class="relative z-10 flex flex-col items-center">
@@ -338,29 +349,29 @@
     const defaultCVData = { documentTitle: "CURRICULUM VITAE", font: "Times New Roman", fontWeight: "bold", textCase: "uppercase", personal: { photo: "", name: "", villagePost: "", tehsil: "", customTehsil: "", district: "", customDistrict: "", state: "", customState: "", mobile: "", email: "", headerStyle: "labeled" }, objective: "", academic: [], other: [], experience: [], details: { dob: "", father: "", gender: "MALE", marital: "UNMARRIED", nationality: "INDIAN", customNationality: "", languages: "", hobbies: "" }, declaration: "", footer: { date: "", place: "", signName: "" } };
     
     function normalizeCVData(data) {
-        if (!data) return JSON.parse(JSON.stringify(defaultCVData));
-        const normalized = JSON.parse(JSON.stringify(defaultCVData));
-        function deepMerge(target, source) {
-            for (const key of Object.keys(source)) {
-                if (source[key] instanceof Object && !Array.isArray(source[key])) {
-                    target[key] = deepMerge(target[key] || {}, source[key]);
-                } else if (Array.isArray(source[key])) {
-                    target[key] = [...source[key]];
-                } else {
-                    target[key] = source[key];
-                }
-            }
-            return target;
+      if (!data) return JSON.parse(JSON.stringify(defaultCVData));
+      const normalized = JSON.parse(JSON.stringify(defaultCVData));
+      function deepMerge(target, source) {
+        for (const key of Object.keys(source)) {
+          if (source[key] instanceof Object && !Array.isArray(source[key])) {
+            target[key] = deepMerge(target[key] || {}, source[key]);
+          } else if (Array.isArray(source[key])) {
+            target[key] = [...source[key]];
+          } else {
+            target[key] = source[key];
+          }
         }
-        return deepMerge(normalized, data);
+        return target;
+      }
+      return deepMerge(normalized, data);
     }
 
     let cvData = (function() { 
-        try { 
-            const saved = localStorage.getItem(STORAGE_KEY); 
-            if (saved) return normalizeCVData(JSON.parse(saved));
-        } catch(e) {} 
-        return JSON.parse(JSON.stringify(defaultCVData)); 
+      try { 
+        const saved = localStorage.getItem(STORAGE_KEY); 
+        if (saved) return normalizeCVData(JSON.parse(saved));
+      } catch(e) {} 
+      return JSON.parse(JSON.stringify(defaultCVData)); 
     })();
     
     let currentCvId = localStorage.getItem('techasar_current_cv_id');
@@ -375,65 +386,65 @@
 
     // INIT
     document.addEventListener('DOMContentLoaded', () => { 
-        renderAppLayer('none'); 
-        setTimeout(() => {
-            const splash = document.getElementById('app-splash-screen'); 
-            if (splash) { 
-                const mainContainer = document.getElementById('main-view-container');
-                if(mainContainer) mainContainer.classList.add('trigger-app-entry');
-                
-                splash.style.opacity = '0'; 
-                splash.style.transform = 'scale(1.05)';
-                setTimeout(() => splash.remove(), 400); 
-            }
-        }, 150); 
+      renderAppLayer('none'); 
+      setTimeout(() => {
+        const splash = document.getElementById('app-splash-screen'); 
+        if (splash) { 
+          const mainContainer = document.getElementById('main-view-container');
+          if(mainContainer) mainContainer.classList.add('trigger-app-entry');
+          
+          splash.style.opacity = '0'; 
+          splash.style.transform = 'scale(1.05)';
+          setTimeout(() => splash.remove(), 350); 
+        }
+      }, 150); 
     });
 
     // ROBUST PRESS SYSTEM
     document.addEventListener('pointerdown', (e) => {
-        const btn = e.target.closest('.btn-pressable');
-        if (btn && !btn.disabled) btn.classList.add('is-pressed');
+      const btn = e.target.closest('.btn-pressable');
+      if (btn && !btn.disabled) btn.classList.add('is-pressed');
     });
     
     function clearPress(e) {
-        const btn = e.target.closest('.btn-pressable');
-        if (btn) {
-            btn.classList.remove('is-pressed');
-            btn.classList.remove('hold-pressed');
-        }
+      const btn = e.target.closest('.btn-pressable');
+      if (btn) {
+        btn.classList.remove('is-pressed');
+        btn.classList.remove('hold-pressed');
+      }
     }
     document.addEventListener('pointerup', clearPress);
     document.addEventListener('pointercancel', clearPress);
     document.addEventListener('pointerleave', clearPress);
 
     function clearAllPressStates() {
-        document.querySelectorAll('.is-pressed, .hold-pressed').forEach(el => {
-            el.classList.remove('is-pressed');
-            el.classList.remove('hold-pressed');
-        });
+      document.querySelectorAll('.is-pressed, .hold-pressed').forEach(el => {
+        el.classList.remove('is-pressed');
+        el.classList.remove('hold-pressed');
+      });
     }
 
     // MOBILE SWIPE
     let touchStartX = 0; let touchStartY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.target.closest('input, textarea, select, button, .modal-backdrop, .dropdown-item')) return;
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
+      if (e.target.closest('input, textarea, select, button, .modal-backdrop, .dropdown-item')) return;
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
     }, {passive: true});
     
     document.addEventListener('touchend', e => {
-        if (isTransitioning || activeView !== 'editor' || activeModalOverlay) return;
-        if (e.target.closest('input, textarea, select, button, .modal-backdrop, .dropdown-item')) return;
-        
-        const touchEndX = e.changedTouches[0].screenX;
-        const touchEndY = e.changedTouches[0].screenY;
-        const dx = touchEndX - touchStartX;
-        const dy = touchEndY - touchStartY;
-        
-        if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)) {
-            if (dx < 0) goNextStep();
-            else if (dx > 0) goPrevStep();
-        }
+      if (isTransitioning || activeView !== 'editor' || activeModalOverlay) return;
+      if (e.target.closest('input, textarea, select, button, .modal-backdrop, .dropdown-item')) return;
+      
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const dx = touchEndX - touchStartX;
+      const dy = touchEndY - touchStartY;
+      
+      if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) goNextStep();
+        else if (dx > 0) goPrevStep();
+      }
     }, {passive: true});
 
     function getNested(obj, path) { return path.split('.').reduce((acc, part) => acc && acc[part], obj); }
@@ -442,143 +453,151 @@
     function autoResizeTextarea(el) {
       if(!el) return;
       requestAnimationFrame(() => {
-          el.style.height = 'auto'; 
-          const sh = el.scrollHeight;
-          if (sh > 0) el.style.height = sh + 'px';
+        el.style.height = 'auto'; 
+        const sh = el.scrollHeight;
+        if (sh > 0) el.style.height = sh + 'px';
       });
     }
 
     // --- ACCURATE ORIGIN-BASED POPUP CONTROLLER ---
     function openModalCenter(overlayId, boxId, callerEl = null) {
-        if(isTransitioning) return;
-        clearAllPressStates();
-        
-        const overlay = document.getElementById(overlayId);
-        const box = document.getElementById(boxId);
-        if(!overlay || !box) return;
+      if(isTransitioning) return;
+      clearAllPressStates();
+      
+      const overlay = document.getElementById(overlayId);
+      const box = document.getElementById(boxId);
+      if(!overlay || !box) return;
 
-        if (overlayId === 'xy-modal-overlay') {
-            ['xy-box-dropdown', 'xy-box-steps', 'xy-box-custom-input'].forEach(id => {
-                const b = document.getElementById(id); if(b) b.classList.add('hidden');
-            });
-            box.classList.remove('hidden');
-        }
+      if (overlayId === 'xy-modal-overlay') {
+        ['xy-box-dropdown', 'xy-box-steps', 'xy-box-custom-input'].forEach(id => {
+          const b = document.getElementById(id); if(b) b.classList.add('hidden');
+        });
+        box.classList.remove('hidden');
+      }
 
-        activeModalOverlay = overlay;
-        activeModalBox = box;
-        
-        if (callerEl && callerEl.getBoundingClientRect) {
-            const rect = callerEl.getBoundingClientRect();
-            const centerX = rect.left + (rect.width / 2);
-            const centerY = rect.top + (rect.height / 2);
-            const deltaX = centerX - (window.innerWidth / 2);
-            const deltaY = centerY - (window.innerHeight / 2);
-            box.style.setProperty('--start-x', deltaX + 'px');
-            box.style.setProperty('--start-y', deltaY + 'px');
-        } else {
-            box.style.setProperty('--start-x', '0px');
-            box.style.setProperty('--start-y', '25px');
-        }
-        
-        if (callerEl) {
-            activeArrowNode = callerEl.querySelector('.dropdown-arrow');
-            if(activeArrowNode) activeArrowNode.classList.add('is-active');
-        }
+      activeModalOverlay = overlay;
+      activeModalBox = box;
+      
+      if (callerEl && callerEl.getBoundingClientRect) {
+        const rect = callerEl.getBoundingClientRect();
+        const centerX = rect.left + (rect.width / 2);
+        const centerY = rect.top + (rect.height / 2);
+        const deltaX = centerX - (window.innerWidth / 2);
+        const deltaY = centerY - (window.innerHeight / 2);
+        box.style.setProperty('--start-x', deltaX + 'px');
+        box.style.setProperty('--start-y', deltaY + 'px');
+      } else {
+        box.style.setProperty('--start-x', '0px');
+        box.style.setProperty('--start-y', '25px');
+      }
+      
+      if (callerEl) {
+        activeArrowNode = callerEl.querySelector('.dropdown-arrow');
+        if(activeArrowNode) activeArrowNode.classList.add('is-active');
+      }
 
-        overlay.classList.remove('hidden');
-        overlay.style.display = 'flex';
+      overlay.classList.remove('hidden');
+      overlay.style.display = 'flex';
 
-        overlay.classList.remove('modal-exit-backdrop');
-        box.classList.remove('modal-exit-box');
-        
-        overlay.classList.add('modal-enter-backdrop');
-        box.classList.add('modal-enter-box');
+      overlay.classList.remove('modal-exit-backdrop');
+      box.classList.remove('modal-exit-box');
+      
+      overlay.classList.add('modal-enter-backdrop');
+      box.classList.add('modal-enter-box');
     }
 
     function closeModalCenter(callback) {
-        if (!activeModalOverlay || !activeModalBox) {
-            if (callback) callback();
-            return;
-        }
+      if (!activeModalOverlay || !activeModalBox) {
+        if (callback) callback();
+        return;
+      }
 
-        const overlay = activeModalOverlay;
-        const box = activeModalBox;
+      const overlay = activeModalOverlay;
+      const box = activeModalBox;
 
-        if(activeArrowNode) {
-            activeArrowNode.classList.remove('is-active');
-            activeArrowNode = null;
-        }
+      if(activeArrowNode) {
+        activeArrowNode.classList.remove('is-active');
+        activeArrowNode = null;
+      }
 
-        overlay.classList.remove('modal-enter-backdrop');
-        box.classList.remove('modal-enter-box');
-        overlay.classList.add('modal-exit-backdrop');
-        box.classList.add('modal-exit-box');
+      overlay.classList.remove('modal-enter-backdrop');
+      box.classList.remove('modal-enter-box');
+      overlay.classList.add('modal-exit-backdrop');
+      box.classList.add('modal-exit-box');
 
-        activeModalOverlay = null;
-        activeModalBox = null;
+      activeModalOverlay = null;
+      activeModalBox = null;
 
-        setTimeout(() => {
-            overlay.classList.remove('modal-exit-backdrop');
-            box.classList.remove('modal-exit-box');
-            overlay.style.display = 'none';
-            overlay.classList.add('hidden');
-            if (callback) callback();
-        }, 280); 
+      setTimeout(() => {
+        overlay.classList.remove('modal-exit-backdrop');
+        box.classList.remove('modal-exit-box');
+        overlay.style.display = 'none';
+        overlay.classList.add('hidden');
+        if (callback) callback();
+      }, 240); 
     }
 
     // Modal Triggers
     function showUIAlert(title, msg, isConfirm = false, callback = null, el = null) {
-        if(isTransitioning) return;
-        const tEl = document.getElementById('custom-alert-title'); const mEl = document.getElementById('custom-alert-msg');
-        if (tEl) tEl.innerText = title; if (mEl) mEl.innerText = msg;
-        const actions = document.getElementById('custom-alert-actions'); alertCallback = callback;
-        if (actions) {
-          if (isConfirm) { actions.innerHTML = `<button type="button" onclick="closeUIAlert(false)" class="btn-pressable flex-1 py-2.5 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-zinc-300 text-xs font-bold uppercase">CANCEL</button><button type="button" onclick="closeUIAlert(true)" class="btn-pressable flex-1 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase shadow-lg shadow-indigo-600/30">CONFIRM</button>`;
-          } else { actions.innerHTML = `<button type="button" onclick="closeUIAlert(true)" class="btn-pressable w-full py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase shadow-lg shadow-indigo-600/30">OKAY</button>`; }
-        }
-        openModalCenter('custom-alert-modal', 'custom-alert-box', el);
+      if(isTransitioning) return;
+      const tEl = document.getElementById('custom-alert-title'); const mEl = document.getElementById('custom-alert-msg');
+      if (tEl) tEl.innerText = title; if (mEl) mEl.innerText = msg;
+      const actions = document.getElementById('custom-alert-actions'); alertCallback = callback;
+      if (actions) {
+        if (isConfirm) { actions.innerHTML = `<button type="button" onclick="closeUIAlert(false)" class="btn-pressable flex-1 py-2.5 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-zinc-300 text-xs font-bold uppercase">CANCEL</button><button type="button" onclick="closeUIAlert(true)" class="btn-pressable flex-1 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase shadow-lg shadow-indigo-600/30">CONFIRM</button>`;
+        } else { actions.innerHTML = `<button type="button" onclick="closeUIAlert(true)" class="btn-pressable w-full py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-bold uppercase shadow-lg shadow-indigo-600/30">OKAY</button>`; }
+      }
+      openModalCenter('custom-alert-modal', 'custom-alert-box', el);
     }
     
     function closeUIAlert(result) {
-        closeModalCenter(() => {
-            if (alertCallback) alertCallback(result);
-        });
+      closeModalCenter(() => {
+        if (alertCallback) alertCallback(result);
+      });
     }
 
     function openResetDialog(el) { openModalCenter('reset-modal', 'reset-box', el); }
     function closeResetDialog() { closeModalCenter(); }
 
     function openHistory(el) {
-        if(isTransitioning) return;
-        renderHistoryList(); 
-        openModalCenter('cv-history-modal', 'cv-history-box', el);
+      if(isTransitioning) return;
+      renderHistoryList(); 
+      openModalCenter('cv-history-modal', 'cv-history-box', el);
     }
     function closeHistory() { closeModalCenter(); }
 
     function createNewCV(el) {
-        if(isTransitioning) return;
-        cvData = JSON.parse(JSON.stringify(defaultCVData)); 
-        currentCvId = 'cv_' + Date.now(); 
-        localStorage.setItem('techasar_current_cv_id', currentCvId);
-        saveState();
-        
-        appStarted = true; 
-        currentPage = 1; 
-        activeView = 'editor';
-        renderAppLayer('enter-editor'); 
+      if(isTransitioning) return;
+      cvData = JSON.parse(JSON.stringify(defaultCVData)); 
+      currentCvId = 'cv_' + Date.now(); 
+      localStorage.setItem('techasar_current_cv_id', currentCvId);
+      saveState();
+      
+      appStarted = true; 
+      currentPage = 1; 
+      activeView = 'editor';
+      renderAppLayer('enter-editor'); 
     }
 
     function tryCreateNewCV(el) { if(!isTransitioning) createNewCV(el); }
     function tryOpenHistory(el) { if(!isTransitioning) openHistory(el); }
 
+    function confirmReset() {
+      cvData = JSON.parse(JSON.stringify(defaultCVData));
+      saveState();
+      closeModalCenter(() => {
+        renderAppLayer('none');
+      });
+    }
+
     function triggerPrint(onComplete = null) { 
-        document.body.classList.add('is-printing');
-        renderPrintNode(); 
-        setTimeout(() => { 
-            window.print(); 
-            document.body.classList.remove('is-printing');
-            if (onComplete) onComplete(); 
-        }, 150); 
+      document.body.classList.add('is-printing');
+      renderPrintNode(); 
+      setTimeout(() => { 
+        window.print(); 
+        document.body.classList.remove('is-printing');
+        if (onComplete) onComplete(); 
+      }, 150); 
     }
     
     window.addEventListener('afterprint', () => { document.body.classList.remove('is-printing'); });
@@ -586,148 +605,159 @@
     function createTextInput(label, val, onInputCode, type = "text", placeholder = "") { return `<div class="w-full h-[58px] min-h-[58px] max-h-[58px] bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] focus-within:border-indigo-500/70 focus-within:bg-[#16162a]/70 focus-within:ring-1 focus-within:ring-indigo-500/30 rounded-2xl px-3.5 py-1.5 flex flex-col justify-center transition-colors shadow-[0_4px_20px_rgba(0,0,0,0.25)]"><span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-tight mb-0.5 pointer-events-none">${label}</span><input type="${type}" value="${escapeHtml(val || '')}" oninput="${onInputCode}" placeholder="${placeholder}" class="w-full bg-transparent border-none text-[13.5px] sm:text-sm text-zinc-100 font-bold outline-none p-0 placeholder:text-zinc-600" /></div>`; }
     
     function createCustomDropdown(fieldPath, options, label, placeholder) {
-        const val = getNested(cvData, fieldPath); const displayLabel = options.find(o => o.val === val)?.label || placeholder;
-        const btnId = 'dd-btn-' + fieldPath.replace('.', '-'); const optionsStr = encodeURIComponent(JSON.stringify(options));
-        return `<div onclick="openGlobalDropdown('${fieldPath}', '${optionsStr}', '${placeholder}', this)" class="btn-pressable w-full h-[58px] min-h-[58px] max-h-[58px] bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] rounded-2xl px-3.5 py-1.5 flex flex-col justify-center cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.25)] select-none"><span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-tight mb-0.5 pointer-events-none">${label}</span><div class="flex items-center justify-between min-w-0"><span id="${btnId}" class="truncate whitespace-nowrap pr-2 text-[13px] sm:text-sm font-bold text-zinc-100 uppercase">${displayLabel}</span><svg class="dropdown-arrow w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`;
+      const val = getNested(cvData, fieldPath); const displayLabel = options.find(o => o.val === val)?.label || placeholder;
+      const btnId = 'dd-btn-' + fieldPath.replace('.', '-'); const optionsStr = encodeURIComponent(JSON.stringify(options));
+      return `<div onclick="openGlobalDropdown('${fieldPath}', '${optionsStr}', '${placeholder}', this)" class="btn-pressable w-full h-[58px] min-h-[58px] max-h-[58px] bg-[#12121e]/60 backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] rounded-2xl px-3.5 py-1.5 flex flex-col justify-center cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.25)] select-none"><span class="block text-[10px] font-bold text-zinc-400 tracking-wider uppercase leading-tight mb-0.5 pointer-events-none">${label}</span><div class="flex items-center justify-between min-w-0"><span id="${btnId}" class="truncate whitespace-nowrap pr-2 text-[13px] sm:text-sm font-bold text-zinc-100 uppercase">${displayLabel}</span><svg class="dropdown-arrow w-4 h-4 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg></div></div>`;
     }
 
     // Step Selector (Long Press on Prev Button)
     let pressTimer; let isPressing = false; let didLongPress = false;
     
     function startPress(e) {
-        if(currentPage === 1 || isTransitioning || activeModalOverlay) return;
-        isPressing = true; didLongPress = false; 
-        const btn = e.currentTarget;
-        btn.classList.add('hold-pressed');
-        
-        pressTimer = setTimeout(() => { 
-            if(isPressing) { 
-                didLongPress = true; 
-                btn.classList.remove('hold-pressed');
-                btn.classList.remove('is-pressed');
-                openStepSelector(btn); 
-            } 
-        }, 450);
+      if(currentPage === 1 || isTransitioning || activeModalOverlay) return;
+      isPressing = true; didLongPress = false; 
+      const btn = e.currentTarget;
+      btn.classList.add('hold-pressed');
+      
+      pressTimer = setTimeout(() => { 
+        if(isPressing) { 
+          didLongPress = true; 
+          btn.classList.remove('hold-pressed');
+          btn.classList.remove('is-pressed');
+          openStepSelector(btn); 
+        } 
+      }, 450);
     }
     
     function endPress(e) {
-        isPressing = false; clearTimeout(pressTimer);
-        const btn = e.currentTarget;
-        if (btn) {
-            btn.classList.remove('hold-pressed');
-            btn.classList.remove('is-pressed');
-        }
-        if(!didLongPress && !isTransitioning && !activeModalOverlay) { goPrevStep(); }
+      isPressing = false; clearTimeout(pressTimer);
+      const btn = e.currentTarget;
+      if (btn) {
+        btn.classList.remove('hold-pressed');
+        btn.classList.remove('is-pressed');
+      }
+      if(!didLongPress && !isTransitioning && !activeModalOverlay) { goPrevStep(); }
     }
     
     function cancelPress(e) { 
-        isPressing = false; clearTimeout(pressTimer); 
-        if (e && e.currentTarget) {
-            e.currentTarget.classList.remove('hold-pressed');
-            e.currentTarget.classList.remove('is-pressed');
-        }
+      isPressing = false; clearTimeout(pressTimer); 
+      if (e && e.currentTarget) {
+        e.currentTarget.classList.remove('hold-pressed');
+        e.currentTarget.classList.remove('is-pressed');
+      }
     }
 
     function openStepSelector(el) {
-        const grid = document.getElementById('step-selector-grid');
-        grid.innerHTML = Array.from({length: TOTAL_STEPS}).map((_, i) => {
-            const step = i + 1; const isActive = step === currentPage;
-            const staggerDelay = i * 20;
-            return `<button type="button" style="animation-delay: ${staggerDelay}ms;" onclick="jumpToStep(${step})" class="stagger-item btn-pressable py-3 rounded-2xl font-bold text-xs uppercase ${isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300'}">STEP ${step}</button>`;
-        }).join('');
-        openModalCenter('xy-modal-overlay', 'xy-box-steps', el);
+      const grid = document.getElementById('step-selector-grid');
+      grid.innerHTML = Array.from({length: TOTAL_STEPS}).map((_, i) => {
+        const step = i + 1; const isActive = step === currentPage;
+        const staggerDelay = i * 20;
+        return `<button type="button" style="animation-delay: ${staggerDelay}ms;" onclick="jumpToStep(${step})" class="stagger-item btn-pressable py-3 rounded-2xl font-bold text-xs uppercase ${isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300'}">STEP ${step}</button>`;
+      }).join('');
+      openModalCenter('xy-modal-overlay', 'xy-box-steps', el);
     }
     
     function jumpToStep(n) {
-        if(isTransitioning || n === currentPage) { closeModalCenter(); return; }
-        closeModalCenter(() => { 
-            const anim = n > currentPage ? 'nav-next' : 'nav-prev'; 
-            currentPage = n; 
-            renderAppLayer(anim); 
-        });
+      if(isTransitioning || n === currentPage) { closeModalCenter(); return; }
+      closeModalCenter(() => { 
+        const anim = n > currentPage ? 'nav-next' : 'nav-prev'; 
+        currentPage = n; 
+        renderAppLayer(anim); 
+      });
     }
 
     // Dropdown Filtering
     function filterGlobalDropdown(val) {
-        const query = val.toUpperCase(); const items = document.querySelectorAll('.dropdown-item'); let hasVisible = false;
-        
-        items.forEach(el => { 
-            if (el.innerText.toUpperCase().includes(query)) { 
-                el.classList.remove('search-hide'); 
-                el.style.display = 'flex'; 
-                hasVisible = true; 
-            } else { 
-                el.classList.add('search-hide');
-                setTimeout(() => { if(el.classList.contains('search-hide')) el.style.display = 'none'; }, 160);
-            } 
-        });
-        
-        let noRes = document.getElementById('no-results-msg');
-        if (!hasVisible) { 
-            if (!noRes) { 
-                noRes = document.createElement('div'); noRes.id = 'no-results-msg'; 
-                noRes.className = 'stagger-item text-zinc-500 text-xs text-center py-6 font-bold uppercase'; 
-                noRes.innerText = 'NO MATCHES FOUND'; 
-                document.getElementById('global-dropdown-list').appendChild(noRes); 
-            }
-        } else { if (noRes) noRes.remove(); }
+      const query = val.toUpperCase(); const items = document.querySelectorAll('.dropdown-item'); let hasVisible = false;
+      
+      items.forEach(el => { 
+        if (el.innerText.toUpperCase().includes(query)) { 
+          el.classList.remove('search-hide'); 
+          el.style.display = 'flex'; 
+          hasVisible = true; 
+        } else { 
+          el.classList.add('search-hide');
+          setTimeout(() => { if(el.classList.contains('search-hide')) el.style.display = 'none'; }, 160);
+        } 
+      });
+      
+      let noRes = document.getElementById('no-results-msg');
+      if (!hasVisible) { 
+        if (!noRes) { 
+          noRes = document.createElement('div'); noRes.id = 'no-results-msg'; 
+          noRes.className = 'stagger-item text-zinc-500 text-xs text-center py-6 font-bold uppercase'; 
+          noRes.innerText = 'NO MATCHES FOUND'; 
+          document.getElementById('global-dropdown-list').appendChild(noRes); 
+        }
+      } else { if (noRes) noRes.remove(); }
     }
 
     function openGlobalDropdown(fieldPath, optionsStr, placeholder, btnElement) {
-        if(isTransitioning) return;
-        const options = JSON.parse(decodeURIComponent(optionsStr)); const currentVal = getNested(cvData, fieldPath);
-        document.getElementById('global-dropdown-title').innerText = placeholder; 
-        document.getElementById('global-dropdown-search-wrapper').classList.remove('hidden');
-        
-        const searchInput = document.getElementById('global-dropdown-search'); 
-        if (searchInput) searchInput.value = '';
-        
-        document.getElementById('global-dropdown-list').innerHTML = options.map((opt, i) => `
-            <div style="animation-delay: ${i * 15}ms;" onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label.replace(/'/g, "\\'")}')" class="stagger-item dropdown-item px-4 py-3 rounded-2xl text-[13px] font-bold uppercase cursor-pointer flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600/20 border border-indigo-500/50 text-indigo-400' : 'hover:bg-white/[0.06] text-zinc-300 bg-white/[0.02]'}"><span class="truncate pr-2">${opt.label}</span>
-            <div class="tick-box ${currentVal === opt.val ? 'ticked' : ''}"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
-        `).join('');
-        openModalCenter('xy-modal-overlay', 'xy-box-dropdown', btnElement);
+      if(isTransitioning) return;
+      const options = JSON.parse(decodeURIComponent(optionsStr)); const currentVal = getNested(cvData, fieldPath);
+      document.getElementById('global-dropdown-title').innerText = placeholder; 
+      document.getElementById('global-dropdown-search-wrapper').classList.remove('hidden');
+      
+      const searchInput = document.getElementById('global-dropdown-search'); 
+      if (searchInput) searchInput.value = '';
+      
+      document.getElementById('global-dropdown-list').innerHTML = options.map((opt, i) => `
+        <div style="animation-delay: ${i * 15}ms;" onclick="selectGlobalDropdown('${fieldPath}', '${opt.val}', '${opt.label.replace(/'/g, "\\'")}')" class="stagger-item dropdown-item px-4 py-3 rounded-2xl text-[13px] font-bold uppercase cursor-pointer flex items-center justify-between ${currentVal === opt.val ? 'bg-indigo-600/20 border border-indigo-500/50 text-indigo-400' : 'hover:bg-white/[0.06] text-zinc-300 bg-white/[0.02]'}"><span class="truncate pr-2">${opt.label}</span>
+        <div class="tick-box ${currentVal === opt.val ? 'ticked' : ''}"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+      `).join('');
+      openModalCenter('xy-modal-overlay', 'xy-box-dropdown', btnElement);
     }
 
     function selectGlobalDropdown(fieldPath, val, label) {
-        setNested(cvData, fieldPath, val); let needsReRender = false;
-        if (fieldPath === 'personal.state') { cvData.personal.district = ''; cvData.personal.tehsil = ''; needsReRender = true; } 
-        else if (fieldPath === 'personal.district') { cvData.personal.tehsil = ''; needsReRender = true; } 
-        else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') { needsReRender = true; }
-        else if (fieldPath === 'footer.place' || fieldPath === 'footer.signName') { needsReRender = true; }
-        saveState(); 
-        closeModalCenter(() => {
-          if (needsReRender && activeView === 'editor') { 
-              renderAppLayer('none'); 
-          } else { 
-              const btn = document.getElementById('dd-btn-' + fieldPath.replace('.', '-')); 
-              if (btn) btn.innerText = label; 
-          }
-        });
+      setNested(cvData, fieldPath, val); 
+      let needsReRender = false;
+      
+      if (fieldPath === 'personal.state') { 
+        cvData.personal.district = ''; 
+        cvData.personal.tehsil = ''; 
+        needsReRender = true; 
+      } else if (fieldPath === 'personal.district') { 
+        cvData.personal.tehsil = ''; 
+        needsReRender = true; 
+      } else if (fieldPath === 'personal.tehsil' || fieldPath === 'details.nationality') { 
+        needsReRender = true; 
+      } else if (fieldPath === 'footer.place' || fieldPath === 'footer.signName') { 
+        needsReRender = true; 
+      }
+      
+      saveState(); 
+      closeModalCenter(() => {
+        if (needsReRender && activeView === 'editor') { 
+          renderAppLayer('none'); 
+        } else { 
+          const btn = document.getElementById('dd-btn-' + fieldPath.replace('.', '-')); 
+          if (btn) btn.innerText = label; 
+        }
+      });
     }
 
     let currentCustomInputType = '';
     function openAddCustomDataModal(type, el) {
-        if(isTransitioning) return;
-        currentCustomInputType = type;
-        document.getElementById('custom-input-title').innerText = type === 'place' ? 'ADD NEW PLACE' : 'ADD NEW SIGNATURE';
-        document.getElementById('custom-input-field').value = '';
-        openModalCenter('xy-modal-overlay', 'xy-box-custom-input', el);
+      if(isTransitioning) return;
+      currentCustomInputType = type;
+      document.getElementById('custom-input-title').innerText = type === 'place' ? 'ADD NEW PLACE' : 'ADD NEW SIGNATURE';
+      document.getElementById('custom-input-field').value = '';
+      openModalCenter('xy-modal-overlay', 'xy-box-custom-input', el);
     }
 
     function saveCustomInput() {
-        const val = document.getElementById('custom-input-field').value.trim();
-        if(!val) return closeModalCenter();
-        const upperVal = val.toUpperCase();
-        if(currentCustomInputType === 'place') {
-            if(!savedPlaces.includes(upperVal)) { savedPlaces.unshift(upperVal); localStorage.setItem('techasar_saved_places', JSON.stringify(savedPlaces)); }
-            cvData.footer.place = upperVal;
-        } else {
-            if(!savedSigns.includes(upperVal)) { savedSigns.unshift(upperVal); localStorage.setItem('techasar_saved_signs', JSON.stringify(savedSigns)); }
-            cvData.footer.signName = upperVal;
-        }
-        saveState();
-        closeModalCenter(() => { if(activeView === 'editor') { renderAppLayer('none'); } });
+      const val = document.getElementById('custom-input-field').value.trim();
+      if(!val) return closeModalCenter();
+      const upperVal = val.toUpperCase();
+      if(currentCustomInputType === 'place') {
+        if(!savedPlaces.includes(upperVal)) { savedPlaces.unshift(upperVal); localStorage.setItem('techasar_saved_places', JSON.stringify(savedPlaces)); }
+        cvData.footer.place = upperVal;
+      } else {
+        if(!savedSigns.includes(upperVal)) { savedSigns.unshift(upperVal); localStorage.setItem('techasar_saved_signs', JSON.stringify(savedSigns)); }
+        cvData.footer.signName = upperVal;
+      }
+      saveState();
+      closeModalCenter(() => { if(activeView === 'editor') { renderAppLayer('none'); } });
     }
 
     function parseDateParts(dateStr) {
@@ -746,25 +776,25 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData)); 
         if (currentCvId) {
-            localStorage.setItem('techasar_current_cv_id', currentCvId);
-            
-            let history = [];
-            try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) {}
-            
-            const idx = history.findIndex(h => h.id === currentCvId);
-            const title = cvData.personal.name.trim().toUpperCase() || "UNTITLED CV";
-            const historyItem = {
-                id: currentCvId,
-                name: title,
-                data: cvData,
-                date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                timestamp: Date.now()
-            };
-            
-            if (idx >= 0) history[idx] = historyItem;
-            else history.push(historyItem);
-            
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+          localStorage.setItem('techasar_current_cv_id', currentCvId);
+          
+          let history = [];
+          try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) {}
+          
+          const idx = history.findIndex(h => h.id === currentCvId);
+          const title = cvData.personal.name.trim().toUpperCase() || "UNTITLED CV";
+          const historyItem = {
+            id: currentCvId,
+            name: title,
+            data: cvData,
+            date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            timestamp: Date.now()
+          };
+          
+          if (idx >= 0) history[idx] = historyItem;
+          else history.push(historyItem);
+          
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
         }
       } catch(e) {}
     }
@@ -797,10 +827,10 @@
         row.classList.add('list-item-exit');
         
         row.addEventListener('animationend', () => {
-            if (!cvData[key]) return; 
-            cvData[key].splice(idx, 1); 
-            saveState(); 
-            renderAppLayer('none'); 
+          if (!cvData[key]) return; 
+          cvData[key].splice(idx, 1); 
+          saveState(); 
+          renderAppLayer('none'); 
         }, { once: true });
         
       } else { 
@@ -909,24 +939,24 @@
       const container = document.getElementById('history-list-container');
       let hist = [];
       try { 
-          hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); 
-          hist.sort((a,b) => b.timestamp - a.timestamp);
+        hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); 
+        hist.sort((a,b) => b.timestamp - a.timestamp);
       } catch(e) {}
 
       if (hist.length === 0) { 
-          container.innerHTML = '<div class="stagger-item text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND IN HISTORY.</div>'; 
-          return; 
+        container.innerHTML = '<div class="stagger-item text-zinc-500 text-sm text-center py-8 font-bold uppercase">NO CVS FOUND IN HISTORY.</div>'; 
+        return; 
       }
       
       container.innerHTML = hist.map((h, i) => `
-          <div style="animation-delay: ${i * 20}ms" class="stagger-item flex items-center justify-between p-3 bg-white/[0.03] border border-white/[0.08] hover:border-white/20 rounded-2xl mb-2 transition-colors">
-            <div class="flex flex-col flex-1 min-w-0 cursor-pointer py-1" onclick="loadCVFromHistory(event, '${h.id}')"><span class="text-zinc-100 font-bold text-sm truncate uppercase">${escapeHtml(h.name)}</span><span class="text-zinc-500 text-[11px] mt-0.5 font-bold uppercase">${h.date || 'SAVED RECENTLY'}</span></div>
-            <div class="flex items-center gap-2 shrink-0 ml-3">
-              <button type="button" onclick="loadCVFromHistory(event, '${h.id}')" class="btn-pressable p-2 bg-indigo-600/20 hover:bg-indigo-600/40 rounded-xl text-indigo-400" title="Edit"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-              <button type="button" onclick="printFromHistory(event, '${h.id}')" class="btn-pressable flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm uppercase w-[80px] justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg><span>PRINT</span></button>
-              <button type="button" onclick="deleteFromHistory(event, '${h.id}')" class="btn-pressable p-2 bg-white/[0.06] hover:bg-red-500/20 rounded-xl text-zinc-400 hover:text-red-400" title="Delete"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
-            </div>
+        <div style="animation-delay: ${i * 20}ms" class="stagger-item flex items-center justify-between p-3 bg-white/[0.03] border border-white/[0.08] hover:border-white/20 rounded-2xl mb-2 transition-colors">
+          <div class="flex flex-col flex-1 min-w-0 cursor-pointer py-1" onclick="loadCVFromHistory(event, '${h.id}')"><span class="text-zinc-100 font-bold text-sm truncate uppercase">${escapeHtml(h.name)}</span><span class="text-zinc-500 text-[11px] mt-0.5 font-bold uppercase">${h.date || 'SAVED RECENTLY'}</span></div>
+          <div class="flex items-center gap-2 shrink-0 ml-3">
+            <button type="button" onclick="loadCVFromHistory(event, '${h.id}')" class="btn-pressable p-2 bg-indigo-600/20 hover:bg-indigo-600/40 rounded-xl text-indigo-400" title="Edit"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
+            <button type="button" onclick="printFromHistory(event, '${h.id}')" class="btn-pressable flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm uppercase w-[80px] justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg><span>PRINT</span></button>
+            <button type="button" onclick="deleteFromHistory(event, '${h.id}')" class="btn-pressable p-2 bg-white/[0.06] hover:bg-red-500/20 rounded-xl text-zinc-400 hover:text-red-400" title="Delete"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
           </div>
+        </div>
       `).join('');
     }
 
@@ -934,20 +964,20 @@
       if (e) e.stopPropagation(); 
       if (isTransitioning) return;
       try { 
-          const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-          const item = hist.find(h => h.id === id);
-          if (item) { 
-              cvData = normalizeCVData(JSON.parse(JSON.stringify(item.data))); 
-              currentCvId = id; 
-              localStorage.setItem('techasar_current_cv_id', currentCvId); 
-              saveState(); 
-              closeModalCenter(() => {
-                  appStarted = true; 
-                  currentPage = 1; 
-                  activeView = 'editor'; 
-                  renderAppLayer('enter-editor');
-              });
-          }
+        const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const item = hist.find(h => h.id === id);
+        if (item) { 
+          cvData = normalizeCVData(JSON.parse(JSON.stringify(item.data))); 
+          currentCvId = id; 
+          localStorage.setItem('techasar_current_cv_id', currentCvId); 
+          saveState(); 
+          closeModalCenter(() => {
+            appStarted = true; 
+            currentPage = 1; 
+            activeView = 'editor'; 
+            renderAppLayer('enter-editor');
+          });
+        }
       } catch(e) {}
     }
 
@@ -960,46 +990,46 @@
       btn.innerHTML = `<div class="w-3.5 h-3.5 border-[2px] border-white/30 border-t-white rounded-full animate-spin"></div>`;
       
       try { 
-          const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-          const item = hist.find(h => h.id === id);
-          if (item){ 
-              const tempOldData = cvData; 
-              cvData = normalizeCVData(JSON.parse(JSON.stringify(item.data))); 
-              
-              requestAnimationFrame(() => { 
-                  triggerPrint(() => { 
-                      cvData = tempOldData; 
-                      if (activeView === 'preview') renderAppLayer('none'); 
-                  }); 
-              }); 
-          }
+        const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const item = hist.find(h => h.id === id);
+        if (item){ 
+          const tempOldData = cvData; 
+          cvData = normalizeCVData(JSON.parse(JSON.stringify(item.data))); 
+          
+          requestAnimationFrame(() => { 
+            triggerPrint(() => { 
+              cvData = tempOldData; 
+              if (activeView === 'preview') renderAppLayer('none'); 
+            }); 
+          }); 
+        }
       } catch(err) { 
-          showUIAlert("ERROR", "Failed to load CV for printing.", false); 
+        showUIAlert("ERROR", "Failed to load CV for printing.", false); 
       }
       btn.innerHTML = ogHTML;
     }
     
     function deleteFromHistory(e, id) {
-        if (e) e.stopPropagation(); 
-        if(isTransitioning) return;
-        
-        showUIAlert("DELETE CV?", "ARE YOU SURE YOU WANT TO DELETE THIS CV FROM HISTORY?", true, (res) => { 
-            if (res) { 
-                try { 
-                    let hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-                    hist = hist.filter(h => h.id !== id);
-                    localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
-                    
-                    if (currentCvId === id) { 
-                        cvData = JSON.parse(JSON.stringify(defaultCVData)); 
-                        currentCvId = null; 
-                        localStorage.removeItem('techasar_current_cv_id'); 
-                        saveState(); 
-                    } 
-                    renderHistoryList(); 
-                } catch(e) {} 
+      if (e) e.stopPropagation(); 
+      if(isTransitioning) return;
+      
+      showUIAlert("DELETE CV?", "ARE YOU SURE YOU WANT TO DELETE THIS CV FROM HISTORY?", true, (res) => { 
+        if (res) { 
+          try { 
+            let hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            hist = hist.filter(h => h.id !== id);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+            
+            if (currentCvId === id) { 
+              cvData = JSON.parse(JSON.stringify(defaultCVData)); 
+              currentCvId = null; 
+              localStorage.removeItem('techasar_current_cv_id'); 
+              saveState(); 
             } 
-        }, e.currentTarget);
+            renderHistoryList(); 
+          } catch(e) {} 
+        } 
+      }, e.currentTarget);
     }
 
     function getWelcomeScreenHTML() {
@@ -1246,16 +1276,16 @@
       const oldLayer = container.lastElementChild;
 
       if (!isTransition || !oldLayer) {
-         container.innerHTML = `<div class="app-layer w-full h-full flex flex-col absolute inset-0 z-10">${newHTML}</div>`;
-         const newLayer = container.lastElementChild;
-         requestAnimationFrame(() => { 
-             newLayer.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el));
-             const scrollArea = newLayer.querySelector('#editor-scroll-area');
-             if(scrollArea && oldLayer && oldLayer.querySelector('#editor-scroll-area')) {
-                 scrollArea.scrollTop = oldLayer.querySelector('#editor-scroll-area').scrollTop;
-             }
-         });
-         return;
+        container.innerHTML = `<div class="app-layer w-full h-full flex flex-col absolute inset-0 z-10">${newHTML}</div>`;
+        const newLayer = container.lastElementChild;
+        requestAnimationFrame(() => { 
+          newLayer.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el));
+          const scrollArea = newLayer.querySelector('#editor-scroll-area');
+          if(scrollArea && oldLayer && oldLayer.querySelector('#editor-scroll-area')) {
+            scrollArea.scrollTop = oldLayer.querySelector('#editor-scroll-area').scrollTop;
+          }
+        });
+        return;
       }
 
       isTransitioning = true;
@@ -1267,70 +1297,70 @@
       container.appendChild(newLayer);
       
       if (oldLayer) {
-          oldLayer.classList.add(`layer-exit-${transitionType}`);
-          oldLayer.style.zIndex = '0';
+        oldLayer.classList.add(`layer-exit-${transitionType}`);
+        oldLayer.style.zIndex = '0';
       }
 
       requestAnimationFrame(() => {
-          newLayer.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el));
-          const scrollArea = newLayer.querySelector('#editor-scroll-area');
-          if (scrollArea && transitionType.startsWith('nav-')) { scrollArea.scrollTop = 0; }
+        newLayer.querySelectorAll('textarea').forEach(el => autoResizeTextarea(el));
+        const scrollArea = newLayer.querySelector('#editor-scroll-area');
+        if (scrollArea && transitionType.startsWith('nav-')) { scrollArea.scrollTop = 0; }
       });
 
       setTimeout(() => {
-          if (currentToken === transitionToken && isTransitioning) {
-              if (oldLayer && oldLayer.parentNode === container) { container.removeChild(oldLayer); }
-              newLayer.className = 'app-layer w-full h-full flex flex-col absolute inset-0 z-10'; 
-              isTransitioning = false;
-          }
-      }, 340); 
+        if (currentToken === transitionToken && isTransitioning) {
+          if (oldLayer && oldLayer.parentNode === container) { container.removeChild(oldLayer); }
+          newLayer.className = 'app-layer w-full h-full flex flex-col absolute inset-0 z-10'; 
+          isTransitioning = false;
+        }
+      }, 320); 
     }
 
     function goToHome() { 
-        if(isTransitioning) return;
-        appStarted = false; activeView = 'editor'; 
-        renderAppLayer('exit-home'); 
+      if(isTransitioning) return;
+      appStarted = false; activeView = 'editor'; 
+      renderAppLayer('exit-home'); 
     }
 
     function goNextStep() { 
-        if (isTransitioning) return;
-        if (currentPage < TOTAL_STEPS) { 
-            currentPage++; renderAppLayer('nav-next'); 
-        } else { 
-            openPreview(); 
-        } 
+      if (isTransitioning) return;
+      if (currentPage < TOTAL_STEPS) { 
+        currentPage++; renderAppLayer('nav-next'); 
+      } else { 
+        openPreview(); 
+      } 
     }
 
     function goPrevStep() { 
-        if (isTransitioning) return;
-        if (currentPage > 1) { 
-            currentPage--; renderAppLayer('nav-prev'); 
-        } 
+      if (isTransitioning) return;
+      if (currentPage > 1) { 
+        currentPage--; renderAppLayer('nav-prev'); 
+      } 
     }
 
     function openPreview() { 
-        if(isTransitioning) return;
-        activeView = 'preview'; renderAppLayer('enter-preview'); 
+      if(isTransitioning) return;
+      activeView = 'preview'; renderAppLayer('enter-preview'); 
     }
     
     function closePreview() { 
-        if(isTransitioning) return;
-        activeView = 'editor'; renderAppLayer('exit-preview'); 
+      if(isTransitioning) return;
+      activeView = 'editor'; renderAppLayer('exit-preview'); 
     }
     
     function handleDirectPrint() {
-        if(isTransitioning) return;
-        triggerPrint();
+      if(isTransitioning) return;
+      triggerPrint();
     }
 
     // Resize Debouncing
     let resizeTimer;
     function fitPreviewWidth() { const container = document.getElementById('preview-viewport-container'); const w = container ? container.clientWidth - 24 : window.innerWidth - 24; previewZoom = Number(Math.max(0.32, Math.min(1.0, w / 794)).toFixed(2)); }
     window.addEventListener('resize', () => { 
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            if (activeView === 'preview' && !isTransitioning) { fitPreviewWidth(); renderAppLayer('none'); }
-        }, 150);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (activeView === 'preview' && !isTransitioning) { fitPreviewWidth(); renderAppLayer('none'); }
+      }, 150);
     });
   </script>
 </body>
