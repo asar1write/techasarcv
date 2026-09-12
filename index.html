@@ -24,15 +24,17 @@
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/algerian">
 
   <style>
-    /* ===== CENTRALIZED ANIMATION ARCHITECTURE ===== */
+    /* ===================================================
+       CENTRALIZED BUTTERY-SMOOTH MOTION ARCHITECTURE
+       =================================================== */
     :root {
       --motion-fast: 160ms;
-      --motion-normal: 250ms; 
-      --motion-modal-in: 380ms;
-      --motion-modal-out: 280ms;
+      --motion-normal: 260ms; 
       --motion-page: 320ms;
+      --modal-open-dur: 340ms;
+      --modal-close-dur: 280ms;
       
-      /* Premium Easings */
+      /* Apple & Namaz Tracker Premium Easings */
       --ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
       --ease-bouncy: cubic-bezier(0.34, 1.15, 0.64, 1);
       --ease-subtle: cubic-bezier(0.25, 1, 0.2, 1);
@@ -82,7 +84,7 @@
 
     /* --- CROSSFADE APP ENTRY --- */
     @keyframes appCrossfade {
-        0% { transform: scale(0.95); opacity: 0; }
+        0% { transform: scale(0.96); opacity: 0; }
         100% { transform: scale(1); opacity: 1; }
     }
     .trigger-app-entry {
@@ -91,20 +93,20 @@
 
     /* --- STAGGERED SLIDE UP ENTRY --- */
     @keyframes smoothSlideUp {
-        0% { opacity: 0; transform: translate3d(0, 15px, 0); }
+        0% { opacity: 0; transform: translate3d(0, 16px, 0); }
         100% { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-    .animate-entry > * { opacity: 0; animation: smoothSlideUp 0.4s var(--ease-subtle) forwards; will-change: transform, opacity; }
-    .animate-entry > *:nth-child(1) { animation-delay: 0.05s; }
-    .animate-entry > *:nth-child(2) { animation-delay: 0.10s; }
-    .animate-entry > *:nth-child(3) { animation-delay: 0.15s; }
-    .animate-entry > *:nth-child(4) { animation-delay: 0.20s; }
-    .animate-entry > *:nth-child(5) { animation-delay: 0.25s; }
-    .animate-entry > *:nth-child(6) { animation-delay: 0.30s; }
-    .animate-entry > *:nth-child(7) { animation-delay: 0.35s; }
-    .animate-entry > *:nth-child(8) { animation-delay: 0.40s; }
+    .animate-entry > * { opacity: 0; animation: smoothSlideUp 0.38s var(--ease-subtle) forwards; will-change: transform, opacity; }
+    .animate-entry > *:nth-child(1) { animation-delay: 0.04s; }
+    .animate-entry > *:nth-child(2) { animation-delay: 0.08s; }
+    .animate-entry > *:nth-child(3) { animation-delay: 0.12s; }
+    .animate-entry > *:nth-child(4) { animation-delay: 0.16s; }
+    .animate-entry > *:nth-child(5) { animation-delay: 0.20s; }
+    .animate-entry > *:nth-child(6) { animation-delay: 0.24s; }
+    .animate-entry > *:nth-child(7) { animation-delay: 0.28s; }
+    .animate-entry > *:nth-child(8) { animation-delay: 0.32s; }
 
-    /* --- STRICT PAGE TRANSITIONS --- */
+    /* --- STRICT HORIZONTAL & VIEW TRANSITIONS --- */
     .app-layer {
       will-change: transform, opacity;
       background-color: #08080e;
@@ -132,67 +134,81 @@
     @keyframes pageFadeDownIn { 0% { opacity: 0; transform: translate3d(0, -12px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes pageFadeDownOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, 12px, 0); } }
     @keyframes fadeScaleIn { 0% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } 100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
-    @keyframes fadeScaleOut { 0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } 100% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } }
+    @keyframes fadeScaleOut { 0% { opacity: 1; transform: translate3d(0, 0, 0); } 100% { opacity: 0; transform: translate3d(0, var(--slide-y-offset), 0) scale(0.985); } }
     @keyframes editorFadeOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.985); } }
     @keyframes editorFadeIn { 0% { opacity: 0; transform: scale(0.985); } 100% { opacity: 1; transform: scale(1); } }
 
-    /* --- UNIFIED ORIGIN-AWARE MODAL SYSTEM --- */
-    .modal-enter-backdrop { animation: modalFadeIn 0.35s ease forwards; }
-    .modal-exit-backdrop { animation: modalFadeOut var(--motion-modal-out) ease forwards; pointer-events: none; }
-    
-    .modal-enter-box { 
-        --start-x: 0px; --start-y: 20px; 
-        animation: originPopIn var(--motion-modal-in) var(--ease-bouncy) forwards; 
+    /* ===================================================
+       PURE ORIGIN-TO-ORIGIN DYNAMIC MODAL SYSTEM
+       =================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 150;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity var(--modal-close-dur) var(--ease-standard), visibility 0s linear var(--modal-close-dur);
     }
-    .modal-exit-box { 
-        /* The exit perfectly reverses to the start-x and start-y variables */
-        animation: originPopOut var(--motion-modal-out) var(--ease-standard) forwards; 
-        pointer-events: none; 
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity var(--modal-open-dur) var(--ease-standard), visibility 0s linear 0s;
     }
 
-    @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes modalFadeOut { from { opacity: 1; } to { opacity: 0; } }
-    
-    /* Pop IN from the exact click location */
-    @keyframes originPopIn {
-        from { opacity: 0; transform: translate3d(var(--start-x), var(--start-y), 0) scale(0.3); }
-        to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    .modal-content-box {
+      --start-x: 0px;
+      --start-y: 20px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      /* Exactly at the origin with scale 0.15 when closed */
+      transform: translate3d(calc(-50% + var(--start-x)), calc(-50% + var(--start-y)), 0) scale(0.15);
+      opacity: 0;
+      /* Return physics to origin */
+      transition: transform var(--modal-close-dur) var(--ease-standard), opacity calc(var(--modal-close-dur) * 0.85) ease-out;
+      will-change: transform, opacity;
     }
-    
-    /* Pop OUT exactly back to the click location */
-    @keyframes originPopOut {
-        from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-        to { opacity: 0; transform: translate3d(var(--start-x), var(--start-y), 0) scale(0.3); }
+    .modal-overlay.show .modal-content-box:not(.hidden) {
+      /* Smooth emergence to center */
+      transform: translate3d(-50%, -50%, 0) scale(1);
+      opacity: 1;
+      transition: transform var(--modal-open-dur) var(--ease-bouncy), opacity var(--modal-open-dur) ease-in;
     }
 
     /* --- ANIMATED SVG TICK-BOX --- */
     .tick-box { width: 22px; height: 22px; border: 2px solid rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s var(--ease-standard); pointer-events: none; }
-    .tick-box svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 0.3s ease 0.1s; }
-    .tick-box.ticked { background: #4f46e5; border-color: #4f46e5; transform: scale(1.1) translate3d(0,0,0); }
+    .tick-box svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 0.28s ease 0.08s; }
+    .tick-box.ticked { background: #4f46e5; border-color: #4f46e5; transform: scale(1.08) translate3d(0,0,0); }
     .tick-box.ticked svg { stroke-dashoffset: 0; }
 
-    /* --- STAGGERED LISTS --- */
+    /* --- STAGGERED LISTS & ROWS --- */
     .stagger-item { opacity: 0; animation: staggerSlideIn var(--motion-normal) var(--ease-standard) forwards; }
     @keyframes staggerSlideIn { from { opacity: 0; transform: translate3d(0, 8px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     .search-hide { animation: searchFadeOut var(--motion-fast) var(--ease-standard) forwards; }
-    @keyframes searchFadeOut { from { opacity: 1; transform: translate3d(0, 0, 0); } to { opacity: 0; transform: translate3d(0, -3px, 0); } }
+    @keyframes searchFadeOut { from { opacity: 1; transform: translate3d(0, 0, 0); } to { opacity: 0; transform: translate3d(0, -4px, 0); } }
+    
     .list-item-enter { animation: itemEnter var(--motion-normal) var(--ease-standard) forwards; }
     .list-item-exit { animation: itemExit var(--motion-fast) var(--ease-standard) forwards; pointer-events: none; }
     @keyframes itemEnter { from { opacity: 0; transform: translate3d(0, 8px, 0) scale(0.985); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
-    @keyframes itemExit { from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } to { opacity: 0; transform: translate3d(10px, 0, 0) scale(0.98); } }
+    @keyframes itemExit { from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } to { opacity: 0; transform: translate3d(12px, 0, 0) scale(0.98); } }
 
-    /* --- NATIVE PRESS ANIMATION --- */
+    /* --- NATIVE PRESS FEEDBACK --- */
     .btn-pressable { 
       transition: transform var(--motion-fast) var(--ease-standard), opacity var(--motion-fast) ease, background-color var(--motion-fast) ease, border-color var(--motion-fast) ease !important; 
       will-change: transform, opacity; 
     }
-    .btn-pressable.is-pressed:not(:disabled) { transform: scale(0.96) !important; opacity: 0.95 !important; box-shadow: none !important; }
-    .btn-pressable.fab-press.is-pressed:not(:disabled) { transform: scale(0.94) !important; }
-    .btn-pressable.hold-pressed:not(:disabled) { transform: scale(0.96) !important; opacity: 0.95 !important; }
+    .btn-pressable.is-pressed:not(:disabled) { transform: scale(0.96) !important; opacity: 0.94 !important; box-shadow: none !important; }
+    .btn-pressable.fab-press.is-pressed:not(:disabled) { transform: scale(0.93) !important; }
+    .btn-pressable.hold-pressed:not(:disabled) { transform: scale(0.95) !important; opacity: 0.94 !important; }
 
-    /* --- DROPDOWN ARROW --- */
+    /* --- DROPDOWN ARROW ROTATION --- */
     .dropdown-arrow { transition: transform var(--motion-normal) var(--ease-standard); }
-    .modal-enter-box .dropdown-arrow.is-active { transform: rotate(180deg); }
+    .dropdown-arrow.is-active { transform: rotate(180deg); }
 
     .custom-scrollbar::-webkit-scrollbar { width: 4px !important; display: block !important; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -210,7 +226,7 @@
       *, ::before, ::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
     }
 
-    /* --- STRICT NO-ANIMATION FOR PDF/PRINT --- */
+    /* --- PRINT PROTECTION: NO ANIMATION/TRANSFORM --- */
     body.is-printing { background-color: #ffffff !important; color: #000000 !important; overflow: hidden !important; }
     body.is-printing > *:not(#cv-print-container) { display: none !important; }
     body.is-printing #cv-print-container { display: block !important; position: static !important; width: 100% !important; visibility: visible !important; }
@@ -245,21 +261,23 @@
   <!-- WORKSPACE -->
   <div id="app-screen-workspace" class="h-screen h-[100dvh] min-h-screen w-full flex flex-col overflow-hidden select-none bg-[#08080e] relative z-0">
     <div id="main-view-container" class="flex-1 flex flex-col overflow-hidden relative w-full h-full">
-      <!-- Transitions happen here -->
+      <!-- Layers render here -->
     </div>
   </div>
 
-  <!-- UNIFIED MODAL OVERLAYS -->
-  <div id="custom-alert-modal" class="modal-backdrop fixed inset-0 z-[200] bg-black/60 backdrop-blur-md hidden justify-center items-center opacity-0">
-    <div id="custom-alert-box" class="modal-box bg-[#141424]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-[320px] w-[90vw] shadow-2xl text-center space-y-4 opacity-0 flex flex-col items-center justify-center">
+  <!-- UNIFIED ORIGIN-TO-ORIGIN MODAL OVERLAYS -->
+  <!-- 1. Alert Modal -->
+  <div id="custom-alert-modal" class="modal-overlay" onclick="closeModalCenter()">
+    <div id="custom-alert-box" class="modal-content-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-[320px] w-[90vw] shadow-2xl text-center space-y-4 flex flex-col items-center justify-center" onclick="event.stopPropagation()">
        <h3 id="custom-alert-title" class="font-bold text-zinc-100 text-[15px] uppercase tracking-wide"></h3>
        <p id="custom-alert-msg" class="text-xs font-bold text-zinc-400 uppercase leading-relaxed"></p>
        <div id="custom-alert-actions" class="flex gap-2.5 justify-center pt-2 w-full"></div>
     </div>
   </div>
 
-  <div id="reset-modal" class="modal-backdrop fixed inset-0 z-[110] bg-black/60 backdrop-blur-md hidden justify-center items-center opacity-0">
-    <div id="reset-box" class="modal-box bg-[#141424]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-xs w-[90vw] shadow-2xl text-center space-y-3.5 opacity-0 flex flex-col items-center justify-center">
+  <!-- 2. Reset Modal -->
+  <div id="reset-modal" class="modal-overlay" onclick="closeModalCenter()">
+    <div id="reset-box" class="modal-content-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 max-w-xs w-[90vw] shadow-2xl text-center space-y-3.5 flex flex-col items-center justify-center" onclick="event.stopPropagation()">
       <div class="w-10 h-10 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg></div>
       <div>
         <h3 class="font-bold text-sm text-zinc-100 uppercase">RESET CV DATA?</h3>
@@ -272,8 +290,9 @@
     </div>
   </div>
 
-  <div id="cv-history-modal" class="modal-backdrop fixed inset-0 z-[110] bg-black/70 backdrop-blur-md hidden justify-center items-center opacity-0 px-4">
-    <div id="cv-history-box" class="modal-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[80vh] opacity-0 hide-scroll">
+  <!-- 3. History Modal -->
+  <div id="cv-history-modal" class="modal-overlay" onclick="closeModalCenter()">
+    <div id="cv-history-box" class="modal-content-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-[92vw] max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[80vh] hide-scroll" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between p-4 border-b border-white/[0.08] bg-white/[0.03]">
          <div class="flex items-center gap-2"><svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><h3 class="font-bold text-zinc-100 text-sm uppercase">CV HISTORY</h3></div>
          <button type="button" onclick="closeModalCenter()" class="btn-pressable fab-press text-zinc-400 hover:text-white p-1.5 rounded-full hover:bg-white/[0.08]"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
@@ -282,9 +301,11 @@
     </div>
   </div>
 
-  <div id="xy-modal-overlay" class="modal-backdrop fixed inset-0 z-[150] bg-black/65 backdrop-blur-md hidden justify-center items-center opacity-0 px-4" onclick="closeModalCenter()">
+  <!-- 4. Universal XY Selector Overlay -->
+  <div id="xy-modal-overlay" class="modal-overlay" onclick="closeModalCenter()">
     
-    <div id="xy-box-dropdown" class="modal-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex-col overflow-hidden shadow-2xl w-full max-w-[340px] opacity-0 hidden" onclick="event.stopPropagation();">
+    <!-- Dropdown Box -->
+    <div id="xy-box-dropdown" class="modal-content-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl w-[90vw] max-w-[340px] hidden" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between p-3.5 border-b border-white/[0.08] bg-white/[0.03]">
          <span id="global-dropdown-title" class="text-[13px] font-bold text-zinc-100 uppercase tracking-wider">SELECT</span>
          <button type="button" onclick="closeModalCenter()" class="btn-pressable fab-press p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.06]"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
@@ -295,14 +316,16 @@
       <div id="global-dropdown-list" class="flex-1 overflow-y-auto p-2.5 custom-scrollbar space-y-1 relative" style="max-height: 45vh;"></div>
     </div>
 
-    <div id="xy-box-steps" class="modal-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex-col overflow-hidden shadow-2xl w-full max-w-[300px] opacity-0 hidden" onclick="event.stopPropagation();">
+    <!-- Step Selector Box -->
+    <div id="xy-box-steps" class="modal-content-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl w-[90vw] max-w-[300px] hidden" onclick="event.stopPropagation()">
       <div class="p-4 border-b border-white/[0.08] bg-white/[0.03] text-center">
          <span class="text-[13px] font-black text-indigo-400 uppercase tracking-widest">JUMP TO STEP</span>
       </div>
       <div class="p-3.5 grid grid-cols-3 gap-2" id="step-selector-grid"></div>
     </div>
 
-    <div id="xy-box-custom-input" class="modal-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex-col overflow-hidden shadow-2xl w-full max-w-[320px] opacity-0 hidden" onclick="event.stopPropagation();">
+    <!-- Custom Text Input Box -->
+    <div id="xy-box-custom-input" class="modal-content-box bg-[#141424]/95 backdrop-blur-2xl border border-white/10 rounded-3xl flex flex-col overflow-hidden shadow-2xl w-[90vw] max-w-[320px] hidden" onclick="event.stopPropagation()">
       <div class="p-5 space-y-4">
          <h3 id="custom-input-title" class="font-black text-indigo-400 text-[14px] uppercase tracking-wider text-center">ADD NEW</h3>
          <div class="bg-black/30 border border-white/[0.08] focus-within:border-indigo-500 rounded-2xl px-4 py-2.5 transition-colors">
@@ -327,7 +350,7 @@
     let isTransitioning = false;
     let transitionToken = 0;
     
-    // MODAL STATE
+    // MODAL ORIGIN CONTROLLER STATE
     let activeModalOverlay = null;
     let activeModalBox = null;
     let alertCallback = null;
@@ -378,7 +401,7 @@
     let savedPlaces = (function() { try { const p = localStorage.getItem('techasar_saved_places'); if (p) return JSON.parse(p); } catch(e) {} return ["LUCKNOW", "DELHI", "BAREILLY", "PILIBHIT", "PURANPUR"]; })();
     let savedSigns = (function() { try { const s = localStorage.getItem('techasar_saved_signs'); if (s) return JSON.parse(s); } catch(e) {} return []; })();
 
-    // INIT with Index 11.0 App Crossfade
+    // INIT
     document.addEventListener('DOMContentLoaded', () => { 
         renderAppLayer('none'); 
         setTimeout(() => {
@@ -394,7 +417,7 @@
         }, 150); 
     });
 
-    // ROBUST POINTER EVENTS SYSTEM
+    // ROBUST PRESS SYSTEM
     document.addEventListener('pointerdown', (e) => {
         const btn = e.target.closest('.btn-pressable');
         if (btn && !btn.disabled) btn.classList.add('is-pressed');
@@ -418,17 +441,17 @@
         });
     }
 
-    // MOBILE SWIPE SYSTEM
+    // MOBILE SWIPE
     let touchStartX = 0; let touchStartY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.target.closest('input, textarea, select, button, .modal-backdrop, .dropdown-item')) return;
+        if (e.target.closest('input, textarea, select, button, .modal-overlay, .dropdown-item')) return;
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, {passive: true});
     
     document.addEventListener('touchend', e => {
         if (isTransitioning || activeView !== 'editor' || activeModalOverlay) return;
-        if (e.target.closest('input, textarea, select, button, .modal-backdrop, .dropdown-item')) return;
+        if (e.target.closest('input, textarea, select, button, .modal-overlay, .dropdown-item')) return;
         
         const touchEndX = e.changedTouches[0].screenX;
         const touchEndY = e.changedTouches[0].screenY;
@@ -453,7 +476,7 @@
       });
     }
 
-    // --- ORIGIN-AWARE MODAL CONTROLLER (Index 11.0 Style) ---
+    // --- ACCURATE ORIGIN-BASED POPUP CONTROLLER ---
     function openModalCenter(overlayId, boxId, callerEl = null) {
         if(isTransitioning) return;
         clearAllPressStates();
@@ -462,6 +485,7 @@
         const box = document.getElementById(boxId);
         if(!overlay || !box) return;
 
+        // Manage multi-content boxes inside universal overlay
         if (overlayId === 'xy-modal-overlay') {
             ['xy-box-dropdown', 'xy-box-steps', 'xy-box-custom-input'].forEach(id => {
                 const b = document.getElementById(id); if(b) b.classList.add('hidden');
@@ -472,69 +496,58 @@
         activeModalOverlay = overlay;
         activeModalBox = box;
         
-        // Calculate interaction origin for scale animation
+        // Compute the exact physical center of the button pressed
         if (callerEl && callerEl.getBoundingClientRect) {
-            let rect = callerEl.getBoundingClientRect();
-            let centerX = rect.left + (rect.width / 2);
-            let centerY = rect.top + (rect.height / 2);
-            let deltaX = centerX - (window.innerWidth / 2);
-            let deltaY = centerY - (window.innerHeight / 2);
+            const rect = callerEl.getBoundingClientRect();
+            const centerX = rect.left + (rect.width / 2);
+            const centerY = rect.top + (rect.height / 2);
+            const deltaX = centerX - (window.innerWidth / 2);
+            const deltaY = centerY - (window.innerHeight / 2);
             box.style.setProperty('--start-x', deltaX + 'px');
             box.style.setProperty('--start-y', deltaY + 'px');
         } else {
             box.style.setProperty('--start-x', '0px');
-            box.style.setProperty('--start-y', '20px');
+            box.style.setProperty('--start-y', '25px');
         }
         
-        // Dropdown arrow animation logic
+        // Arrow rotation
         if (callerEl) {
             activeArrowNode = callerEl.querySelector('.dropdown-arrow');
             if(activeArrowNode) activeArrowNode.classList.add('is-active');
         }
 
-        overlay.classList.remove('hidden');
-        overlay.style.display = 'flex';
-
-        overlay.classList.remove('modal-exit-backdrop', 'opacity-0');
-        box.classList.remove('modal-exit-box', 'opacity-0');
-        
-        overlay.classList.add('modal-enter-backdrop');
-        box.classList.add('modal-enter-box');
+        // Hardware accelerated pop out from origin
+        requestAnimationFrame(() => {
+            overlay.classList.add('show');
+        });
     }
 
     function closeModalCenter(callback) {
-        if (!activeModalOverlay || !activeModalBox) {
+        if (!activeModalOverlay) {
             if (callback) callback();
             return;
         }
 
         const overlay = activeModalOverlay;
-        const box = activeModalBox;
 
         if(activeArrowNode) {
             activeArrowNode.classList.remove('is-active');
             activeArrowNode = null;
         }
 
-        overlay.classList.remove('modal-enter-backdrop');
-        box.classList.remove('modal-enter-box');
-        overlay.classList.add('modal-exit-backdrop');
-        box.classList.add('modal-exit-box');
+        // Smooth physics-reversal directly back into the origin button
+        overlay.classList.remove('show');
 
         activeModalOverlay = null;
         activeModalBox = null;
 
-        // Perfectly synced 280ms duration matches motion-modal-out
+        // Matches exactly --modal-close-dur (280ms)
         setTimeout(() => {
-            overlay.classList.remove('modal-exit-backdrop');
-            box.classList.remove('modal-exit-box');
-            overlay.style.display = 'none';
-            overlay.classList.add('hidden');
             if (callback) callback();
         }, 280); 
     }
 
-    // Modal Implementations
+    // Modal Triggers
     function showUIAlert(title, msg, isConfirm = false, callback = null, el = null) {
         if(isTransitioning) return;
         const tEl = document.getElementById('custom-alert-title'); const mEl = document.getElementById('custom-alert-msg');
@@ -655,7 +668,7 @@
         });
     }
 
-    // Dropdown System
+    // Dropdown Filtering
     function filterGlobalDropdown(val) {
         const query = val.toUpperCase(); const items = document.querySelectorAll('.dropdown-item'); let hasVisible = false;
         
@@ -1285,7 +1298,7 @@
               newLayer.className = 'app-layer w-full h-full flex flex-col absolute inset-0 z-10'; 
               isTransitioning = false;
           }
-      }, 360); 
+      }, 340); 
     }
 
     function goToHome() { 
