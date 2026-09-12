@@ -197,6 +197,14 @@
     const CUSTOM_PLACES_KEY = 'techasar_custom_places';
     const CUSTOM_SIGNS_KEY = 'techasar_custom_signs';
     
+    // Prevent scrolling when keyboard opens via JS
+    document.addEventListener('focusin', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      }
+    });
+    
     let initialViewWidth = window.innerWidth;
     function setRealViewportHeight() { document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px'); }
     window.addEventListener('resize', () => {
@@ -237,9 +245,81 @@
     let customSigns = JSON.parse(localStorage.getItem(CUSTOM_SIGNS_KEY)) || [];
 
     const upTehsils = {
-      "Lucknow": ["Bakshi Ka Talab", "Lucknow", "Malihabad", "Mohanlalganj"],
+      "Agra": ["Agra", "Bah", "Etmadpur", "Fatehabad", "Kheragarh", "Kiraoli"],
+      "Aligarh": ["Atrauli", "Gabhasana", "Iglas", "Khair", "Koil"],
+      "Ambedkar Nagar": ["Akbarpur", "Allapur", "Jalalpur", "Tanda", "Bhitargaon"],
+      "Amethi": ["Amethi", "Gauriganj", "Musafirkhana", "Tiloi"],
+      "Amroha": ["Amroha", "Dhanaura", "Hasanpur", "Naugaon Sadat"],
+      "Auraiya": ["Auraiya", "Bidhuna", "Ajitmal"],
+      "Ayodhya": ["Bikapur", "Milkipur", "Rudauli", "Sadar", "Sohawal"],
+      "Azamgarh": ["Azamgarh", "Burhanpur", "Lalganj", "Mehnagar", "Nizamabad", "Phulpur", "Sagri"],
+      "Baghpat": ["Baghpat", "Baraut", "Khekada"],
+      "Bahraich": ["Bahraich", "Kaiserganj", "Mahasi", "Mihipurwa", "Nanpara", "Payagpur"],
+      "Ballia": ["Bairia", "Ballia", "Bansdih", "Belthara Road", "Rasra", "Sikandarpur"],
+      "Balrampur": ["Balrampur", "Tulsipur", "Utraula"],
+      "Banda": ["Atarra", "Baberu", "Banda", "Naraini", "Pailani"],
+      "Barabanki": ["Fatehpur", "Haidergarh", "Nawabganj", "Ram Sanehi Ghat", "Sirauli Gauspur"],
+      "Bareilly": ["Aonla", "Baheri", "Bareilly", "Faridpur", "Mirganj", "Nawabganj"],
+      "Basti": ["Basti", "Bhanpur", "Harraiya", "Rudhauli"],
+      "Bhadohi": ["Aurai", "Bhadohi", "Gyanpur"],
+      "Bijnor": ["Bijnor", "Chandpur", "Dhampur", "Nagina", "Najibabad"],
+      "Budaun": ["Bilsi", "Bisauli", "Budaun", "Dataganj", "Sahaswan"],
+      "Bulandshahr": ["Anupshahr", "Bulandshahr", "Debai", "Khurja", "Shikarpur", "Sikandrabad"],
+      "Chandauli": ["Chakia", "Chandauli", "Mughalsarai", "Naukhi", "Sakaldiha"],
+      "Chitrakoot": ["Karwi", "Mau"],
+      "Deoria": ["Barhaj", "Bhatpar Rani", "Deoria", "Rudrapur", "Salempur"],
+      "Etah": ["Aliganj", "Etah", "Jalesar"],
+      "Etawah": ["Bharthana", "Chakarnagar", "Etawah", "Jaswantnagar", "Saifai", "Taakhaa"],
+      "Farrukhabad": ["Amritpur", "Farrukhabad", "Kaimganj"],
+      "Fatehpur": ["Bindki", "Fatehpur", "Khaga"],
+      "Firozabad": ["Firozabad", "Jasrana", "Shikohabad", "Tundla", "Siraganj"],
+      "Gautam Buddha Nagar": ["Dadri", "Gautam Buddha Nagar", "Jewar"],
+      "Ghaziabad": ["Ghaziabad", "Loni", "Modinagar"],
+      "Ghazipur": ["Ghazipur", "Jakhanian", "Jamania", "Mohammadabad", "Qasimabad", "Saidpur", "Zamania"],
+      "Gonda": ["Colonelganj", "Gonda", "Mankapur", "Tarabganj"],
+      "Gorakhpur": ["Bansgaon", "Campierganj", "Chauri Chaura", "Gorakhpur", "Khajani", "Sahjanwa"],
+      "Hamirpur": ["Hamirpur", "Maudaha", "Rath", "Sarila"],
+      "Hapur": ["Dhaulana", "Garhmukteshwar", "Hapur"],
+      "Hardoi": ["Balamau", "Bilgram", "Hardoi", "Sandila", "Sawayajpur", "Shahabad"],
+      "Hathras": ["Hathras", "Sadabad", "Sikandra Rao", "Sasni"],
+      "Jalaun": ["Jalaun", "Kalpi", "Konch", "Madhaugarh", "Orai"],
+      "Jaunpur": ["Badlapur", "Jaunpur", "Kerakat", "Machhlishahr", "Madiyahun", "Shahganj"],
+      "Jhansi": ["Garautha", "Jhansi", "Mauranipur", "Moth", "Tahrauli"],
+      "Kannauj": ["Chhibramau", "Kannauj", "Tirwa"],
+      "Kanpur Dehat": ["Akbarpur", "Bhognipur", "Derapur", "Rasulabad", "Sikandara"],
       "Kanpur Nagar": ["Bilhaur", "Ghatampur", "Kanpur", "Narwal"],
-      // Add or expand your full dictionary here as needed
+      "Kasganj": ["Kasganj", "Patiyali", "Sahawar"],
+      "Kaushambi": ["Chail", "Manjhanpur", "Sirathu"],
+      "Kheri": ["Dhaurahara", "Gola Gokarannath", "Lakhimpur", "Mohammdi", "Nighasan", "Palia"],
+      "Kushinagar": ["Hata", "Kasya", "Padrauna", "Tamkuhi Raj", "Khadda"],
+      "Lalitpur": ["Lalitpur", "Mahroni", "Talbehat"],
+      "Lucknow": ["Bakshi Ka Talab", "Lucknow", "Malihabad", "Mohanlalganj"],
+      "Maharajganj": ["Anandnagar", "Maharajganj", "Nautanwa", "Nichlaul"],
+      "Mahoba": ["Charkhari", "Kulpahar", "Mahoba"],
+      "Mainpuri": ["Bhongaon", "Karhal", "Mainpuri", "Kishni", "Kurawali"],
+      "Mathura": ["Chhata", "Gowardhan", "Mahavan", "Mant", "Mathura"],
+      "Mau": ["Ghosi", "Madhuban", "Maunath Bhanjan", "Muhammadabad Gohna"],
+      "Meerut": ["Meerut", "Mawana", "Sardhana"],
+      "Mirzapur": ["Chunar", "Lalganj", "Madihan", "Mirzapur"],
+      "Moradabad": ["Bilari", "Kanth", "Moradabad", "Thakurdwara"],
+      "Muzaffarnagar": ["Budhana", "Jansath", "Khatuli", "Muzaffarnagar"],
+      "Pilibhit": ["Amariya", "Bisalpur", "Kalinagar", "Pilibhit", "Puranpur"],
+      "Pratapgarh": ["Kunda", "Lalganj", "Patti", "Pratapgarh", "Raniganj"],
+      "Prayagraj": ["Allahabad", "Bara", "Handia", "Karchhana", "Koraon", "Meja", "Phulpur", "Soraon"],
+      "Raebareli": ["Dalmau", "Lalganj", "Maharajganj", "Raebareli", "Salon", "Unchahar"],
+      "Rampur": ["Bilaspur", "Milak", "Rampur", "Shahabad", "Suar", "Tanda"],
+      "Saharanpur": ["Behat", "Deoband", "Nakur", "Rampur Maniharan", "Saharanpur"],
+      "Sambhal": ["Chandausi", "Gunnaur", "Sambhal"],
+      "Sant Kabir Nagar": ["Dhanghata", "Khalilabad", "Mehdawal"],
+      "Shahjahanpur": ["Jalalabad", "Powayan", "Sadar", "Tilhar"],
+      "Shamli": ["Kairana", "Shamli", "Unn"],
+      "Shravasti": ["Bhinga", "Ikauna"],
+      "Siddharthnagar": ["Bansi", "Domariyaganj", "Itwa", "Naugarh", "Shohratgarh"],
+      "Sitapur": ["Biswan", "Laharpur", "Mahmudabad", "Misrikh", "Sidhauli", "Sitapur"],
+      "Sonbhadra": ["Duddhi", "Ghorawal", "Robertsganj"],
+      "Sultanpur": ["Jaisinghpur", "Kadipur", "Lambhua", "Sultanpur"],
+      "Unnao": ["Bighapur", "Hasanganj", "Purwa", "Safipur", "Unnao"],
+      "Varanasi": ["Pindra", "Varanasi"]
     };
 
     const upDistricts = Object.keys(upTehsils);
@@ -342,7 +422,7 @@
         editorEl.style.setProperty('--ty', lastEditorOrigin.ty);
         editorEl.classList.remove('anim-pop-in-origin', 'anim-next', 'anim-prev', 'anim-none');
         editorEl.classList.add('anim-pop-out-origin');
-        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 280);
+        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 290);
       } else {
         appState.view = 'home'; appState.animDirection = 'fade'; renderApp();
       }
@@ -362,7 +442,7 @@
         el.style.setProperty('--ty', lastEditorOrigin.ty);
         el.classList.remove('anim-pop-in-origin', 'anim-none');
         el.classList.add('anim-pop-out-origin');
-        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 280);
+        setTimeout(() => { appState.view = 'home'; appState.animDirection = 'fade'; renderApp(); }, 290);
       } else {
         appState.view = 'home'; appState.animDirection = 'fade'; renderApp();
       }
@@ -631,15 +711,15 @@
           </div>
 
           <div class="flex items-center justify-between gap-3 px-4 pt-3 pb-6 z-30 shrink-0 bg-transparent">
-            <button onmousedown="startPrevPress(event)" onmouseup="cancelPrevPress()" onmouseleave="cancelPrevPress()" ontouchstart="startPrevPress(event)" ontouchend="cancelPrevPress()" onclick="handlePrevClick()" class="flex items-center gap-1.5 px-5 py-3.5 rounded-full bg-transparent border border-zinc-700 text-zinc-200 text-xs font-bold active:scale-95 uppercase transition-all ${page === 1 ? 'opacity-0 pointer-events-none' : ''}">
+            <button onmousedown="startPrevPress(event)" onmouseup="cancelPrevPress()" onmouseleave="cancelPrevPress()" ontouchstart="startPrevPress(event)" ontouchend="cancelPrevPress()" onclick="handlePrevClick()" class="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-transparent border border-zinc-700 text-zinc-200 text-xs font-bold active:scale-95 uppercase transition-all ${page === 1 ? 'opacity-0 pointer-events-none' : ''}">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               PREV
             </button>
-            <button onclick="goPreview(event)" class="flex-1 flex justify-center items-center gap-2 py-3.5 rounded-full bg-transparent border border-zinc-600 text-zinc-100 text-xs font-bold active:scale-95 uppercase transition-all">
+            <button onclick="goPreview(event)" class="flex-1 flex justify-center items-center gap-2 py-2.5 rounded-full bg-transparent border border-zinc-600 text-zinc-100 text-xs font-bold active:scale-95 uppercase transition-all">
               <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               PREVIEW
             </button>
-            <button onclick="goNext(event)" class="flex items-center gap-1.5 px-5 py-3.5 rounded-full bg-indigo-600 border border-indigo-500 text-white text-xs font-bold active:scale-95 uppercase transition-all">
+            <button onclick="goNext(event)" class="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-indigo-600 border border-indigo-500 text-white text-xs font-bold active:scale-95 uppercase transition-all">
               ${page === 8 ? 'DONE' : 'NEXT'}
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
@@ -964,7 +1044,7 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         box.classList.remove('anim-pop-out-origin');
-      }, 250);
+      }, 290);
     }
 
     function goToStep(step) {
@@ -1130,7 +1210,7 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         box.classList.remove('anim-pop-out-origin');
-      }, 280);
+      }, 290);
     }
 
     function goNext(e) {
@@ -1171,7 +1251,7 @@
         previewRoot.style.setProperty('--ty', lastEditorOrigin.ty);
         previewRoot.classList.remove('anim-pop-in-origin');
         previewRoot.classList.add('anim-pop-out-origin');
-        setTimeout(() => setView('editor', 'none'), 250);
+        setTimeout(() => setView('editor', 'none'), 290);
       } else {
         setView('editor', 'none');
       }
@@ -1254,7 +1334,7 @@
 
       const contactRowsHTML = contactList.map((item, idx) => `
         <tr>
-          <td style="font-weight:${tw}; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:80px; text-transform:${tt};">${item.label}</td>
+          <td style="font-weight:${tw}; font-size:${idx === 0 ? '12pt' : '11pt'}; vertical-align:top; padding:1.5px 0; color:#000; width:95px; text-transform:${tt};">${item.label}</td>
           <td style="font-weight:${tw}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-align:center; vertical-align:top; padding:1.5px 0; color:#000; width:15px;">:</td>
           <td style="font-weight:${tw}; font-size:${idx === 0 ? '12pt' : '11pt'}; text-transform:${tt}; vertical-align:top; padding:1.5px 0; color:#000;">${item.val}</td>
         </tr>
@@ -1267,7 +1347,7 @@
         { l: 'Gender', v: d.gender },
         { l: 'Marital Status', v: d.marital },
         { l: 'Nationality', v: d.nationality },
-        { l: 'Language Known', v: d.languages },
+        { l: 'Language', v: d.languages },
         { l: 'Hobbies', v: d.hobbies }
       ].map(item => `
         <tr>
